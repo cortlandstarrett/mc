@@ -20,7 +20,7 @@
 ./rsl2oal < ../../arc/q.oal.act_blk.arc | sed 's/, """/, \&quot;"/' | sed 's/+ """/+ "\&quot;/' | sed 's/include(file:"${te_file.arc_path}/include(file:"c/' | sh swapreflex.sh >> o3.oal
 ./rsl2oal < ../../arc/q.oal.action.arc | sed 's/include(file:"${te_file.arc_path}/include(file:"c/' | sh swapreflex.sh >> o3.oal
 ./rsl2oal < ../../arc/q.oal.translate.arc | sed 's/include(file:"${te_file.arc_path}/include(file:"c/' | sh swapreflex.sh >> o3.oal
-./rsl2oal < ../../arc/q.smt.generate.arc | sed 's/include(file:"${te_file.arc_path}/include(file:"c/' | sh swapreflex.sh >> o3.oal
+./rsl2oal < ../../arc/q.smt.generate.arc | sed 's/include(file:"${te_file.arc_path}/include(file:"c/' | sed 's/\${subtypecheck}\\/subtypecheck/' | sed 's/\${ws}{\\/ws + "{"/' | sed 's/}\\/"}"/' | sh swapreflex.sh >> o3.oal
 ./rsl2oal < ../../arc/q.r_rel.arc | sed 's/include(file:"${te_file.arc_path}/include(file:"c/' | sh swapreflex.sh >> o3.oal
 
 # fourth list for afunmark

@@ -2161,7 +2161,7 @@ if ( not_empty start_te_class )
         if ( 0 == te_lnk.Mult )
           if ( not_empty sub_r_rel )
             T::include(file:"c/t.smt_sr.result_ref_init.c");
-T::b(s:${subtypecheck}\);
+T::b(s:subtypecheck);
           end if;
           if ( not te_select_related.by_where )
             //  1  |   T   |  T   |     F     |   "one"      |  0:one   |    F     | select one b related by a->B[R1];
@@ -2183,7 +2183,7 @@ T::b(s:${subtypecheck}\);
         if ( 0 == te_lnk.Mult )
           if ( not_empty sub_r_rel )
             T::include(file:"c/t.smt_sr.result_ref_init.c");
-T::b(s:${subtypecheck}\);
+T::b(s:subtypecheck);
           end if;
           if ( not te_select_related.by_where )
             //  5  |   T   |  T   |     F     |   "any"      |  0:one   |    F     | select any b related by a->B[R1];                              // Note 1
@@ -2291,7 +2291,7 @@ T::b(s:${subtypecheck}\);
         T::include(file:"c/t.smt_sr.result_ref_init.c");
       end if;
     end if;
-T::b(s:${ws}{\);
+T::b(s:ws + "{");
     depth = depth + 1;
     if ( te_select_related.start_many )
       depth = depth + 1;
@@ -2340,7 +2340,7 @@ T::b(s:${ws}{\);
     if ( "one" == te_select_related.multiplicity )
       if ( 0 == te_lnk.Mult )
         if ( not_empty sub_r_rel )
-T::b(s:${subtypecheck}\);
+T::b(s:subtypecheck);
         end if;
         if ( not te_select_related.by_where )
           //  1m |   T   |  F   |   "one"      |  0:one   |    F     | select one c related by a(s)->B[R1]->C[R2];
@@ -2361,7 +2361,7 @@ T::b(s:${subtypecheck}\);
     elif ( "any" == te_select_related.multiplicity )
       if ( 0 == te_lnk.Mult )
         if ( not_empty sub_r_rel )
-T::b(s:${subtypecheck}\);
+T::b(s:subtypecheck);
         end if;
         if ( not te_select_related.by_where )
           //  5m |   T   |  F   |   "any"      |  0:one   |    F     | select any c related by a(s)->B[R1]->C[R2];                              // Note 1, 2
@@ -2382,7 +2382,7 @@ T::b(s:${subtypecheck}\);
     else
       if ( 0 == te_lnk.Mult )
         if ( not_empty sub_r_rel )
-T::b(s:${subtypecheck}\);
+T::b(s:subtypecheck);
         end if;
         if ( not te_select_related.by_where )
           //  9m |   T   |  F   |   "many"     |  0:one   |    F     | select many cs related by a(s)->B[R1]->C[R2];                            // Note 1
@@ -2403,7 +2403,7 @@ T::b(s:${subtypecheck}\);
     end if; // one, any, many
     //
     while ( depth > 0 )
-T::b(s:}\);
+T::b(s:"}");
       depth = depth - 1;
     end while;
     ::oal( s:"T_b( \\n ); // Ccode" );
