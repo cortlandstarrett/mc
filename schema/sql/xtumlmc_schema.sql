@@ -2355,7 +2355,6 @@ CREATE TABLE TE_SYS (
 	AllPortsPoly	BOOLEAN,
 	StructuredMessaging	BOOLEAN,
 	NetworkSockets	BOOLEAN,
-	DomainClassNumberName	STRING,
 	Sys_ID	UNIQUE_ID );
 
 -- Class:  2005.  Dispatcher
@@ -2363,7 +2362,10 @@ CREATE TABLE TE_DISP (
 	Dispatcher_ID	INTEGER,
 	SystemID	INTEGER,
 	Name	STRING,
-	Descrip	STRING );
+	Descrip	STRING,
+	message_id_type	STRING,
+	base_message_type	STRING,
+	message_post_type	STRING );
 
 -- Class:  2006.  Message Queue
 CREATE TABLE TE_QUEUE (
@@ -2635,13 +2637,16 @@ CREATE TABLE TE_PO (
 	GeneratedName	STRING,
 	InterfaceName	STRING,
 	PackageName	STRING,
+	message_post	STRING,
+	vector_table	STRING,
 	Provision	BOOLEAN,
 	polymorphic	BOOLEAN,
 	sibling	INTEGER,
 	Order	INTEGER,
 	te_cID	UNIQUE_ID,
 	c_iId	UNIQUE_ID,
-	c_poId	UNIQUE_ID );
+	c_poId	UNIQUE_ID,
+	first_te_mactID	UNIQUE_ID );
 
 -- Class:  2032.  Extended Value
 CREATE TABLE TE_VAL (
@@ -4489,7 +4494,7 @@ CREATE ROP REF_ID R4709	FROM MC CL_POR	(C_PO_Id)
 
 
 -- ============================================================================
--- Relationships In Subsystem:  Component Nesting  
+-- Relationships In Package:  Component Nesting  
 -- ============================================================================
   
 CREATE ROP REF_ID R4201	FROM MC CL_IC	(AssignedComp_Id)
@@ -6108,6 +6113,9 @@ CREATE ROP REF_ID R2097	FROM 1  TE_C	(first_syncID)
 
 CREATE ROP REF_ID R2098	FROM 1C TE_C	(first_eeID)
 			  TO 1C TE_EE	(ID);
+
+CREATE ROP REF_ID R2099	FROM 1C TE_PO	(first_te_mactID)
+			  TO 1C TE_MACT	(ID);
 
 
 -- ============================================================================

@@ -347,7 +347,7 @@
 {"FactoryTE_CLASS","o_obj","te_c"},
 {"FactoryTE_DIM","s_dim","predecessor_te_dim"},
 {"FactoryTE_SM","is_ism","sm_sm","te_class"},
-{"FactoryTE_MACT","te_parms","te_dt","te_c","te_po","message_name","subtypeKL"},
+{"FactoryTE_MACT","te_parms","te_dt","te_c","te_po","message_name","subtypeKL","direction"},
 {"TE_EE_init","te_ee","te_c"},
 {"FactoryTE_ABA","te_c","te_parms","scope","name","subtypeKL","te_dt"},
 {"FactoryTE_PARM","s_dims","te_dt","prefix","name","by_ref"},

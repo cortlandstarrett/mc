@@ -122,6 +122,9 @@
     .// relate te_disp to te_sys across R2003;
     .assign te_disp.SystemID = te_sys.SystemID
     .// end relate
+    .assign te_disp.message_id_type = te_prefix.type + "msgid_t"
+    .assign te_disp.base_message_type = te_prefix.type + "base_msg_t"
+    .assign te_disp.message_post_type = te_prefix.type + "mpost_t"
   .end if
   .assign te_disp.Descrip = "dispatcher"
   .assign te_disp.Name = "main"
@@ -245,6 +248,8 @@
         .assign te_po.sibling = 0
         .assign te_po.Name = c_po.Name
         .assign te_po.GeneratedName = "$r{te_po.Name}"
+        .// structured messaging dispatcher
+        .assign te_po.message_post = ( te_c.Name + "_" ) + ( te_po.GeneratedName + "_mpost" )
         .// Create the Interface Instance instances.
         .select many c_irs related by c_po->C_IR[R4016]
         .for each c_ir in c_irs
@@ -1146,10 +1151,9 @@
       .end if
     .end if
     .select many te_parms related by spr_rep->C_EP[R4500]->C_PP[R4006]->TE_PARM[R2048]
-    .invoke r = FactoryTE_MACT( te_parms, te_dt, te_c, te_po, spr_ro.Name, "SPR_RO" )
+    .invoke r = FactoryTE_MACT( te_parms, te_dt, te_c, te_po, spr_ro.Name, "SPR_RO", c_io.Direction )
     .assign te_mact = r.result
     .assign te_mact.Descrip = c_io.Descrip
-    .assign te_mact.Direction = c_io.Direction
     .// relate te_mact to spr_ro across R2052;
     .assign te_mact.SPR_ROId = spr_ro.Id
     .// end relate
@@ -1161,10 +1165,9 @@
     .select one te_c related by te_po->TE_C[R2005]
     .select one c_as related by spr_rep->C_EP[R4500]->C_AS[R4004]
     .select many te_parms related by spr_rep->C_EP[R4500]->C_PP[R4006]->TE_PARM[R2048]
-    .invoke r = FactoryTE_MACT( te_parms, void_te_dt, te_c, te_po, spr_rs.Name, "SPR_RS" )
+    .invoke r = FactoryTE_MACT( te_parms, void_te_dt, te_c, te_po, spr_rs.Name, "SPR_RS", c_as.Direction )
     .assign te_mact = r.result
     .assign te_mact.Descrip = c_as.Descrip
-    .assign te_mact.Direction = c_as.Direction
     .// relate te_mact to spr_rs across R2053;
     .assign te_mact.SPR_RSId = spr_rs.Id
     .// end relate
@@ -1183,10 +1186,9 @@
       .end if
     .end if
     .select many te_parms related by spr_pep->C_EP[R4501]->C_PP[R4006]->TE_PARM[R2048]
-    .invoke r = FactoryTE_MACT( te_parms, te_dt, te_c, te_po, spr_po.Name, "SPR_PO" )
+    .invoke r = FactoryTE_MACT( te_parms, te_dt, te_c, te_po, spr_po.Name, "SPR_PO", c_io.Direction )
     .assign te_mact = r.result
     .assign te_mact.Descrip = c_io.Descrip
-    .assign te_mact.Direction = c_io.Direction
     .// relate te_mact to spr_po across R2050;
     .assign te_mact.SPR_POId = spr_po.Id
     .// end relate
@@ -1198,10 +1200,9 @@
     .select one te_c related by te_po->TE_C[R2005]
     .select one c_as related by spr_pep->C_EP[R4501]->C_AS[R4004]
     .select many te_parms related by spr_pep->C_EP[R4501]->C_PP[R4006]->TE_PARM[R2048]
-    .invoke r = FactoryTE_MACT( te_parms, void_te_dt, te_c, te_po, spr_ps.Name, "SPR_PS" )
+    .invoke r = FactoryTE_MACT( te_parms, void_te_dt, te_c, te_po, spr_ps.Name, "SPR_PS", c_as.Direction )
     .assign te_mact = r.result
     .assign te_mact.Descrip = c_as.Descrip
-    .assign te_mact.Direction = c_as.Direction
     .// relate te_mact to spr_ps across R2051;
     .assign te_mact.SPR_PSId = spr_ps.Id
     .// end relate
@@ -1210,7 +1211,20 @@
   .select many te_pos from instances of TE_PO
   .for each te_po in te_pos
     .select many te_macts related by te_po->TE_MACT[R2006]
-    .invoke mact_sort( te_macts )
+    .invoke r = mact_sort( te_macts )
+    .assign first_te_mact = r.result
+    .// relate te_po to first_te_mact across R2099;
+    .assign te_po.first_te_mactID = first_te_mact.ID
+    .// end relate
+    .// Build vector table for structured messaging.
+    .assign te_mact = first_te_mact
+    .while ( not_empty te_mact )
+      .assign te_po.vector_table = ( ( te_po.vector_table + "\n  ( " ) + ( te_disp.message_post_type + " ) " ) ) + te_mact.GeneratedName
+      .select one te_mact related by te_mact->TE_MACT[R2083.'succeeds']
+      .if ( not_empty te_mact )
+        .assign te_po.vector_table = te_po.vector_table + ","
+      .end if
+    .end while
   .end for
   .//
   .//
@@ -2099,6 +2113,7 @@
   .param inst_ref te_po
   .param string message_name
   .param string subtypeKL
+  .param integer direction
   .select any te_file from instances of TE_FILE
   .select any te_sys from instances of TE_SYS
   .select any te_target from instances of TE_TARGET
@@ -2123,6 +2138,7 @@
   .else
     .assign te_mact.polymorphic = true
   .end if
+  .assign te_mact.Direction = direction
   .assign te_mact.subtypeKL = subtypeKL
   .assign te_mact.Provision = te_po.Provision
   .assign te_mact.MessageName = message_name
@@ -2166,6 +2182,19 @@
   .end if
   .invoke r = FactoryTE_ABA( te_c, te_parms, te_mact.ComponentName, te_mact.GeneratedName, "TE_MACT", te_dt )
   .assign te_aba = r.result
+  .if ( te_sys.StructuredMessaging ) 
+    .if ( ( ( te_mact.Provision ) and ( 0 == te_mact.Direction ) ) or ( ( not te_mact.Provision ) and ( 1 == te_mact.Direction ) ) )
+      .// inbound
+      .assign te_aba.ParameterDeclaration = ( ( " " + te_mact.InterfaceName ) + ( "_" + te_mact.MessageName ) ) + "_t * "
+      .assign te_aba.ParameterDefinition = te_aba.ParameterDeclaration + "m "
+    .elif ( ( ( te_mact.Provision ) and ( 1 == te_mact.Direction ) ) or ( ( not te_mact.Provision ) and ( 0 == te_mact.Direction ) ) )
+      .// outbound
+      .assign te_aba.ParameterInvocation = " &m "
+    .else
+      .print "ERROR:  Component message that is neither inbound nor outbound ${te_mact.GeneratedName}"
+      .exit 13
+    .end if
+  .end if
   .// relate te_mact to te_aba across R2010;
   .assign te_mact.AbaID = te_aba.AbaID
   .// end relate
@@ -2767,7 +2796,7 @@
 .end function
 .//
 .// Sort a list of TE_MACTs.
-.function mact_sort
+.function mact_sort .// te_mact
   .param inst_ref_set te_macts
   .// Declare an empty instance reference.
   .select any head_te_mact related by te_macts->TE_MACT[R2083.'succeeds'] where ( false )
@@ -2785,6 +2814,7 @@
     .assign counter = counter + 1
     .select one te_mact related by te_mact->TE_MACT[R2083.'succeeds']
   .end while
+  .assign attr_result = head_te_mact
 .end function
 .function mact_insert .// te_mact
   .param inst_ref head_te_mact

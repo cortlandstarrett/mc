@@ -28,7 +28,18 @@
   .// ports
   .// messages
   .select many te_pos related by te_c->TE_PO[R2005]
+  .if ( te_sys.StructuredMessaging )
+    .select many c_is related by te_pos->C_I[R2007]
+    .for each c_i in c_is
+      .assign message_declarations = message_declarations + "#include ""${c_i.Name}_interface.h""\n"
+    .end for
+  .end if
   .for each te_po in te_pos
+    .if ( te_sys.StructuredMessaging )
+      .// CDS - make this a template
+      .assign mpost = "void ${te_po.message_post}( ${te_disp.base_message_type} * );\n"
+      .assign message_declarations = message_declarations + mpost
+    .end if
     .// Get the first te_mact(s) in the port.
     .select many te_macts related by te_po->TE_MACT[R2006] where ( selected.Order == 0 )
     .invoke s = TE_MACT_CreateDeclarations( te_macts )
@@ -38,6 +49,11 @@
   .emit to file "${te_file.system_include_path}/${te_c.module_file}.${te_file.hdr_file_ext}"
   .//
   .for each te_po in te_pos
+    .select one first_te_mact related by te_po->TE_MACT[R2099]
+    .// CDS - make this a template
+    .assign mpost = "void ${te_po.message_post}( ${te_disp.base_message_type} * m )\n"
+    .assign mpost = mpost + "{ static ${te_disp.message_post_type} f[ ${first_te_mact.InterfaceName}_msgmax ] = { ${te_po.vector_table} };\n  ( f[ m->mid.msg ] )( m );\n}\n"
+    .assign message_definitions = message_definitions + mpost
     .// Get the first te_mact(s) in the port.
     .select many te_macts related by te_po->TE_MACT[R2006] where ( selected.Order == 0 )
     .invoke s = TE_MACT_CreateDefinition( te_c, te_po, te_macts )
@@ -49,7 +65,6 @@
       .invoke wrapper = Vista_TLM_CreateTCLFiles ( te_c )
       .assign register_offset = register_offset + wrapper.register_offset
       .// CDS This is not general purpose yet.  We need to handle multiple ports and ordering within ports and polymorphism.
-      .select any first_te_mact related by te_macts->TE_C[R2002]->TE_MACT[R2002] where ( selected.Order == 0 )
       .invoke mo = TE_MACT_GenerateTLMMessageOrder( first_te_mact )
       .assign TLM_message_order = TLM_message_order + mo.message_order
     .end if

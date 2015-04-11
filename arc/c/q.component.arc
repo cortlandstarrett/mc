@@ -86,6 +86,7 @@
   .param inst_ref te_c
   .param inst_ref te_po
   .param inst_ref_set first_te_macts
+  .select any te_disp from instances of TE_DISP
   .select any te_file from instances of TE_FILE
   .select any te_prefix from instances of TE_PREFIX
   .select any te_sys from instances of TE_SYS
@@ -100,6 +101,7 @@
     .while ( not_empty te_mact )
     .assign sm_evt = empty_sm_evt
     .assign foreign_te_macts = empty_te_macts
+    .select any foreign_te_po related by empty_te_macts->TE_PO[R2099]
     .select one te_aba related by te_mact->TE_ABA[R2010]
     .if ( te_mact.subtypeKL == "SPR_PO" )
     .elif ( te_mact.subtypeKL == "SPR_RO" )
@@ -129,12 +131,12 @@
         .assign action_body = ""
         .for each foreign_te_mact in foreign_te_macts
           .select one foreign_te_c related by foreign_te_mact->TE_C[R2002]
+          .select one foreign_te_po related by foreign_te_mact->TE_PO[R2006]
           .if ( foreign_te_c.included_in_build )
-            .invoke s = t_oal_smt_iop( foreign_te_mact.GeneratedName, te_aba.ParameterInvocation, "  ", true )
             .if ( "void" != te_aba.ReturnDataType )
               .assign action_body = "return "
             .end if
-            .assign action_body = action_body + s.body
+            .assign action_body = ( ( action_body + foreign_te_mact.GeneratedName ) + ( "(" + te_aba.ParameterInvocation ) ) + ");"
           .end if
         .end for
       .else
@@ -147,11 +149,10 @@
           .end if
           .for each foreign_te_iir in foreign_te_iirs
             .assign presumed_target = ( ( foreign_te_iir.component_name + "_" ) + ( foreign_te_iir.port_name + "_" ) ) + te_mact.MessageName
-            .invoke s = t_oal_smt_iop( presumed_target, te_aba.ParameterInvocation, "  ", true )
             .if ( "void" != te_aba.ReturnDataType )
               .assign action_body = "  return"
             .end if
-            .assign action_body = action_body + s.body
+            .assign action_body = ( ( action_body + presumed_target ) + ( "(" + te_aba.ParameterInvocation ) ) + ");"
           .end for
         .end if
       .end if
@@ -207,7 +208,7 @@
           .if (parmsCount > 1)
             .//create an instance of the struct
             .assign autosar_body = autosar_body +"  dt_${signal.Name}_param ${signal.Name}_param;\n"
-            .// assign the signal parameters' values to the struct
+            .// assign the signal parameter values to the struct
             .for each parm in te_parms
               .assign autosar_body = autosar_body +"  ${signal.Name}_param.${parm.GeneratedName}=${parm.GeneratedName};\n"
             .end for

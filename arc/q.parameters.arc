@@ -67,7 +67,7 @@
     .assign defn = ( ( defn + te_dt.ExtName ) + ( param_qual + " " ) ) + ( te_parm.GeneratedName + te_parm.array_spec )
     .assign decl = ( ( decl + te_dt.ExtName ) + ( param_qual + te_parm.array_spec ) )
     .assign invo = ( invo + param_delimiter ) + te_parm.GeneratedName
-    .assign stru = ( ( stru + te_dt.ExtName ) + ( param_qual + " " ) ) + ( ( te_parm.GeneratedName + te_parm.array_spec ) + ";\n" )
+    .assign stru = ( ( stru + te_dt.ExtName ) + ( param_qual + " " ) ) + ( ( te_parm.GeneratedName + te_parm.array_spec ) + "; " )
     .if ( ( "" != te_dt.string_format ) and ( "" == te_parm.array_spec ) )
       .// Do not trace structures or arrays.
       .assign dereference = ""

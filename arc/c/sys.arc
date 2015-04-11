@@ -102,6 +102,7 @@
 .select any te_container from instances of TE_CONTAINER
 .select any te_copyright from instances of TE_COPYRIGHT
 .select any te_dlist from instances of TE_DLIST
+.select any te_disp from instances of TE_DISP
 .select any te_dma from instances of TE_DMA
 .select any te_eq from instances of TE_EQ
 .select any te_extent from instances of TE_EXTENT
@@ -144,7 +145,9 @@
 .end for
 .//
 .select any tim_te_ee from instances of TE_EE where ( ( selected.RegisteredName == "TIM" ) and ( selected.Included ) )
-.// Generate the interface code between the components.
+.// Generate interface declarations.
+.include "${te_file.arc_path}/q.interfaces.arc"
+.// Generate components.
 .include "${te_file.arc_path}/q.components.arc"
 .//
 .//

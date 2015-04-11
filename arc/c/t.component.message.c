@@ -37,5 +37,17 @@ ${te_aba.scope}${te_aba.GeneratedName}(${te_aba.ParameterDefinition})
   /* <message compname="${te_c.Name}" compnum="${te_c.number}" portname="${te_po.Name}" portnum="${te_po.Order}" msgname="${te_mact.MessageName}" msgnum="${te_mact.Order}"/> */
   ${te_trace.component_msg_start}( "${te_aba.ParameterFormat}", ${te_c.number}, ${te_po.Order}, ${te_mact.Order}${te_aba.ParameterTrace} );
   .end if
-${action_body}\
+  .if ( te_sys.StructuredMessaging )
+    .if ( ( ( te_mact.Provision ) and ( 1 == te_mact.Direction ) ) or ( ( not te_mact.Provision ) and ( 0 == te_mact.Direction ) ) )
+      .// outbound message
+    ${te_mact.InterfaceName}_${te_mact.MessageName}_t m, * e; e = &m;
+    e->mid.msg = ${te_mact.InterfaceName}_${te_mact.MessageName}_e;
+${te_aba.ParameterAssignment}
+      .if ( not_empty foreign_te_po )
+  ${foreign_te_po.message_post}( ( ${te_disp.base_message_type} * ) &m );
+        .assign action_body = ""
+      .end if
+    .end if
+  .end if
+  ${action_body}
 }
