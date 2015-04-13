@@ -48,7 +48,6 @@ struct ooaofooa_TE_SYS {
   bool VFB;  
   c_t * SystemCPortsType;  
   bool AllPortsPoly;  
-  c_t * DomainClassNumberName;  
   bool StructuredMessaging;  
   bool NetworkSockets;  
   Escher_UniqueID_t Sys_ID;  

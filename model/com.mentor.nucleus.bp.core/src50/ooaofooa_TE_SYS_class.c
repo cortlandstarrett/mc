@@ -49,10 +49,9 @@ ooaofooa_TE_SYS_instanceloader( Escher_iHandle_t instance, const c_t * avlstring
   self->VFB = ( '0' != *avlstring[ 25 ] );
   self->SystemCPortsType = Escher_strcpy( self->SystemCPortsType, avlstring[ 26 ] );
   self->AllPortsPoly = ( '0' != *avlstring[ 27 ] );
-  self->DomainClassNumberName = Escher_strcpy( self->DomainClassNumberName, avlstring[ 28 ] );
-  self->StructuredMessaging = ( '0' != *avlstring[ 29 ] );
-  self->NetworkSockets = ( '0' != *avlstring[ 30 ] );
-  self->Sys_ID = (Escher_iHandle_t) Escher_atoi( avlstring[ 31 ] );
+  self->StructuredMessaging = ( '0' != *avlstring[ 28 ] );
+  self->NetworkSockets = ( '0' != *avlstring[ 29 ] );
+  self->Sys_ID = (Escher_iHandle_t) Escher_atoi( avlstring[ 30 ] );
   return return_identifier;
 }
 
@@ -118,7 +117,7 @@ void
 ooaofooa_TE_SYS_instancedumper( Escher_iHandle_t instance )
 {
   ooaofooa_TE_SYS * self = (ooaofooa_TE_SYS *) instance;
-  printf( "INSERT INTO TE_SYS VALUES ( %d,'%s','%s',%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%d,'%s',%d,'%s',%d,%d,%ld );\n",
+  printf( "INSERT INTO TE_SYS VALUES ( %d,'%s','%s',%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,'%s','%s',%d,%d,'%s',%d,%d,%d,%ld );\n",
     self->SystemID,
     ( 0 != self->ModelCompilerName ) ? self->ModelCompilerName : "",
     ( 0 != self->ExecutableName ) ? self->ExecutableName : "",
@@ -146,7 +145,6 @@ ooaofooa_TE_SYS_instancedumper( Escher_iHandle_t instance )
     self->VFB,
     ( 0 != self->SystemCPortsType ) ? self->SystemCPortsType : "",
     self->AllPortsPoly,
-    ( 0 != self->DomainClassNumberName ) ? self->DomainClassNumberName : "",
     self->StructuredMessaging,
     self->NetworkSockets,
     ((long)self->Sys_ID & ESCHER_IDDUMP_MASK) );
