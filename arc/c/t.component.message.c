@@ -42,9 +42,11 @@ ${te_aba.scope}${te_aba.GeneratedName}(${te_aba.ParameterDefinition})
       .// outbound message
     ${te_mact.InterfaceName}_${te_mact.MessageName}_t m, * e; e = &m;
     e->mid.msg = ${te_mact.InterfaceName}_${te_mact.MessageName}_e;
+    e->mid.len = sizeof( ${te_mact.InterfaceName}_${te_mact.MessageName}_t );
+    e->mid.port = ${te_c.Name}_${te_po.GeneratedName}_e;
 ${te_aba.ParameterAssignment}
       .if ( not_empty foreign_te_po )
-  ${foreign_te_po.message_post}( ( ${te_disp.base_message_type} * ) &m );
+  ${te_c.Name}_smsg_send( ( ${te_disp.base_message_type} * ) &m );
         .assign action_body = ""
       .end if
     .end if

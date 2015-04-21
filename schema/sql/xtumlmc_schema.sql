@@ -2364,8 +2364,7 @@ CREATE TABLE TE_DISP (
 	Name	STRING,
 	Descrip	STRING,
 	message_id_type	STRING,
-	base_message_type	STRING,
-	message_post_type	STRING );
+	base_message_type	STRING );
 
 -- Class:  2006.  Message Queue
 CREATE TABLE TE_QUEUE (
@@ -2389,6 +2388,7 @@ CREATE TABLE TE_ABA (
 	ParameterTrace	STRING,
 	ParameterFormat	STRING,
 	ParameterInvocation	STRING,
+	ParameterSMSGinvoke	STRING,
 	ParameterAssignment	STRING,
 	ParameterAssignmentBase	STRING,
 	scope	STRING,
@@ -2434,7 +2434,9 @@ CREATE TABLE TE_C (
 	next_ID	UNIQUE_ID,
 	cId	UNIQUE_ID,
 	first_eeID	UNIQUE_ID,
-	first_syncID	UNIQUE_ID );
+	first_syncID	UNIQUE_ID,
+	smsg_send	STRING,
+	smsg_recv	STRING );
 
 -- Class:  2014.  Extended Member
 CREATE TABLE TE_MBR (
@@ -2637,8 +2639,8 @@ CREATE TABLE TE_PO (
 	GeneratedName	STRING,
 	InterfaceName	STRING,
 	PackageName	STRING,
-	message_post	STRING,
-	vector_table	STRING,
+	smsg_send	STRING,
+	smsg_recv	STRING,
 	Provision	BOOLEAN,
 	polymorphic	BOOLEAN,
 	sibling	INTEGER,

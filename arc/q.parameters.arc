@@ -25,6 +25,7 @@
     .assign decl = " void"
   .end if
   .assign invo = ""
+  .assign sinv = ""
   .assign stru = ""
   .assign parameter_trace = ""
   .assign string_format = ""
@@ -34,10 +35,11 @@
   .assign format_delimiter = ""
   .assign Order = 0
   .// Be sure we have the first parameter.
-  .select any te_parm from instances of TE_PARM where (false)
+  .select any te_parm related by te_aba->TE_PARM[R2062] where ( false )
   .for each te_parm in te_parms
     .break for
   .end for
+  .select one te_mact related by te_aba->TE_MACT[R2010]
   .while ( not_empty te_parm )
     .select one prev_te_parm related by te_parm->TE_PARM[R2041.'precedes']
     .if ( empty prev_te_parm )
@@ -67,6 +69,9 @@
     .assign defn = ( ( defn + te_dt.ExtName ) + ( param_qual + " " ) ) + ( te_parm.GeneratedName + te_parm.array_spec )
     .assign decl = ( ( decl + te_dt.ExtName ) + ( param_qual + te_parm.array_spec ) )
     .assign invo = ( invo + param_delimiter ) + te_parm.GeneratedName
+    .if ( not_empty te_mact )
+      .assign sinv = ( sinv + param_delimiter ) + ( "((${te_mact.InterfaceName}_${te_mact.MessageName}_t *)m)->" + te_parm.GeneratedName )
+    .end if
     .assign stru = ( ( stru + te_dt.ExtName ) + ( param_qual + " " ) ) + ( ( te_parm.GeneratedName + te_parm.array_spec ) + "; " )
     .if ( ( "" != te_dt.string_format ) and ( "" == te_parm.array_spec ) )
       .// Do not trace structures or arrays.
@@ -94,6 +99,7 @@
   .assign te_aba.ParameterDefinition = defn
   .assign te_aba.ParameterDeclaration = decl + " "
   .assign te_aba.ParameterInvocation = invo
+  .assign te_aba.ParameterSMSGinvoke = sinv
   .assign te_aba.ParameterStructure = stru
   .assign te_aba.ParameterTrace = parameter_trace
   .assign te_aba.ParameterFormat = string_format

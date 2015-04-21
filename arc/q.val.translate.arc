@@ -384,17 +384,12 @@
 .end function
 .//
 .function val_parameter_values
-  .select any te_sys from instances of TE_SYS
   .select many v_pvls from instances of V_PVL
   .for each v_pvl in v_pvls
-    .assign pp = false
     .select one te_val related by v_pvl->V_VAL[R801]->TE_VAL[R2040]
     .select one te_parm related by v_pvl->O_TPARM[R833]->TE_PARM[R2029]
     .if ( empty te_parm )
     .select one te_parm related by v_pvl->C_PP[R843]->TE_PARM[R2048]
-    .if ( not_empty te_parm )
-      .assign pp = true
-    .end if
     .if ( empty te_parm )
     .select one te_parm related by v_pvl->S_SPARM[R832]->TE_PARM[R2030]
     .if ( empty te_parm )
@@ -419,11 +414,6 @@
     .end if
     .if ( 1 == te_parm.By_Ref )
       .assign te_val.buffer = ( "(*" + te_parm.GeneratedName ) + ")"
-    .end if
-    .if ( pp )
-      .if ( te_sys.StructuredMessaging )
-        .assign te_val.buffer = "m->" + te_val.buffer
-      .end if
     .end if
   .end for
 .end function

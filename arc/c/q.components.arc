@@ -22,6 +22,7 @@
 .for each te_c in te_cs
   .assign message_definitions = ""
   .assign message_declarations = ""
+  .assign port_enum = ""
   .invoke s = TE_C_CreateIncludeList ( te_c )
   .assign include_files = s.include_files
   .// nested components
@@ -33,27 +34,36 @@
     .for each c_i in c_is
       .assign message_declarations = message_declarations + "#include ""${c_i.Name}_interface.h""\n"
     .end for
+    .assign message_declarations = message_declarations + "void ${te_c.Name}_smsg_recv( ${te_disp.base_message_type} * );\n"
   .end if
   .for each te_po in te_pos
-    .if ( te_sys.StructuredMessaging )
-      .// CDS - make this a template
-      .assign mpost = "void ${te_po.message_post}( ${te_disp.base_message_type} * );\n"
-      .assign message_declarations = message_declarations + mpost
-    .end if
     .// Get the first te_mact(s) in the port.
     .select many te_macts related by te_po->TE_MACT[R2006] where ( selected.Order == 0 )
     .invoke s = TE_MACT_CreateDeclarations( te_macts )
     .assign message_declarations = message_declarations + s.body
   .end for
+  .if ( not_empty te_pos )
+    .assign port_enum = port_enum + "enum {"
+    .for each te_po in te_pos
+      .assign port_enum = port_enum + " ${te_c.Name}_${te_po.GeneratedName}_e = ${te_po.Order},"
+      .select any foreign_te_po related by te_po->TE_IIR[R2080]->TE_IIR[R2081.'provides or is delegated']->TE_PO[R2080]
+      .if ( empty foreign_te_po )
+        .select any foreign_te_po related by te_po->TE_IIR[R2080]->TE_IIR[R2081.'requires or delegates']->TE_PO[R2080]
+      .end if
+      .select one foreign_te_c related by foreign_te_po->TE_C[R2005] where ( selected.included_in_build )
+      .invoke r = TE_PO_smsg_send( te_c, te_po, foreign_te_c, foreign_te_po )
+      .assign te_c.smsg_send = te_c.smsg_send + r.body
+      .select one first_te_mact related by te_po->TE_MACT[R2099]
+      .invoke r = TE_PO_smsg_recv( first_te_mact )
+      .assign te_c.smsg_recv = te_c.smsg_recv + r.body
+    .end for
+    .assign port_enum = port_enum + " ${te_c.Name}_portmax };"
+  .end if
   .include "${arc_path}/t.component.module.h"
   .emit to file "${te_file.system_include_path}/${te_c.module_file}.${te_file.hdr_file_ext}"
   .//
   .for each te_po in te_pos
     .select one first_te_mact related by te_po->TE_MACT[R2099]
-    .// CDS - make this a template
-    .assign mpost = "void ${te_po.message_post}( ${te_disp.base_message_type} * m )\n"
-    .assign mpost = mpost + "{ static ${te_disp.message_post_type} f[ ${first_te_mact.InterfaceName}_msgmax ] = { ${te_po.vector_table} };\n  ( f[ m->mid.msg ] )( m );\n}\n"
-    .assign message_definitions = message_definitions + mpost
     .// Get the first te_mact(s) in the port.
     .select many te_macts related by te_po->TE_MACT[R2006] where ( selected.Order == 0 )
     .invoke s = TE_MACT_CreateDefinition( te_c, te_po, te_macts )

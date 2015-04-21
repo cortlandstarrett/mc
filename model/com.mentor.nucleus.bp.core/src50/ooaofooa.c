@@ -18173,7 +18173,7 @@ ooaofooa_smt_return( ooaofooa_ACT_RET * p_act_ret, ooaofooa_TE_SMT * p_te_smt )
   /* ASSIGN intCast2 =  */
   intCast2 = Escher_strcpy( intCast2, "" );
   /* ASSIGN value =  */
-  value = Escher_strcpy( value, "" );
+  value = Escher_strcpy( value, "0" ); // CDS patch for issue 7602
   /* ASSIGN value_OAL =  */
   value_OAL = Escher_strcpy( value_OAL, "" );
   /* ASSIGN deallocation = te_blk.deallocation */
@@ -18201,6 +18201,7 @@ ooaofooa_smt_return( ooaofooa_ACT_RET * p_act_ret, ooaofooa_TE_SMT * p_te_smt )
   }
   /* SELECT one te_aba RELATED BY te_blk->TE_ABA[R2011] */
   te_aba = ( 0 != te_blk ) ? te_blk->TE_ABA_R2011 : 0;
+if ( 0 == te_aba ) return ""; // CDS patch for issue 7602
   /* IF ( not_empty v_val ) */
   if ( ( 0 != v_val ) ) {
     ooaofooa_TE_VAL * te_val=0;

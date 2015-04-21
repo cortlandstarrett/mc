@@ -41,6 +41,7 @@
   .select any te_typemap from instances of TE_TYPEMAP
   .select any empty_cp_cp from instances of CP_CP where ( false )
   .select many empty_ep_pkgs from instances of EP_PKG where ( false )
+  .select any empty_te_blk from instances of TE_BLK where ( false )
   .select any empty_te_c from instances of TE_C where ( false )
   .select any empty_te_dim from instances of TE_DIM where ( false )
   .select many empty_s_dims from instances of S_DIM where ( false )
@@ -124,7 +125,6 @@
     .// end relate
     .assign te_disp.message_id_type = te_prefix.type + "msgid_t"
     .assign te_disp.base_message_type = te_prefix.type + "base_msg_t"
-    .assign te_disp.message_post_type = te_prefix.type + "mpost_t"
   .end if
   .assign te_disp.Descrip = "dispatcher"
   .assign te_disp.Name = "main"
@@ -248,8 +248,6 @@
         .assign te_po.sibling = 0
         .assign te_po.Name = c_po.Name
         .assign te_po.GeneratedName = "$r{te_po.Name}"
-        .// structured messaging dispatcher
-        .assign te_po.message_post = ( te_c.Name + "_" ) + ( te_po.GeneratedName + "_mpost" )
         .// Create the Interface Instance instances.
         .select many c_irs related by c_po->C_IR[R4016]
         .for each c_ir in c_irs
@@ -1216,15 +1214,6 @@
     .// relate te_po to first_te_mact across R2099;
     .assign te_po.first_te_mactID = first_te_mact.ID
     .// end relate
-    .// Build vector table for structured messaging.
-    .assign te_mact = first_te_mact
-    .while ( not_empty te_mact )
-      .assign te_po.vector_table = ( ( te_po.vector_table + "\n  ( " ) + ( te_disp.message_post_type + " ) " ) ) + te_mact.GeneratedName
-      .select one te_mact related by te_mact->TE_MACT[R2083.'succeeds']
-      .if ( not_empty te_mact )
-        .assign te_po.vector_table = te_po.vector_table + ","
-      .end if
-    .end while
   .end for
   .//
   .//
@@ -1591,7 +1580,7 @@
     .select many te_macts related by te_c->TE_MACT[R2002]
     .for each te_mact in te_macts
       .select one te_aba related by te_mact->TE_ABA[R2010]
-      .select any te_blk from instances of TE_BLK where (false)
+      .assign te_blk = empty_te_blk
       .if ( "SPR_PO" == te_mact.subtypeKL )
         .select one te_blk related by te_mact->SPR_PO[R2050]->ACT_POB[R687]->ACT_ACT[R698]->ACT_BLK[R666]->TE_BLK[R2016]
       .elif ( "SPR_RO" == te_mact.subtypeKL )
@@ -1605,6 +1594,8 @@
         .// relate te_blk to te_aba across R2011;
         .assign te_blk.AbaID = te_aba.AbaID
         .// end relate
+      .else
+        .// CDS - Recover?
       .end if
     .end for
     .//
@@ -2182,19 +2173,6 @@
   .end if
   .invoke r = FactoryTE_ABA( te_c, te_parms, te_mact.ComponentName, te_mact.GeneratedName, "TE_MACT", te_dt )
   .assign te_aba = r.result
-  .if ( te_sys.StructuredMessaging ) 
-    .if ( ( ( te_mact.Provision ) and ( 0 == te_mact.Direction ) ) or ( ( not te_mact.Provision ) and ( 1 == te_mact.Direction ) ) )
-      .// inbound
-      .assign te_aba.ParameterDeclaration = ( ( " " + te_mact.InterfaceName ) + ( "_" + te_mact.MessageName ) ) + "_t * "
-      .assign te_aba.ParameterDefinition = te_aba.ParameterDeclaration + "m "
-    .elif ( ( ( te_mact.Provision ) and ( 1 == te_mact.Direction ) ) or ( ( not te_mact.Provision ) and ( 0 == te_mact.Direction ) ) )
-      .// outbound
-      .assign te_aba.ParameterInvocation = " &m "
-    .else
-      .print "ERROR:  Component message that is neither inbound nor outbound ${te_mact.GeneratedName}"
-      .exit 13
-    .end if
-  .end if
   .// relate te_mact to te_aba across R2010;
   .assign te_mact.AbaID = te_aba.AbaID
   .// end relate

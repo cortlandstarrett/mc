@@ -126,9 +126,8 @@ typedef struct {
   ${te_persist.index_type} ${te_persist.index_name};
 } ${te_persist.instid_type};
 .if ( te_sys.StructuredMessaging )
-typedef struct { u2_t msg; } ${te_disp.message_id_type};
+typedef struct { u2_t msg; ${te_prefix.type}size_t len; u2_t port; } ${te_disp.message_id_type};
 typedef struct { ${te_disp.message_id_type} mid; } ${te_disp.base_message_type};
-typedef void ( *${te_disp.message_post_type} )( ${te_disp.base_message_type} * );
 .end if
 .if ( te_sys.PersistentClassCount > 0 )
 typedef struct { ${te_persist.instid_type} owner, left, right, assoc; } ${te_persist.link_type_name};

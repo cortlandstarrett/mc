@@ -62,6 +62,11 @@ ib_${te_c.Name}_ru_${te_c.Name}_Initialize( Rte_Instance self )
 #endif
   .end if
 .end if
+.if ( te_sys.StructuredMessaging )
+
+.include "${te_file.arc_path}/t.component.smsg.send.c"
+.include "${te_file.arc_path}/t.component.smsg.recv.c"
+.end if
 ${message_definitions}
 .if ( te_c.internal_behavior )
 .include "${te_file.arc_path}/t.domain.functions.c"

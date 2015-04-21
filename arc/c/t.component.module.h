@@ -26,6 +26,7 @@ ${te_c.Descrip}
 .end if
 
 #include "${te_file.types}.${te_file.hdr_file_ext}"
+${port_enum}
 ${message_declarations}
 
 ${te_target.c2cplusplus_linkage_end}

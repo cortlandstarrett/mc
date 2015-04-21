@@ -48,6 +48,7 @@
 .include "${arc_path}/q.class.sem.arc"
 .include "${arc_path}/q.class.where.arc"
 .include "${arc_path}/q.component.arc"
+.include "${arc_path}/q.component.port.smsg.arc"
 .include "${arc_path}/q.datatype.arc"
 .include "${arc_path}/q.domain.analyze.arc"
 .include "${arc_path}/q.domain.bridge.arc"
