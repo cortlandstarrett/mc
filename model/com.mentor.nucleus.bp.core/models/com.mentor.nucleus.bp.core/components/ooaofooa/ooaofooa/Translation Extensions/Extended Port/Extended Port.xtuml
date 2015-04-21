@@ -139,7 +139,7 @@ INSERT INTO O_BATTR
 INSERT INTO O_ATTR
 	VALUES ("7c541fe4-a4a2-4577-92ac-147c657b470c",
 	"e3cf6460-d2fa-4e93-81ef-a5e9be31f3f8",
-	"10be9954-d880-4153-b51c-bbd9f3875c79",
+	"e529275a-4ff4-4cdc-9caf-686fe7c5bc49",
 	'Provision',
 	'',
 	'',
@@ -374,37 +374,37 @@ INSERT INTO O_ATTR
 	'',
 	'');
 INSERT INTO O_NBATTR
-	VALUES ("1ed69bc9-3036-491c-ab60-ae0263e1882f",
+	VALUES ("f496a107-7130-4e4d-9640-2148a8660831",
 	"e3cf6460-d2fa-4e93-81ef-a5e9be31f3f8");
 INSERT INTO O_BATTR
-	VALUES ("1ed69bc9-3036-491c-ab60-ae0263e1882f",
+	VALUES ("f496a107-7130-4e4d-9640-2148a8660831",
 	"e3cf6460-d2fa-4e93-81ef-a5e9be31f3f8");
 INSERT INTO O_ATTR
-	VALUES ("1ed69bc9-3036-491c-ab60-ae0263e1882f",
+	VALUES ("f496a107-7130-4e4d-9640-2148a8660831",
 	"e3cf6460-d2fa-4e93-81ef-a5e9be31f3f8",
 	"74526c5d-1e09-4f09-8316-0c5a331f3fa8",
-	'message_post',
+	'smsg_send',
 	'',
 	'',
-	'message_post',
+	'smsg_send',
 	0,
 	"ba5eda7a-def5-0000-0000-000000000004",
 	'',
 	'');
 INSERT INTO O_NBATTR
-	VALUES ("10be9954-d880-4153-b51c-bbd9f3875c79",
+	VALUES ("e529275a-4ff4-4cdc-9caf-686fe7c5bc49",
 	"e3cf6460-d2fa-4e93-81ef-a5e9be31f3f8");
 INSERT INTO O_BATTR
-	VALUES ("10be9954-d880-4153-b51c-bbd9f3875c79",
+	VALUES ("e529275a-4ff4-4cdc-9caf-686fe7c5bc49",
 	"e3cf6460-d2fa-4e93-81ef-a5e9be31f3f8");
 INSERT INTO O_ATTR
-	VALUES ("10be9954-d880-4153-b51c-bbd9f3875c79",
+	VALUES ("e529275a-4ff4-4cdc-9caf-686fe7c5bc49",
 	"e3cf6460-d2fa-4e93-81ef-a5e9be31f3f8",
-	"1ed69bc9-3036-491c-ab60-ae0263e1882f",
-	'vector_table',
+	"f496a107-7130-4e4d-9640-2148a8660831",
+	'smsg_recv',
 	'',
 	'',
-	'vector_table',
+	'smsg_recv',
 	0,
 	"ba5eda7a-def5-0000-0000-000000000004",
 	'',

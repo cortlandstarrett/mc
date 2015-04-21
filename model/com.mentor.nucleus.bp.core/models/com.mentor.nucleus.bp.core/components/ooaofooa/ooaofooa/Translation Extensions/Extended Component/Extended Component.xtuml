@@ -647,7 +647,7 @@ INSERT INTO O_REF
 	'',
 	'Extended Component',
 	'ID',
-	'R2017');
+	'R2017.''precedes''');
 INSERT INTO R_RGO_PROXY
 	VALUES ("1d8a3916-cffc-4a74-8c26-e42b86aea190",
 	"fec7acb8-4581-4f12-bbb4-8223b6a745e7",
@@ -694,7 +694,7 @@ INSERT INTO O_REF
 	'',
 	'Extended External Entity',
 	'ID',
-	'R2098');
+	'R2098.''has first''');
 INSERT INTO R_RGO_PROXY
 	VALUES ("1d8a3916-cffc-4a74-8c26-e42b86aea190",
 	"c1551c94-10c3-475b-b483-f6b27051e878",
@@ -745,7 +745,7 @@ INSERT INTO O_REF
 	'',
 	'Extended Function',
 	'ID',
-	'R2097');
+	'R2097.''has first''');
 INSERT INTO R_RGO_PROXY
 	VALUES ("1d8a3916-cffc-4a74-8c26-e42b86aea190",
 	"f12bd224-4988-4a6f-976f-c3ae043d5025",
@@ -779,6 +779,42 @@ INSERT INTO O_ATTR
 	'ID',
 	1,
 	"ba5eda7a-def5-0000-0000-000000000007",
+	'',
+	'');
+INSERT INTO O_NBATTR
+	VALUES ("464f642d-183d-4d66-8c06-6881d6b1bcd6",
+	"1d8a3916-cffc-4a74-8c26-e42b86aea190");
+INSERT INTO O_BATTR
+	VALUES ("464f642d-183d-4d66-8c06-6881d6b1bcd6",
+	"1d8a3916-cffc-4a74-8c26-e42b86aea190");
+INSERT INTO O_ATTR
+	VALUES ("464f642d-183d-4d66-8c06-6881d6b1bcd6",
+	"1d8a3916-cffc-4a74-8c26-e42b86aea190",
+	"f843e73f-dc5d-41e0-bed6-455c9d4b5d0f",
+	'smsg_send',
+	'',
+	'',
+	'smsg_send',
+	0,
+	"ba5eda7a-def5-0000-0000-000000000004",
+	'',
+	'');
+INSERT INTO O_NBATTR
+	VALUES ("795a965c-f0b8-4f9d-83b7-aac6a5155a7e",
+	"1d8a3916-cffc-4a74-8c26-e42b86aea190");
+INSERT INTO O_BATTR
+	VALUES ("795a965c-f0b8-4f9d-83b7-aac6a5155a7e",
+	"1d8a3916-cffc-4a74-8c26-e42b86aea190");
+INSERT INTO O_ATTR
+	VALUES ("795a965c-f0b8-4f9d-83b7-aac6a5155a7e",
+	"1d8a3916-cffc-4a74-8c26-e42b86aea190",
+	"464f642d-183d-4d66-8c06-6881d6b1bcd6",
+	'smsg_recv',
+	'',
+	'',
+	'smsg_recv',
+	0,
+	"ba5eda7a-def5-0000-0000-000000000004",
 	'',
 	'');
 INSERT INTO O_ID
