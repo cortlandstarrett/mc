@@ -925,7 +925,7 @@ ooaofooa_FactoryTE_ABA( c_t * p_name, c_t * p_scope, c_t * p_subtypeKL, ooaofooa
   /* IF ( ( ( c_t == te_dt.ExtName ) or ( c_t * == te_dt.ExtName ) ) ) */
   if ( ( ( Escher_strcmp( "c_t", te_dt->ExtName ) == 0 ) || ( Escher_strcmp( "c_t *", te_dt->ExtName ) == 0 ) ) ) {
     /* IF ( not te_sys.InstanceLoading ) */
-    if ( !te_sys->InstanceLoading ) {
+    if ( !te_sys->InstanceLoading && !duplicates_needed ) {
       ooaofooa_TE_PARM * duplicate_te_parm;ooaofooa_TE_PARM * r;ooaofooa_TE_PARM * string_te_parm=0;
       /* SELECT any string_te_parm FROM INSTANCES OF TE_PARM WHERE ( SELECTED.Name == A0xtumlsret ) */
       string_te_parm = 0;
@@ -26141,6 +26141,7 @@ ooaofooa_val_bridge_value( ooaofooa_V_BRV * p_v_brv )
     v_val = ( 0 != v_brv ) ? v_brv->V_VAL_R801 : 0;
     /* SELECT one te_val RELATED BY v_val->TE_VAL[R2040] */
     te_val = ( 0 != v_val ) ? v_val->TE_VAL_R2040 : 0;
+if ( 0 != Escher_strcmp( "", te_val->buffer ) ) return;
     /* SELECT many v_pars RELATED BY v_brv->V_PAR[R810] */
     Escher_ClearSet( v_pars );
     if ( 0 != v_brv ) {
@@ -26785,6 +26786,7 @@ ooaofooa_val_message_value( ooaofooa_V_MSV * p_v_msv )
   v_val = ( 0 != v_msv ) ? v_msv->V_VAL_R801 : 0;
   /* SELECT one te_val RELATED BY v_val->TE_VAL[R2040] */
   te_val = ( 0 != v_val ) ? v_val->TE_VAL_R2040 : 0;
+if ( 0 != Escher_strcmp( "", te_val->buffer ) ) return;
   /* SELECT one te_mact RELATED BY v_msv->SPR_PEP[R841]->SPR_PO[R4503]->TE_MACT[R2050] */
   te_mact = 0;
   {  if ( 0 != v_msv ) {
@@ -27018,6 +27020,7 @@ ooaofooa_val_synch_service_value( ooaofooa_V_FNV * p_v_fnv )
     v_val = ( 0 != v_fnv ) ? v_fnv->V_VAL_R801 : 0;
     /* SELECT one te_val RELATED BY v_val->TE_VAL[R2040] */
     te_val = ( 0 != v_val ) ? v_val->TE_VAL_R2040 : 0;
+if ( 0 != Escher_strcmp( "", te_val->buffer ) ) return;
     /* SELECT many v_pars RELATED BY v_fnv->V_PAR[R817] */
     Escher_ClearSet( v_pars );
     if ( 0 != v_fnv ) {

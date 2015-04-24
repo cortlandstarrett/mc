@@ -557,26 +557,28 @@
   .param inst_ref v_msv
   .select one v_val related by v_msv->V_VAL[R801]
   .select one te_val related by v_val->TE_VAL[R2040]
-  .select one te_mact related by v_msv->SPR_PEP[R841]->SPR_PO[R4503]->TE_MACT[R2050]
-  .if ( empty te_mact )
-    .select one te_mact related by v_msv->SPR_REP[R845]->SPR_RO[R4502]->TE_MACT[R2052]
-  .end if
-  .select many v_pars related by v_msv->V_PAR[R842]
-  .select one te_aba related by te_mact->TE_ABA[R2010]
-  .select one te_blk related by v_val->ACT_BLK[R826]->TE_BLK[R2016]
-  .assign sretvar = ( ( "vmsv" + "$t{v_val.LineNumber}" ) + ( te_aba.GeneratedName + "$t{v_val.StartPosition}" ) )
-  .invoke r = q_render_msg( te_mact, v_pars, te_blk, sretvar, false )
-  .assign te_val.buffer = r.body
-  .assign te_val.OAL = ( ( te_mact.PortName + "::" ) + ( te_mact.MessageName + "(" ) ) + ( te_mact.OALParamBuffer + ")" )
-  .assign te_val.dimensions = te_aba.dimensions
-  .assign te_val.array_spec = te_aba.array_spec
-  .select one te_dim related by te_aba->TE_DIM[R2058]
-  .if ( not_empty te_dim )
-    .// relate te_val to te_dim across R2079;
-    .assign te_val.te_dimID = te_dim.te_dimID
-    .// end relate
-  .else
-    .assign te_val.te_dimID = 00
+  .if ( "" == te_val.buffer )
+    .select one te_mact related by v_msv->SPR_PEP[R841]->SPR_PO[R4503]->TE_MACT[R2050]
+    .if ( empty te_mact )
+      .select one te_mact related by v_msv->SPR_REP[R845]->SPR_RO[R4502]->TE_MACT[R2052]
+    .end if
+    .select many v_pars related by v_msv->V_PAR[R842]
+    .select one te_aba related by te_mact->TE_ABA[R2010]
+    .select one te_blk related by v_val->ACT_BLK[R826]->TE_BLK[R2016]
+    .assign sretvar = ( ( "vmsv" + "$t{v_val.LineNumber}" ) + ( te_aba.GeneratedName + "$t{v_val.StartPosition}" ) )
+    .invoke r = q_render_msg( te_mact, v_pars, te_blk, sretvar, false )
+    .assign te_val.buffer = r.body
+    .assign te_val.OAL = ( ( te_mact.PortName + "::" ) + ( te_mact.MessageName + "(" ) ) + ( te_mact.OALParamBuffer + ")" )
+    .assign te_val.dimensions = te_aba.dimensions
+    .assign te_val.array_spec = te_aba.array_spec
+    .select one te_dim related by te_aba->TE_DIM[R2058]
+    .if ( not_empty te_dim )
+      .// relate te_val to te_dim across R2079;
+      .assign te_val.te_dimID = te_dim.te_dimID
+      .// end relate
+    .else
+      .assign te_val.te_dimID = 00
+    .end if
   .end if
 .end function
 .//
@@ -595,56 +597,58 @@
     .select any te_target from instances of TE_TARGET
     .select one v_val related by v_brv->V_VAL[R801]
     .select one te_val related by v_val->TE_VAL[R2040]
-    .select many v_pars related by v_brv->V_PAR[R810]
-    .select one te_aba related by te_brg->TE_ABA[R2010]
-    .select one te_ee related by v_brv->S_BRG[R828]->S_EE[R19]->TE_EE[R2020]
-    .assign te_ee.Included = true
-    .invoke r = gen_parameter_list( v_pars, false )
-    .assign te_parm = r.result
-    .assign parameters = te_parm.ParamBuffer
-    .assign params_OAL = te_parm.OALParamBuffer
-    .assign te_val.OAL = ( ( te_brg.EEkeyletters + "::" ) + ( te_brg.Name + "(" ) ) + ( params_OAL + ")" )
-    .if ( "c_t *" == te_aba.ReturnDataType )
-      .if ( not te_sys.InstanceLoading )
-        .select one te_blk related by v_val->ACT_BLK[R826]->TE_BLK[R2016]
-        .assign sretvar = ( ( "vbrv" + "$t{v_val.LineNumber}" ) + ( te_aba.GeneratedName + "$t{v_val.StartPosition}" ) )
-        .assign te_blk.declaration = ( ( te_blk.declaration + "c_t " ) + ( sretvar + te_aba.array_spec ) ) + ";"
-        .if ( "" == parameters )
-          .assign parameters = sretvar
-        .else
-          .assign parameters = ( ( sretvar + ", " ) + parameters )
-        .end if
-      .end if
-    .end if
-    .if ( "C++" == te_target.language )
-      .if ( "TIM" == te_brg.EEkeyletters )
-        .assign te_val.buffer = ( "thismodule->tim->" + te_brg.GeneratedName ) + "("
-      .else
-        .select one te_c related by te_ee->TE_C[R2085]
-        .if ( not_empty te_c )
+    .if ( "" == te_val.buffer )
+      .select many v_pars related by v_brv->V_PAR[R810]
+      .select one te_aba related by te_brg->TE_ABA[R2010]
+      .select one te_ee related by v_brv->S_BRG[R828]->S_EE[R19]->TE_EE[R2020]
+      .assign te_ee.Included = true
+      .invoke r = gen_parameter_list( v_pars, false )
+      .assign te_parm = r.result
+      .assign parameters = te_parm.ParamBuffer
+      .assign params_OAL = te_parm.OALParamBuffer
+      .assign te_val.OAL = ( ( te_brg.EEkeyletters + "::" ) + ( te_brg.Name + "(" ) ) + ( params_OAL + ")" )
+      .if ( "c_t *" == te_aba.ReturnDataType )
+        .if ( not te_sys.InstanceLoading )
+          .select one te_blk related by v_val->ACT_BLK[R826]->TE_BLK[R2016]
+          .assign sretvar = ( ( "vbrv" + "$t{v_val.LineNumber}" ) + ( te_aba.GeneratedName + "$t{v_val.StartPosition}" ) )
+          .assign te_blk.declaration = ( ( te_blk.declaration + "c_t " ) + ( sretvar + te_aba.array_spec ) ) + ";"
           .if ( "" == parameters )
-            .assign parameters = "thismodule"
+            .assign parameters = sretvar
           .else
-            .assign parameters = "thismodule, " + parameters
+            .assign parameters = ( ( sretvar + ", " ) + parameters )
           .end if
         .end if
       .end if
-    .else
-      .assign te_val.buffer = ( te_aba.scope + te_brg.GeneratedName ) + "("
-    .end if
-    .if ( "" != parameters )
-      .assign te_val.buffer = ( te_val.buffer + " " ) + ( parameters + " " )
-    .end if
-    .assign te_val.buffer = te_val.buffer + ")"
-    .assign te_val.dimensions = te_aba.dimensions
-    .assign te_val.array_spec = te_aba.array_spec
-    .select one te_dim related by te_aba->TE_DIM[R2058]
-    .if ( not_empty te_dim )
-      .// relate te_val to te_dim across R2079;
-      .assign te_val.te_dimID = te_dim.te_dimID
-      .// end relate
-    .else
-      .assign te_val.te_dimID = 00
+      .if ( "C++" == te_target.language )
+        .if ( "TIM" == te_brg.EEkeyletters )
+          .assign te_val.buffer = ( "thismodule->tim->" + te_brg.GeneratedName ) + "("
+        .else
+          .select one te_c related by te_ee->TE_C[R2085]
+          .if ( not_empty te_c )
+            .if ( "" == parameters )
+              .assign parameters = "thismodule"
+            .else
+              .assign parameters = "thismodule, " + parameters
+            .end if
+          .end if
+        .end if
+      .else
+        .assign te_val.buffer = ( te_aba.scope + te_brg.GeneratedName ) + "("
+      .end if
+      .if ( "" != parameters )
+        .assign te_val.buffer = ( te_val.buffer + " " ) + ( parameters + " " )
+      .end if
+      .assign te_val.buffer = te_val.buffer + ")"
+      .assign te_val.dimensions = te_aba.dimensions
+      .assign te_val.array_spec = te_aba.array_spec
+      .select one te_dim related by te_aba->TE_DIM[R2058]
+      .if ( not_empty te_dim )
+        .// relate te_val to te_dim across R2079;
+        .assign te_val.te_dimID = te_dim.te_dimID
+        .// end relate
+      .else
+        .assign te_val.te_dimID = 00
+      .end if
     .end if
   .end if
 .end function
@@ -749,43 +753,45 @@
     .select any te_target from instances of TE_TARGET
     .select one v_val related by v_fnv->V_VAL[R801]
     .select one te_val related by v_val->TE_VAL[R2040]
-    .select many v_pars related by v_fnv->V_PAR[R817]
-    .select one te_aba related by te_sync->TE_ABA[R2010]
-    .invoke r = gen_parameter_list( v_pars, false )
-    .assign te_parm = r.result
-    .assign parameters = te_parm.ParamBuffer
-    .assign params_OAL = te_parm.OALParamBuffer
-    .assign te_val.OAL = ( ( "::" + te_sync.Name ) + ( "(" + params_OAL ) ) + ")"  
-    .if ( "c_t *" == te_aba.ReturnDataType )
-      .if ( not te_sys.InstanceLoading )
-        .select one te_blk related by v_val->ACT_BLK[R826]->TE_BLK[R2016]
-        .assign sretvar = ( ( "vfnv" + "$t{v_val.LineNumber}" ) + ( te_aba.GeneratedName + "$t{v_val.StartPosition}" ) )
-        .assign te_blk.declaration = ( ( te_blk.declaration + "c_t " ) + ( sretvar + te_aba.array_spec ) ) + ";"
-        .if ( "" == parameters )
-          .assign parameters = sretvar
-        .else
-          .assign parameters = ( ( sretvar + ", " ) + parameters )
+    .if ( "" == te_val.buffer )
+      .select many v_pars related by v_fnv->V_PAR[R817]
+      .select one te_aba related by te_sync->TE_ABA[R2010]
+      .invoke r = gen_parameter_list( v_pars, false )
+      .assign te_parm = r.result
+      .assign parameters = te_parm.ParamBuffer
+      .assign params_OAL = te_parm.OALParamBuffer
+      .assign te_val.OAL = ( ( "::" + te_sync.Name ) + ( "(" + params_OAL ) ) + ")"  
+      .if ( "c_t *" == te_aba.ReturnDataType )
+        .if ( not te_sys.InstanceLoading )
+          .select one te_blk related by v_val->ACT_BLK[R826]->TE_BLK[R2016]
+          .assign sretvar = ( ( "vfnv" + "$t{v_val.LineNumber}" ) + ( te_aba.GeneratedName + "$t{v_val.StartPosition}" ) )
+          .assign te_blk.declaration = ( ( te_blk.declaration + "c_t " ) + ( sretvar + te_aba.array_spec ) ) + ";"
+          .if ( "" == parameters )
+            .assign parameters = sretvar
+          .else
+            .assign parameters = ( ( sretvar + ", " ) + parameters )
+          .end if
         .end if
       .end if
-    .end if
-    .assign name = te_sync.intraface_method
-    .if ( "C++" == te_target.language )
-      .assign name = "thismodule->" + name
-    .end if
-    .assign te_val.buffer = name + "("
-    .if ( "" != parameters )
-      .assign te_val.buffer = ( te_val.buffer + " " ) + ( parameters + " " )
-    .end if
-    .assign te_val.buffer = te_val.buffer + ")"
-    .assign te_val.dimensions = te_aba.dimensions
-    .assign te_val.array_spec = te_aba.array_spec
-    .select one te_dim related by te_aba->TE_DIM[R2058]
-    .if ( not_empty te_dim )
-      .// relate te_val to te_dim across R2079;
-      .assign te_val.te_dimID = te_dim.te_dimID
-      .// end relate
-    .else
-      .assign te_val.te_dimID = 00
+      .assign name = te_sync.intraface_method
+      .if ( "C++" == te_target.language )
+        .assign name = "thismodule->" + name
+      .end if
+      .assign te_val.buffer = name + "("
+      .if ( "" != parameters )
+        .assign te_val.buffer = ( te_val.buffer + " " ) + ( parameters + " " )
+      .end if
+      .assign te_val.buffer = te_val.buffer + ")"
+      .assign te_val.dimensions = te_aba.dimensions
+      .assign te_val.array_spec = te_aba.array_spec
+      .select one te_dim related by te_aba->TE_DIM[R2058]
+      .if ( not_empty te_dim )
+        .// relate te_val to te_dim across R2079;
+        .assign te_val.te_dimID = te_dim.te_dimID
+        .// end relate
+      .else
+        .assign te_val.te_dimID = 00
+      .end if
     .end if
   .end if
 .end function
