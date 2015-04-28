@@ -16,8 +16,8 @@ typedef unsigned long u4_t;
 #include <arpa/inet.h>
 
 c_t * Escher_itoa( c_t * , s4_t );
-char * Escher_socket_receive( const unsigned int );
-void Escher_socket_send( char *, int, const unsigned int );
+i_t Escher_socket_send( char *, int, const unsigned int );
+i_t Escher_socket_recv( char *, int, const unsigned int );
 
 i_t sockfd;
 
@@ -86,19 +86,65 @@ i_t Escher_socket_accept(void)
   return 0;
 }
 
-i_t oldreceive(void);
-
 int main(int argc, char *argv[])
 {
+  c_t buf[32];
   int iamserver = atoi( argv[2] );
   if ( iamserver ) {
     Escher_socket_init(NULL,3490,iamserver);
     Escher_socket_accept();
   } else {
     Escher_socket_init(argv[1],3490,iamserver);
-    oldreceive();
+    if ( 0 < Escher_socket_recv(buf,32,0) ) {
+      printf("client: received '%s'\n",buf);
+    }
+  }
+  close(sockfd);
+  return 0;
+}
+
+/*
+ * Attempt to read a message.  One may be there or not.  If so,
+ * we read it and process it.  Otherwise, plan to come back later.
+ * This routine needs to be called periodically (perhaps from the
+ * background loop.  A timeout is set up to limit the wait duration
+ * on the socket select.
+ */
+i_t Escher_socket_recv(
+  char * message,
+  int maxlength,
+  const unsigned int p
+)
+{
+  struct timeval timeout;
+  fd_set toberead; // will need port mapping here
+  FD_ZERO( &toberead ); // clear the list
+  FD_SET( sockfd, &toberead ); // mark the socket to be queried
+  timeout.tv_usec = 10000;
+  timeout.tv_sec = 0;
+  if ( 0 < select( sockfd + 1, &toberead, 0, 0, &timeout ) ) {
+    int bytes_read;
+    bytes_read = recv( sockfd, message, maxlength, 0 );
+    if ( 0 < bytes_read ) {
+      message[ bytes_read ] = 0;
+      return bytes_read;
+    }
   }
   return 0;
+}
+
+/*
+ * Attempt to send a message to the host through the socket.
+ * Only length bytes will be transmitted even if more exist.
+ * Note that this routine walks on the message buffer.
+ */
+i_t Escher_socket_send(
+  char * message,
+  int length,
+  const unsigned int p
+)
+{
+  return send( sockfd, message, length, 0 );
 }
 
 #define ESCHER_ATOI_RADIX 10
@@ -135,67 +181,4 @@ Escher_itoa( c_t * string, s4_t value )
   }
   *sp = 0;
   return string;
-}
-
-#define MAXDATASIZE 100 // max number of bytes we can get at once 
-i_t oldreceive(void)
-{
-  int numbytes;
-  char buf[MAXDATASIZE];
-  if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
-    perror("recv");
-    exit(1);
-  }
-  buf[numbytes] = '\0';
-
-  printf("client: received '%s'\n",buf);
-
-  close(sockfd);
-
-  return 0;
-}
-
-/*
- * Attempt to read a message.  One may be there or not.  If so,
- * we read it and process it.  Otherwise, plan to come back later.
- * This routine needs to be called periodically (perhaps from the
- * background loop.
- */
-char * Escher_socket_receive(
-  const unsigned int p
-)
-{
-  int retval;
-  struct timeval timeout;
-
-  //FD_ZERO( &socklist[ portmap[p] ] );
-  //FD_SET( file_descriptor[ portmap[p] ], &socklist[ portmap[p] ] );
-  timeout.tv_usec = 10000;
-  timeout.tv_sec = 0;
-  //retval = select( file_descriptor[ portmap[p] ] + 1, &socklist[ portmap[p] ], 0, 0, &timeout );
-  if ( 0 < retval ) {
-    //retval = recv( file_descriptor[ portmap[p] ], buffer[ portmap[p] ], sizeof(buffer[ portmap[p] ]), 0 );
-    if ( 0 < retval ) {
-      //buffer[ portmap[p] ][ retval ] = 0;
-      //return buffer[ portmap[p] ];
-    }
-  }
-  return 0;
-}
-
-
-/*
- * Attempt to send a message to the host through the socket.
- * Only length bytes will be transmitted even if more exist.
- * Note that this routine walks on the input buffer.
- */
-void Escher_socket_send(
-  char * message,
-  int length,
-  const unsigned int p
-)
-{
-  if ( send( sockfd, message, length, 0 ) < 0 ) {
-    perror( "Bad news.  Cannot send message.\n" );
-  }
 }
