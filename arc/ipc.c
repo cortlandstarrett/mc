@@ -15,13 +15,16 @@ typedef unsigned long u4_t;
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-i_t sockfd;
 c_t * Escher_itoa( c_t * , s4_t );
+char * Escher_socket_receive( const unsigned int );
+void Escher_socket_send( char *, int, const unsigned int );
+
+i_t sockfd;
 
 i_t Escher_socket_init(c_t * h, i_t port, i_t I_am_server)
 {
   struct addrinfo hints, *servinfo, *p;
-  i_t rv;
+  i_t rv, yes = 1;
   c_t s[32];
 
   memset(&hints, 0, sizeof hints);
@@ -40,7 +43,7 @@ i_t Escher_socket_init(c_t * h, i_t port, i_t I_am_server)
       continue;
     }
     rv = ( I_am_server ) ?
-      bind(sockfd, p->ai_addr, p->ai_addrlen) :
+      setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)), bind(sockfd, p->ai_addr, p->ai_addrlen) :
       connect(sockfd, p->ai_addr, p->ai_addrlen);
     if ( -1 == rv ) {
       close(sockfd);
@@ -65,43 +68,20 @@ i_t Escher_socket_init(c_t * h, i_t port, i_t I_am_server)
   return 0;
 }
 
-
-#include <sys/wait.h>
-#include <signal.h>
-void sigchld_handler(int s) { while(waitpid(-1, NULL, WNOHANG) > 0); }
 i_t Escher_socket_accept(void)
 {
   int new_fd;
   struct sockaddr_storage their_addr;
-  struct sigaction sa;
-
-  sa.sa_handler = sigchld_handler; // reap all dead processes
-  sigemptyset(&sa.sa_mask);
-  sa.sa_flags = SA_RESTART;
-  if (sigaction(SIGCHLD, &sa, NULL) == -1) {
-    perror("sigaction");
-    exit(1);
-  }
 
   printf("server: waiting for connections...\n");
 
-  while(1) {  // main accept() loop
-    socklen_t sin_size = sizeof their_addr;
-    new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
-    if (new_fd == -1) {
-      perror("accept");
-      continue;
-    }
-
-    if (!fork()) { // this is the child process
-      close(sockfd); // child doesn't need the listener
-      if (send(new_fd, "Hello, world!", 13, 0) == -1)
-        perror("send");
-      close(new_fd);
-      exit(0);
-    }
-    close(new_fd);  // parent doesn't need this
-  }
+  socklen_t sin_size = sizeof their_addr;
+  new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
+  if (new_fd == -1) perror("accept");
+  close(sockfd);
+  sockfd = new_fd;
+  Escher_socket_send("Hello, world!", 13, 0);
+  close(new_fd);
 
   return 0;
 }
@@ -175,3 +155,47 @@ i_t oldreceive(void)
   return 0;
 }
 
+/*
+ * Attempt to read a message.  One may be there or not.  If so,
+ * we read it and process it.  Otherwise, plan to come back later.
+ * This routine needs to be called periodically (perhaps from the
+ * background loop.
+ */
+char * Escher_socket_receive(
+  const unsigned int p
+)
+{
+  int retval;
+  struct timeval timeout;
+
+  //FD_ZERO( &socklist[ portmap[p] ] );
+  //FD_SET( file_descriptor[ portmap[p] ], &socklist[ portmap[p] ] );
+  timeout.tv_usec = 10000;
+  timeout.tv_sec = 0;
+  //retval = select( file_descriptor[ portmap[p] ] + 1, &socklist[ portmap[p] ], 0, 0, &timeout );
+  if ( 0 < retval ) {
+    //retval = recv( file_descriptor[ portmap[p] ], buffer[ portmap[p] ], sizeof(buffer[ portmap[p] ]), 0 );
+    if ( 0 < retval ) {
+      //buffer[ portmap[p] ][ retval ] = 0;
+      //return buffer[ portmap[p] ];
+    }
+  }
+  return 0;
+}
+
+
+/*
+ * Attempt to send a message to the host through the socket.
+ * Only length bytes will be transmitted even if more exist.
+ * Note that this routine walks on the input buffer.
+ */
+void Escher_socket_send(
+  char * message,
+  int length,
+  const unsigned int p
+)
+{
+  if ( send( sockfd, message, length, 0 ) < 0 ) {
+    perror( "Bad news.  Cannot send message.\n" );
+  }
+}
