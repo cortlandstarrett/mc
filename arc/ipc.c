@@ -16,90 +16,92 @@ typedef unsigned long u4_t;
 #include <arpa/inet.h>
 
 c_t * Escher_itoa( c_t * , s4_t );
-i_t Escher_socket_send( char *, int, const unsigned int );
+i_t Escher_socket_send( char *, int, int );
 i_t Escher_socket_recv( char *, int, const unsigned int );
 
 i_t sockfd;
 
-i_t Escher_socket_init(c_t * h, i_t port, i_t I_am_server)
+i_t Escher_socket_init(
+  c_t * host,
+  i_t port,
+  i_t I_am_server
+)
 {
   struct addrinfo hints, *servinfo, *p;
-  i_t rv, yes = 1;
+  i_t sockfd, rv, yes = 1;
   c_t s[32];
 
-  memset(&hints, 0, sizeof hints);
+  memset( &hints, 0, sizeof( hints ) );
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_flags = AI_PASSIVE; // use my IP
 
-  if ((rv = getaddrinfo(h, Escher_itoa(s,port), &hints, &servinfo)) != 0) {
-    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
-    return 1;
+  if ( 0 != ( rv = getaddrinfo( host, Escher_itoa( s, port ), &hints, &servinfo ) ) ) {
+    fprintf( stderr, "getaddrinfo: %s\n", gai_strerror( rv ) );
+    return -1;
   }
 
-  for(p = servinfo; p != NULL; p = p->ai_next) {
-    if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
-      perror("socket");
+  for ( p = servinfo; p != NULL; p = p->ai_next ) {
+    if ( -1 == ( sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol ) ) ) {
+      perror( "socket" );
       continue;
     }
     rv = ( I_am_server ) ?
-      setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)), bind(sockfd, p->ai_addr, p->ai_addrlen) :
-      connect(sockfd, p->ai_addr, p->ai_addrlen);
+      setsockopt( sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int) ), bind( sockfd, p->ai_addr, p->ai_addrlen ) :
+      connect( sockfd, p->ai_addr, p->ai_addrlen );
     if ( -1 == rv ) {
-      close(sockfd);
-      perror("bind/connect");
+      close( sockfd );
+      perror( "bind/connect" );
       continue;
     }
     break;
   }
 
-  if (p == NULL) {
-    fprintf(stderr, "socket failed\n");
-    return 2;
+  if ( NULL == p ) {
+    fprintf( stderr, "socket failed\n" );
+    return -2;
   }
   if ( I_am_server ) {
-    if (-1 == listen(sockfd, 10)) {
-      perror("listen");
-      exit(1);
+    if ( -1 == listen( sockfd, 10 ) ) {
+      perror( "listen" );
+      return -3;
     }
   }
 
-  freeaddrinfo(servinfo); // all done with this structure
-  return 0;
+  freeaddrinfo( servinfo ); // all done with this structure
+  return sockfd;
 }
 
-i_t Escher_socket_accept(void)
+i_t Escher_socket_accept( i_t s )
 {
-  int new_fd;
+  int accepted_socket_fd;
   struct sockaddr_storage their_addr;
-
-  printf("server: waiting for connections...\n");
-
   socklen_t sin_size = sizeof their_addr;
-  new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
-  if (new_fd == -1) perror("accept");
-  close(sockfd);
-  sockfd = new_fd;
-  Escher_socket_send("Hello, world!", 13, 0);
-  close(new_fd);
 
-  return 0;
+  accepted_socket_fd = accept( s, (struct sockaddr *) &their_addr, &sin_size );
+  if ( -1 == accepted_socket_fd ) {
+    perror( "accept" );
+  } else {
+    Escher_socket_send( "Hello, world!", 13, accepted_socket_fd );
+  }
+  close( s );
+  return accepted_socket_fd;
 }
 
-int main(int argc, char *argv[])
+int main( int argc, char *argv[] )
 {
   c_t buf[32];
   int iamserver = atoi( argv[2] );
   if ( iamserver ) {
-    Escher_socket_init(NULL,3490,iamserver);
-    Escher_socket_accept();
+    sockfd = Escher_socket_init( NULL, 3490, iamserver );
+    sockfd = Escher_socket_accept( sockfd );
   } else {
-    Escher_socket_init(argv[1],3490,iamserver);
-    if ( 0 < Escher_socket_recv(buf,32,0) ) {
-      printf("client: received '%s'\n",buf);
+    sockfd = Escher_socket_init( argv[1], 3490, iamserver );
+    if ( 0 < Escher_socket_recv( buf, 32, 0 ) ) {
+      printf( "client: received '%s'\n", buf );
     }
   }
-  close(sockfd);
+  close( sockfd );
   return 0;
 }
 
@@ -141,10 +143,10 @@ i_t Escher_socket_recv(
 i_t Escher_socket_send(
   char * message,
   int length,
-  const unsigned int p
+  int s
 )
 {
-  return send( sockfd, message, length, 0 );
+  return send( s, message, length, 0 );
 }
 
 #define ESCHER_ATOI_RADIX 10
