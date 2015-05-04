@@ -1,12 +1,34 @@
 .//============================================================================
 .//
-.function TE_PO_smsg_send
+.function TE_PO_smsg_init
   .param inst_ref te_c
   .param inst_ref te_po
-  .param inst_ref foreign_te_c
-  .param inst_ref foreign_te_po
+  .param inst_ref foreign_te_iir
   .select any te_file from instances of TE_FILE
-  .if ( ( not_empty te_c ) and ( not_empty foreign_te_c ) )
+  .select any te_prefix from instances of TE_PREFIX
+  .if ( ( not_empty te_c ) and ( not_empty foreign_te_iir ) )
+    .include "${te_file.arc_path}/t.component.port.smsg.init.c"
+  .end if
+.end function
+.//
+.function TE_PO_smsg_accept
+  .param inst_ref te_c
+  .param inst_ref te_po
+  .param inst_ref foreign_te_iir
+  .select any te_file from instances of TE_FILE
+  .if ( ( not_empty te_c ) and ( not_empty foreign_te_iir ) )
+    .include "${te_file.arc_path}/t.component.port.smsg.accept.c"
+  .end if
+.end function
+.//
+.function TE_PO_smsg_send
+  .param inst_ref te_sys
+  .param inst_ref te_c
+  .param inst_ref te_po
+  .param inst_ref foreign_te_iir
+  .select any te_file from instances of TE_FILE
+  .select any te_prefix from instances of TE_PREFIX
+  .if ( ( not_empty te_c ) and ( not_empty foreign_te_iir ) )
     .include "${te_file.arc_path}/t.component.port.smsg.send.c"
   .end if
 .end function

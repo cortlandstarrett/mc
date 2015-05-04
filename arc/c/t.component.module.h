@@ -27,6 +27,11 @@ ${te_c.Descrip}
 
 #include "${te_file.types}.${te_file.hdr_file_ext}"
 ${port_enum}
+.if ( te_sys.NetworkSockets )
+void ${te_c.Name}_smsg_init( void );
+void ${te_c.Name}_smsg_accept( void );
+void ${te_c.Name}_smsg_poll( void );
+.end if
 ${message_declarations}
 
 ${te_target.c2cplusplus_linkage_end}

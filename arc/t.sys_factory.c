@@ -280,4 +280,5 @@ ${te_instance.get_dci}(class_num);
 .end if
   }
 }
+.include "${te_file.arc_path}/t.sys_smsg.c"
 .include "${te_file.arc_path}/t.sys_events.c"

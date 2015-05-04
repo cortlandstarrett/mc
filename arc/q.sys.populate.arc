@@ -39,7 +39,6 @@
   .select any te_thread from instances of TE_THREAD
   .select any te_tim from instances of TE_TIM
   .select any te_typemap from instances of TE_TYPEMAP
-  .select any empty_cp_cp from instances of CP_CP where ( false )
   .select many empty_ep_pkgs from instances of EP_PKG where ( false )
   .select any empty_te_blk from instances of TE_BLK where ( false )
   .select any empty_te_c from instances of TE_C where ( false )
@@ -275,6 +274,7 @@
             .// relate te_iir to te_po across R2080;
             .assign te_iir.te_poID = te_po.ID
             .// end relate
+            .assign te_iir.component_name = c_c.Name
             .assign te_iir.port_name = te_po.Name
             .assign te_iir.interface_name = te_po.InterfaceName
             .assign te_iir.polymorphic = false
@@ -364,7 +364,6 @@
   .// a package has been marked, translate only the components contained
   .// in the package (or referenced from it).
   .assign ep_pkgs = empty_ep_pkgs
-  .assign cp_cp = empty_cp_cp
   .assign package_to_build = ""
   .select any tm_build from instances of TM_BUILD
   .assign markedsystems = 0

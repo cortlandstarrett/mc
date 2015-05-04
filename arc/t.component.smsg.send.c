@@ -1,3 +1,4 @@
+.if ( te_sys.StructuredMessaging )
 static void ${te_c.Name}_smsg_send( ${te_disp.base_message_type} * );
 static void ${te_c.Name}_smsg_send( ${te_disp.base_message_type} * m )
 {
@@ -7,3 +8,4 @@ static void ${te_c.Name}_smsg_send( ${te_disp.base_message_type} * m )
       ; // CDS - recovery?
   }
 }
+.end if

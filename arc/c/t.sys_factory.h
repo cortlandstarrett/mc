@@ -41,6 +41,7 @@ void ${te_instance.delete_persistent}( ${te_instance.handle}, const ${te_typemap
  * by linking the empty instances into a collection.
  */
 void ${te_instance.factory_init}( const ${te_typemap.domain_number_name}, const ${te_typemap.object_number_name} );
+.include "${te_file.arc_path}/t.sys_smsg.h"
 
 ${te_target.c2cplusplus_linkage_end}
 #endif   /* $u{te_file.factory}_$u{te_file.hdr_file_ext} */

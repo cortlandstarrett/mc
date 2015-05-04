@@ -46,12 +46,15 @@
     .assign port_enum = port_enum + "enum {"
     .for each te_po in te_pos
       .assign port_enum = port_enum + " ${te_c.Name}_${te_po.GeneratedName}_e = ${te_po.Order},"
-      .select any foreign_te_po related by te_po->TE_IIR[R2080]->TE_IIR[R2081.'provides or is delegated']->TE_PO[R2080]
-      .if ( empty foreign_te_po )
-        .select any foreign_te_po related by te_po->TE_IIR[R2080]->TE_IIR[R2081.'requires or delegates']->TE_PO[R2080]
+      .select any foreign_te_iir related by te_po->TE_IIR[R2080]->TE_IIR[R2081.'provides or is delegated']
+      .if ( empty foreign_te_iir )
+        .select any foreign_te_iir related by te_po->TE_IIR[R2080]->TE_IIR[R2081.'requires or delegates']
       .end if
-      .select one foreign_te_c related by foreign_te_po->TE_C[R2005] where ( selected.included_in_build )
-      .invoke r = TE_PO_smsg_send( te_c, te_po, foreign_te_c, foreign_te_po )
+      .invoke r = TE_PO_smsg_init( te_c, te_po, foreign_te_iir )
+      .assign te_c.smsg_init = te_c.smsg_init + r.body
+      .invoke r = TE_PO_smsg_accept( te_c, te_po, foreign_te_iir )
+      .assign te_c.smsg_accept = te_c.smsg_accept + r.body
+      .invoke r = TE_PO_smsg_send( te_sys, te_c, te_po, foreign_te_iir )
       .assign te_c.smsg_send = te_c.smsg_send + r.body
       .select one first_te_mact related by te_po->TE_MACT[R2099]
       .invoke r = TE_PO_smsg_recv( first_te_mact )

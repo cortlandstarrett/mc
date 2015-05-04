@@ -528,7 +528,7 @@ ${te_set.scope}${te_string.strlen}( const c_t * s )
 }
 
 .end if
-.if ( te_sys.InstanceLoading )
+.if ( te_sys.InstanceLoading or te_sys.NetworkSockets )
 #define ${te_prefix.define_u}ATOI_RADIX 10
 c_t *
 ${te_set.scope}${te_string.itoa}( c_t * string, s4_t value )
@@ -565,6 +565,8 @@ ${te_set.scope}${te_string.itoa}( c_t * string, s4_t value )
   return string;
 }
 
+.end if
+.if ( te_sys.InstanceLoading )
 s4_t
 ${te_set.scope}${te_string.atoi}( const char * p )
 {
