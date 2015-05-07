@@ -2435,8 +2435,12 @@ CREATE TABLE TE_C (
 	cId	UNIQUE_ID,
 	first_eeID	UNIQUE_ID,
 	first_syncID	UNIQUE_ID,
+	smsg_listen	STRING,
+	smsg_connect	STRING,
+	smsg_accept	STRING,
 	smsg_send	STRING,
-	smsg_recv	STRING );
+	smsg_recv	STRING,
+	port_enum	STRING );
 
 -- Class:  2014.  Extended Member
 CREATE TABLE TE_MBR (
