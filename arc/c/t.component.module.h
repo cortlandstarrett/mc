@@ -26,9 +26,9 @@ ${te_c.Descrip}
 .end if
 
 #include "${te_file.types}.${te_file.hdr_file_ext}"
-${port_enum}
 .if ( te_sys.NetworkSockets )
-void ${te_c.Name}_smsg_init( void );
+void ${te_c.Name}_smsg_listen( void );
+void ${te_c.Name}_smsg_connect( void );
 void ${te_c.Name}_smsg_accept( void );
 void ${te_c.Name}_smsg_poll( void );
 .end if

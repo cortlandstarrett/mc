@@ -1,13 +1,24 @@
 .//============================================================================
 .//
-.function TE_PO_smsg_init
+.function TE_PO_smsg_listen
   .param inst_ref te_c
   .param inst_ref te_po
   .param inst_ref foreign_te_iir
   .select any te_file from instances of TE_FILE
   .select any te_prefix from instances of TE_PREFIX
   .if ( ( not_empty te_c ) and ( not_empty foreign_te_iir ) )
-    .include "${te_file.arc_path}/t.component.port.smsg.init.c"
+    .include "${te_file.arc_path}/t.component.port.smsg.listen.c"
+  .end if
+.end function
+.//
+.function TE_PO_smsg_connect
+  .param inst_ref te_c
+  .param inst_ref te_po
+  .param inst_ref foreign_te_iir
+  .select any te_file from instances of TE_FILE
+  .select any te_prefix from instances of TE_PREFIX
+  .if ( ( not_empty te_c ) and ( not_empty foreign_te_iir ) )
+    .include "${te_file.arc_path}/t.component.port.smsg.connect.c"
   .end if
 .end function
 .//

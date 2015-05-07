@@ -282,6 +282,7 @@
         .end for
       .end if
     .end for
+    .assign te_c.port_enum = te_c.port_enum + "enum { "
     .// Identify polymorhic ports.
     .// Polymorphic ports exist more than once in the same orientation on a component.
     .assign port_counter = 0
@@ -289,6 +290,7 @@
     .for each te_po in te_pos
       .assign te_po.Order = port_counter
       .assign port_counter = port_counter + 1
+      .assign te_c.port_enum = ( ( te_c.port_enum + te_c.Name ) + ( "_" + te_po.GeneratedName ) ) + "_e, "
       .select many poly_te_pos related by te_po->TE_C[R2005]->TE_PO[R2005] where ( ( ( selected.c_iId == te_po.c_iId ) and ( selected.Provision == te_po.Provision ) ) and ( selected.ID != te_po.ID ) )
       .if ( not_empty poly_te_pos )
         .// If we have seen this port already, it will be marked as polymorphic.
@@ -309,6 +311,7 @@
         .end for
       .end if
     .end for
+    .assign te_c.port_enum = ( te_c.port_enum + te_c.Name ) + "_portmax };"
   .end for
   .// Here we force all the ports and interface references to be polymorphic.  
   .// We do this step via a second loop here so that we could set up the 

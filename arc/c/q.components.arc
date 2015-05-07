@@ -22,7 +22,6 @@
 .for each te_c in te_cs
   .assign message_definitions = ""
   .assign message_declarations = ""
-  .assign port_enum = ""
   .invoke s = TE_C_CreateIncludeList ( te_c )
   .assign include_files = s.include_files
   .// nested components
@@ -43,15 +42,16 @@
     .assign message_declarations = message_declarations + s.body
   .end for
   .if ( not_empty te_pos )
-    .assign port_enum = port_enum + "enum {"
     .for each te_po in te_pos
-      .assign port_enum = port_enum + " ${te_c.Name}_${te_po.GeneratedName}_e = ${te_po.Order},"
+      .// CDS - This query can reach outside of the marked package into other packages...
       .select any foreign_te_iir related by te_po->TE_IIR[R2080]->TE_IIR[R2081.'provides or is delegated']
       .if ( empty foreign_te_iir )
         .select any foreign_te_iir related by te_po->TE_IIR[R2080]->TE_IIR[R2081.'requires or delegates']
       .end if
-      .invoke r = TE_PO_smsg_init( te_c, te_po, foreign_te_iir )
-      .assign te_c.smsg_init = te_c.smsg_init + r.body
+      .invoke r = TE_PO_smsg_listen( te_c, te_po, foreign_te_iir )
+      .assign te_c.smsg_listen = te_c.smsg_listen + r.body
+      .invoke r = TE_PO_smsg_connect( te_c, te_po, foreign_te_iir )
+      .assign te_c.smsg_connect = te_c.smsg_connect + r.body
       .invoke r = TE_PO_smsg_accept( te_c, te_po, foreign_te_iir )
       .assign te_c.smsg_accept = te_c.smsg_accept + r.body
       .invoke r = TE_PO_smsg_send( te_sys, te_c, te_po, foreign_te_iir )
@@ -60,7 +60,6 @@
       .invoke r = TE_PO_smsg_recv( first_te_mact )
       .assign te_c.smsg_recv = te_c.smsg_recv + r.body
     .end for
-    .assign port_enum = port_enum + " ${te_c.Name}_portmax };"
   .end if
   .include "${arc_path}/t.component.module.h"
   .emit to file "${te_file.system_include_path}/${te_c.module_file}.${te_file.hdr_file_ext}"

@@ -193,6 +193,15 @@ ${te_typemap.structured_data_types}
 #include "${te_file.interfaces}.${te_file.hdr_file_ext}"
 .end if
 ${domain_ids.body}
+.select many all_te_cs from instances of TE_C
+enum { \
+.for each each_te_c in all_te_cs
+${te_prefix.result}${each_te_c.Name}_e, \
+.end for
+${te_prefix.result}compmax };
+.for each each_te_c in all_te_cs
+${each_te_c.port_enum}
+.end for
 .// Include the macros for tracing.
 .include "${te_file.arc_path}/t.sys_trace.h"
 

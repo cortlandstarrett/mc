@@ -84,6 +84,17 @@ ${te_persist.factory_init}();
   ${te_persist.restore}(); /* Restore persistent instances.  */
 .end if
   ${te_callout.pre_xtUML_initialization}();
+.if ( te_sys.NetworkSockets )
+  .for each te_c in te_cs
+  ${te_c.Name}_smsg_listen();
+  .end for
+  .for each te_c in te_cs
+  ${te_c.Name}_smsg_connect();
+  .end for
+  .for each te_c in te_cs
+  ${te_c.Name}_smsg_accept();
+  .end for
+.end if
 .for each te_c in te_cs
   .if ( te_c.internal_behavior )
   ${te_c.Name}_execute_initialization();

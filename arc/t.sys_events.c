@@ -15,15 +15,16 @@
 .//============================================================================
 .//
 .//
+
 /*
- * Following provides the dispatcher loops for the xtUML event queues.
+ * The following provides the dispatcher loops for the xtUML event queues.
  */
 
 .if ( te_sys.MaxInterleavedBridges > 0 )
 #include "${te_file.ilb}.${te_file.hdr_file_ext}"
+
 .end if
 .if ( "C" == te_target.language )
-
 bool ${te_eq.run_flag} = true; /* Turn this off to exit dispatch loop(s).  */
 .end if
 .//
@@ -649,6 +650,11 @@ static void ooa_loop( void )
   .end if
   .if ( te_thread.enabled )
       ${te_thread.nonbusy_wait}( ${thread_number} );
+  .end if
+  .if ( te_sys.NetworkSockets )
+    .for each te_c in te_cs
+      ${te_c.Name}_smsg_poll();
+    .end for
   .end if
     }
   .if ( event_prioritization_needed.result )

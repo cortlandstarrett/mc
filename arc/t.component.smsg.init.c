@@ -1,13 +1,17 @@
 .if ( te_sys.StructuredMessaging and te_sys.NetworkSockets )
 
 int ${te_c.Name}_port_fd[ ${te_c.Name}_portmax ];
-void ${te_c.Name}_smsg_init()
+void ${te_c.Name}_smsg_listen()
 {
-${te_c.smsg_init}
+${te_c.smsg_listen}\
+}
+void ${te_c.Name}_smsg_connect()
+{
+${te_c.smsg_connect}\
 }
 void ${te_c.Name}_smsg_accept()
 {
-${te_c.smsg_accept}
+${te_c.smsg_accept}\
 }
 void ${te_c.Name}_smsg_poll()
 {

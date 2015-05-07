@@ -12,17 +12,17 @@
 #include <arpa/inet.h>
 
 /* 
- * Open a socket as server/provider or client/requirer.  Return file descriptor.
+ * Open a socket as server/provider.  Listen on the given port.
+ * Return the socket file descriptor.
  */
 i_t 
-${te_prefix.result}smsg_init(
+${te_prefix.result}smsg_listen(
   c_t * host,
-  i_t port,
-  i_t iamserver
+  i_t port
 )
 {
   struct addrinfo hints, *servinfo, *p;
-  int sfd, rv, yes = 1;
+  int sfd;
   c_t strspace[ ${te_string.max_string_length} ];
 
   ${te_string.memset}( &hints, 0, sizeof( hints ) );
@@ -30,39 +30,76 @@ ${te_prefix.result}smsg_init(
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_flags = AI_PASSIVE; /* use my IP */
 
-  if ( 0 != ( rv = getaddrinfo( host, ${te_string.itoa}( strspace, port ), &hints, &servinfo ) ) ) {
-    fprintf( stderr, "getaddrinfo: %s\n", gai_strerror( rv ) );
-    return -1;
-  }
-
-  for ( p = servinfo; p != NULL; p = p->ai_next ) {
-    if ( -1 == ( sfd = socket( p->ai_family, p->ai_socktype, p->ai_protocol ) ) ) {
-      perror( "socket" );
-      continue;
+  if ( 0 != getaddrinfo( host, ${te_string.itoa}( strspace, port ), &hints, &servinfo ) ) {
+    perror( "getaddrinfo" );
+    sfd = -1;
+  } else {
+    /* Cycle through a (potential) list of server entries.  */
+    for ( p = servinfo; p != 0; p = p->ai_next ) {
+      int yes = 1;
+      if ( -1 == ( sfd = socket( p->ai_family, p->ai_socktype, p->ai_protocol ) ) ) {
+        perror( "socket" );
+        sfd = -2;
+      } else if ( 0 != setsockopt( sfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int) ) ) {
+        perror( "setsockopt" );
+        close( sfd );
+        sfd = -3;
+      } else if ( 0 != bind( sfd, p->ai_addr, p->ai_addrlen ) ) {
+        perror( "bind" );
+        close( sfd );
+        sfd = -4;
+      } else {
+        break;
+      }
     }
-    rv = ( iamserver ) ?
-      setsockopt( sfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int) ), bind( sfd, p->ai_addr, p->ai_addrlen ) :
-      connect( sfd, p->ai_addr, p->ai_addrlen );
-    if ( -1 == rv ) {
-      close( sfd );
-      perror( "bind/connect" );
-      continue;
-    }
-    break;
-  }
-
-  if ( NULL == p ) {
-    fprintf( stderr, "socket failed\n" );
-    return -2;
-  }
-  if ( iamserver ) {
-    if ( -1 == listen( sfd, 10 ) ) {
+    if ( 0 == p ) {
+      fprintf( stderr, "server socket failed %s %d.\n", host, port );
+      sfd = -5;
+    } else if ( 0 != listen( sfd, 10 ) ) {
       perror( "listen" );
-      return -3;
+      close( sfd );
+      sfd = -6;
     }
   }
+  freeaddrinfo( servinfo );
+  return sfd;
+}
 
-  freeaddrinfo( servinfo ); /* done with this structure */
+i_t 
+${te_prefix.result}smsg_connect(
+  c_t * host,
+  i_t port
+)
+{
+  struct addrinfo hints, *servinfo, *p;
+  int sfd;
+  c_t strspace[ ${te_string.max_string_length} ];
+
+  ${te_string.memset}( &hints, 0, sizeof( hints ) );
+  hints.ai_family = AF_UNSPEC;
+  hints.ai_socktype = SOCK_STREAM;
+
+  if ( 0 != getaddrinfo( host, ${te_string.itoa}( strspace, port ), &hints, &servinfo ) ) {
+    perror( "getaddrinfo" );
+    sfd = -1;
+  } else {
+    /* Cycle through a (potential) list of server entries.  */
+    for ( p = servinfo; p != 0; p = p->ai_next ) {
+      if ( -1 == ( sfd = socket( p->ai_family, p->ai_socktype, p->ai_protocol ) ) ) {
+        perror( "socket" );
+        sfd = -2;
+      } else {
+        /* NOTE:  We hang here until we get the net connection!  */
+        while ( 0 != connect( sfd, p->ai_addr, p->ai_addrlen ) );
+        break;
+      }
+    }
+    if ( 0 == p ) {
+      fprintf( stderr, "client socket failed %s %d.\n", host, port );
+      sfd = -4;
+    }
+  }
+  freeaddrinfo( servinfo );
   return sfd;
 }
 
