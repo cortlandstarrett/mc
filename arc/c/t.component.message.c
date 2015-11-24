@@ -24,8 +24,10 @@ ${te_aba.scope}${te_aba.GeneratedName}(${te_aba.ParameterDefinition})
     .end if
   .end if
   .if ( te_mact.trace )
+    .invoke r = GetDomainTypeIDFromString( te_c.Name )
+    .assign dom_id = r.result
   /* <message compname="${te_c.Name}" compnum="${te_c.number}" portname="${te_po.Name}" portnum="${te_po.Order}" msgname="${te_mact.MessageName}" msgnum="${te_mact.Order}"/> */
-  ${te_trace.component_msg_start}( "${te_aba.ParameterFormat}", ${te_c.number}, ${te_po.Order}, ${te_mact.Order}${te_aba.ParameterTrace} );
+  ${te_trace.component_msg_start}( "${te_aba.ParameterFormat}", ${dom_id}, ${te_po.Order}, ${te_mact.Order}${te_aba.ParameterTrace} );
   .end if
   .if ( te_sys.StructuredMessaging )
     .if ( ( ( te_mact.Provision ) and ( 1 == te_mact.Direction ) ) or ( ( not te_mact.Provision ) and ( 0 == te_mact.Direction ) ) )
