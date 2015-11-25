@@ -255,7 +255,7 @@ INSERT INTO S_EE
 	'This EE represents the user of the tool. It''s bridge calls all
 capture required interactions with that user.
  
-Import:com.mentor.nucleus.bp.core.common.*
+Import:org.xtuml.bp.core.common.*
 ',
 	'USER',
 	"00000000-0000-0000-0000-000000000000",
@@ -524,7 +524,7 @@ INSERT INTO S_BRG
 	'Translate:native',
 	0,
 	"ba5eda7a-def5-0000-0000-000000000005",
-	'return com.mentor.nucleus.bp.core.common.IdAssigner.NULL_UUID;',
+	'return org.xtuml.bp.core.common.IdAssigner.NULL_UUID;',
 	0,
 	'');
 INSERT INTO S_BRG
@@ -1511,7 +1511,7 @@ INSERT INTO S_EE
 	'This EE contains utility bridges that provide functionality which cannot be
 modeled.
                                       
-Import:java.util.*; import com.mentor.nucleus.bp.core.ui.actions.ElementChange
+Import:java.util.*; import org.xtuml.bp.core.ui.actions.ElementChange
 ',
 	'Util',
 	"00000000-0000-0000-0000-000000000000",
@@ -1568,7 +1568,7 @@ INSERT INTO S_BRG
 Participant is contained within it.  This is required with free-floating message
 formalization.
 
-Import:com.mentor.nucleus.bp.core.*; import com.mentor.nucleus.bp.core.common.*; import com.mentor.nucleus.bp.core.inspector.ModelInspector; import com.mentor.nucleus.bp.core.ui.*; import java.util.Iterator
+Import:org.xtuml.bp.core.*; import org.xtuml.bp.core.common.*; import org.xtuml.bp.core.inspector.ModelInspector; import org.xtuml.bp.core.ui.*; import java.util.Iterator
 Translate:native',
 	0,
 	"ba5eda7a-def5-0000-0000-000000000001",
@@ -1776,7 +1776,7 @@ INSERT INTO S_BRG
 in the paste action.  The paste action will check this list and display a
 dialog to the user indicating some problem.
 
-Import:com.mentor.nucleus.bp.core.ui.PasteAction
+Import:org.xtuml.bp.core.ui.PasteAction
 Translate:native',
 	0,
 	"ba5eda7a-def5-0000-0000-000000000000",
@@ -2011,7 +2011,7 @@ INSERT INTO S_BRG
 		// look for other systems if IPRs are enabled
 		SystemModel_c sys = (SystemModel_c) ((NonRootModelElement) p_Askingelement).getRoot();
 		if (Pref_c.Getsystemboolean(
-				"com.mentor.nucleus.bp.ui.project.references",
+				"org.xtuml.bp.ui.project.references",
 				sys.getName())) {
 			SystemModel_c[] systems = SystemModel_c.SystemModelInstances(Ooaofooa.getDefaultInstance());
 			for(SystemModel_c system : systems) {
@@ -2122,7 +2122,7 @@ INSERT INTO S_BRG
 	'addElementToList',
 	'This bridge will add an element to a native Java java.util.List
 
-Import:com.mentor.nucleus.bp.core.common.NonRootModelElement
+Import:org.xtuml.bp.core.common.NonRootModelElement
 Translate:native',
 	0,
 	"ba5eda7a-def5-0000-0000-000000000000",
@@ -2248,7 +2248,7 @@ INSERT INTO S_BRG
 	'getCurrentSelectionCount',
 	'This bridge returns the tools current selection count.
 
-Import:com.mentor.nucleus.bp.core.ui.Selection
+Import:org.xtuml.bp.core.ui.Selection
 Translate:native',
 	0,
 	"ba5eda7a-def5-0000-0000-000000000002",
@@ -2261,7 +2261,7 @@ INSERT INTO S_BRG
 	'clearSelection',
 	'This bridge clears the current selection.
 
-Import:com.mentor.nucleus.bp.core.ui.Selection
+Import:org.xtuml.bp.core.ui.Selection
 Translate:native',
 	0,
 	"ba5eda7a-def5-0000-0000-000000000000",
@@ -2637,7 +2637,7 @@ INSERT INTO S_EE
 	'This EE represents the interface to the Eclipse preferences. It''s bridge calls
 provide a means for action language to access the preferences.
 
-Import: com.mentor.nucleus.bp.core.common.*; import org.eclipse.jface.dialogs.*; import com.mentor.nucleus.bp.core.ui.preferences.*; import org.osgi.service.prefs.Preferences; import org.eclipse.core.resources.*; import org.eclipse.jface.preference.*; import org.eclipse.core.runtime.preferences.IScopeContext; import org.eclipse.jface.dialogs.MessageDialogWithToggle
+Import: org.xtuml.bp.core.common.*; import org.eclipse.jface.dialogs.*; import org.xtuml.bp.core.ui.preferences.*; import org.osgi.service.prefs.Preferences; import org.eclipse.core.resources.*; import org.eclipse.jface.preference.*; import org.eclipse.core.runtime.preferences.IScopeContext; import org.eclipse.jface.dialogs.MessageDialogWithToggle
 ',
 	'PREF',
 	"00000000-0000-0000-0000-000000000000",
