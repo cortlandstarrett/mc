@@ -1,0 +1,238 @@
+-- BP 7.1.6 content: ModelClass syschar: 3 persistence-version: 7.1.6
+
+INSERT INTO O_OBJ
+	VALUES ("514b84aa-197a-464c-a09e-e7f135680958",
+	'attribute',
+	3711,
+	'attribute',
+	'',
+	"00000000-0000-0000-0000-000000000000");
+INSERT INTO O_TFR
+	VALUES ("fb972f5f-d2bd-4c5f-afe9-7eadca2ff059",
+	"514b84aa-197a-464c-a09e-e7f135680958",
+	'render',
+	'',
+	"ba5eda7a-def5-0000-0000-000000000000",
+	1,
+	'T::include( file:"masl/t.attribute_begin.masl" );
+select many referentials related by self->referential[R3718.''refers through''];
+for each referential in referentials
+  referential.render();
+end for;
+select one type related by self->type[R3717];
+T::include( file:"masl/t.attribute_end.masl" );',
+	1,
+	'',
+	"4c9d4539-8201-424e-84cc-ac2ce8b70c71");
+INSERT INTO O_TFR
+	VALUES ("4c9d4539-8201-424e-84cc-ac2ce8b70c71",
+	"514b84aa-197a-464c-a09e-e7f135680958",
+	'populate',
+	'',
+	"2c8859d3-78f0-4799-9ba0-e82b40711de3",
+	0,
+	'object = param.object;
+create object instance attribute of attribute;
+attribute.name = param.name;
+attribute.preferred = param.preferred;
+attribute.unique = param.unique;
+attribute.defaultvalue = param.defaultvalue;
+relate object to attribute across R3709.''is characterized by'';
+return attribute;',
+	1,
+	'',
+	"00000000-0000-0000-0000-000000000000");
+INSERT INTO O_TPARM
+	VALUES ("f87125ba-42aa-4a4d-912d-a8e86fe9600d",
+	"4c9d4539-8201-424e-84cc-ac2ce8b70c71",
+	'name',
+	"34fac455-523f-4aa2-932b-a33981ceacad",
+	0,
+	'',
+	"00000000-0000-0000-0000-000000000000",
+	'');
+INSERT INTO S_DT_PROXY
+	VALUES ("34fac455-523f-4aa2-932b-a33981ceacad",
+	"00000000-0000-0000-0000-000000000000",
+	'str',
+	'',
+	'""',
+	'../../types/types.xtuml');
+INSERT INTO O_TPARM
+	VALUES ("b90a5b96-97a1-4611-b06d-9f8fb8924c93",
+	"4c9d4539-8201-424e-84cc-ac2ce8b70c71",
+	'preferred',
+	"ba5eda7a-def5-0000-0000-000000000001",
+	0,
+	'',
+	"f87125ba-42aa-4a4d-912d-a8e86fe9600d",
+	'');
+INSERT INTO O_TPARM
+	VALUES ("95952fdd-517e-4d1c-9a3c-e4cdf53ec35e",
+	"4c9d4539-8201-424e-84cc-ac2ce8b70c71",
+	'unique',
+	"ba5eda7a-def5-0000-0000-000000000001",
+	0,
+	'',
+	"b90a5b96-97a1-4611-b06d-9f8fb8924c93",
+	'');
+INSERT INTO O_TPARM
+	VALUES ("c36f5e3e-3842-4a5b-ab80-ce3199b5847a",
+	"4c9d4539-8201-424e-84cc-ac2ce8b70c71",
+	'defaultvalue',
+	"34fac455-523f-4aa2-932b-a33981ceacad",
+	0,
+	'',
+	"95952fdd-517e-4d1c-9a3c-e4cdf53ec35e",
+	'');
+INSERT INTO O_TPARM
+	VALUES ("809b8aea-858a-40be-afae-06ffd349baef",
+	"4c9d4539-8201-424e-84cc-ac2ce8b70c71",
+	'object',
+	"42488ce2-7c14-405b-ab4a-c6b5a73ef562",
+	0,
+	'',
+	"c36f5e3e-3842-4a5b-ab80-ce3199b5847a",
+	'');
+INSERT INTO S_DT_PROXY
+	VALUES ("42488ce2-7c14-405b-ab4a-c6b5a73ef562",
+	"00000000-0000-0000-0000-000000000000",
+	'inst_ref<object>',
+	'',
+	'',
+	'../masl.xtuml');
+INSERT INTO S_DT_PROXY
+	VALUES ("2c8859d3-78f0-4799-9ba0-e82b40711de3",
+	"00000000-0000-0000-0000-000000000000",
+	'inst_ref<attribute>',
+	'',
+	'',
+	'../masl.xtuml');
+INSERT INTO O_TFR
+	VALUES ("57ca507c-d88a-4bcb-8a8d-d86fe4680b5e",
+	"514b84aa-197a-464c-a09e-e7f135680958",
+	'validate',
+	'',
+	"ba5eda7a-def5-0000-0000-000000000001",
+	0,
+	'valid = true;
+select many attributes from instances of attribute;
+for each attribute in attributes
+  if ( "" == attribute.name )
+    TRACE::log( flavor:"failure", id:28, message:"attribute with no name" );
+    valid = false;
+  end if;
+  select one object related by attribute->object[R3709];
+  if ( empty object )
+    TRACE::log( flavor:"failure", id:29, message:"orphan attribute with no object:  " + attribute.name );
+    valid = false;
+  end if;
+  select one type related by attribute->type[R3717];
+  if ( empty type )
+    TRACE::log( flavor:"failure", id:29, message:"attribute with no type:  " + attribute.name );
+    valid = false;
+  end if;
+end for;
+
+// Validate siblings and subordinates.
+return ( valid and referential::validate() and identifier::validate() );
+return valid;
+',
+	1,
+	'',
+	"fb972f5f-d2bd-4c5f-afe9-7eadca2ff059");
+INSERT INTO O_NBATTR
+	VALUES ("6ed52915-ba48-441a-83a8-e2427e0b0ca2",
+	"514b84aa-197a-464c-a09e-e7f135680958");
+INSERT INTO O_BATTR
+	VALUES ("6ed52915-ba48-441a-83a8-e2427e0b0ca2",
+	"514b84aa-197a-464c-a09e-e7f135680958");
+INSERT INTO O_ATTR
+	VALUES ("6ed52915-ba48-441a-83a8-e2427e0b0ca2",
+	"514b84aa-197a-464c-a09e-e7f135680958",
+	"00000000-0000-0000-0000-000000000000",
+	'name',
+	'',
+	'',
+	'name',
+	0,
+	"34fac455-523f-4aa2-932b-a33981ceacad",
+	'',
+	'');
+INSERT INTO O_NBATTR
+	VALUES ("2444187c-b318-4bc6-95ab-96625c52c849",
+	"514b84aa-197a-464c-a09e-e7f135680958");
+INSERT INTO O_BATTR
+	VALUES ("2444187c-b318-4bc6-95ab-96625c52c849",
+	"514b84aa-197a-464c-a09e-e7f135680958");
+INSERT INTO O_ATTR
+	VALUES ("2444187c-b318-4bc6-95ab-96625c52c849",
+	"514b84aa-197a-464c-a09e-e7f135680958",
+	"6ed52915-ba48-441a-83a8-e2427e0b0ca2",
+	'preferred',
+	'',
+	'',
+	'preferred',
+	0,
+	"ba5eda7a-def5-0000-0000-000000000001",
+	'',
+	'');
+INSERT INTO O_NBATTR
+	VALUES ("9a1530ed-4471-48ad-a081-3a4b3cad3ac9",
+	"514b84aa-197a-464c-a09e-e7f135680958");
+INSERT INTO O_BATTR
+	VALUES ("9a1530ed-4471-48ad-a081-3a4b3cad3ac9",
+	"514b84aa-197a-464c-a09e-e7f135680958");
+INSERT INTO O_ATTR
+	VALUES ("9a1530ed-4471-48ad-a081-3a4b3cad3ac9",
+	"514b84aa-197a-464c-a09e-e7f135680958",
+	"2444187c-b318-4bc6-95ab-96625c52c849",
+	'unique',
+	'',
+	'',
+	'unique',
+	0,
+	"ba5eda7a-def5-0000-0000-000000000001",
+	'',
+	'');
+INSERT INTO O_NBATTR
+	VALUES ("2e6b8b9e-e543-4630-9ca7-d835304bf0ab",
+	"514b84aa-197a-464c-a09e-e7f135680958");
+INSERT INTO O_BATTR
+	VALUES ("2e6b8b9e-e543-4630-9ca7-d835304bf0ab",
+	"514b84aa-197a-464c-a09e-e7f135680958");
+INSERT INTO O_ATTR
+	VALUES ("2e6b8b9e-e543-4630-9ca7-d835304bf0ab",
+	"514b84aa-197a-464c-a09e-e7f135680958",
+	"9a1530ed-4471-48ad-a081-3a4b3cad3ac9",
+	'defaultvalue',
+	'',
+	'',
+	'defaultvalue',
+	0,
+	"ba5eda7a-def5-0000-0000-000000000004",
+	'',
+	'');
+INSERT INTO O_ID
+	VALUES (0,
+	"514b84aa-197a-464c-a09e-e7f135680958");
+INSERT INTO O_ID
+	VALUES (1,
+	"514b84aa-197a-464c-a09e-e7f135680958");
+INSERT INTO O_ID
+	VALUES (2,
+	"514b84aa-197a-464c-a09e-e7f135680958");
+INSERT INTO PE_PE
+	VALUES ("514b84aa-197a-464c-a09e-e7f135680958",
+	1,
+	"ceafde1b-ef7d-4cdb-ab88-6866d249a397",
+	"00000000-0000-0000-0000-000000000000",
+	4);
+INSERT INTO EP_PKG_PROXY
+	VALUES ("ceafde1b-ef7d-4cdb-ab88-6866d249a397",
+	"0c88bc32-05c8-40cf-8e56-04848518b4a9",
+	"0c88bc32-05c8-40cf-8e56-04848518b4a9",
+	'masl',
+	'',
+	0,
+	'../masl.xtuml');

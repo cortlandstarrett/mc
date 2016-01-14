@@ -1,0 +1,5 @@
+${type.name}\
+.if ( "" != self.default )
+ assign ${self.default}\
+.end if
+;
