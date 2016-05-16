@@ -90,16 +90,21 @@ this association.
 6.1.2 Two new classes are introduced in this package named _Markable_
 and _Mark_.  
 6.1.3 The classes will be modeled as such:  
-```
-Markable [M_MBL] ( Name:string {I} ) 1 marks ----- is marked by * Mark [M_M] ( ID? {I}, Name {I2, R}, Path:string {I2}, Value:string )
-```
-6.1.4 The _Path_ attribute is the same xtUML model hierarchy path used to
-uniquely identify logical and graphical elements in the application model.
-This path is a double-colon ('::') separated list of model elements
-mostly showing containment from the system down through the packages
-to the named model element.  It is unique for every element in a model.  
-6.1.5 The _Name_ attribute on Markable is the key letters of the xtUML
-meta-model that can be marked.  This is supplied in pre-existing instance
+<pre>
+Markable [M_MBL] ( KeyLetters:string {I} )
+ 1 marks
+   |
+   |
+ * is marked by
+Mark [M_M] ( ID? {I}, KeyLetters {R}, Name {I2}, Component {I2}, Package {I2}, Value:string )
+</pre>
+6.1.4 The _Name_, _Component_ and _Package_ attributes are meant to
+provide enough key material to find the marked element in the application
+model.  Component and Package are the names of the most local container for
+the marked model element.  Sometimes, one or the other of Name, Component
+and Package may be an empty string.  
+6.1.5 The _KeyLetters_ attribute on Markable is the key letters of the xtUML
+meta-model class that can be marked.  This is supplied in pre-existing instance
 data.
 
 6.2 Exceptions  
