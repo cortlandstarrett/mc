@@ -380,7 +380,7 @@
 .//
 .function target_factory
   .param inst_ref te_target
-  .assign te_target.language = "C"
+  .assign te_target.language = "Java"
   .assign te_target.c2cplusplus_linkage_begin = "#ifdef\t__cplusplus\nextern\t""C""\t{\n#endif"
   .assign te_target.c2cplusplus_linkage_end = "#ifdef\t__cplusplus\n}\n#endif"
   .assign te_target.main = "main"

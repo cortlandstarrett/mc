@@ -40,10 +40,7 @@ of xtUML to the enhanced model.
 
 5. Analysis
 -----------
-This section is only required if there is no preceding analysis note. If present
-it sets out a brief analysis of the problem to be resolved by this design note.
-
-5.1 Item 1  
+5.1 MASL ZZ
 5.2 Item 2  
 5.3 Item 3  
 
@@ -51,26 +48,38 @@ it sets out a brief analysis of the problem to be resolved by this design note.
 ---------
 6.1 Add PEIs for more MASL types.  
 6.1.1 Add PEIs to the existing set of pre-existing instances of S_DT.  The
-current set of preexisting instances represent native global types.  Add a
-set of native global types for MASL that are derived from the xtUML native
-types.  
+current set of preexisting instances represent built-in global types.  Add
+a set of built-in global types for MASL that are derived from the xtUML
+built-in types.  Each of the below are added to the Globals.xtuml file
+which contains the model pre-existing instance data for built-in types.  
 6.1.2 The following table lists the types that need to in place.  
-| UDT name | MASL type  | xtUML parent type | UUID                                 | parent UUID |  
-|----------|------------|-------------------|--------------------------------------|-------------|  
-| MASLtype | unassigned | string            | ba5eda7a-def5-0000-0000-000000000011 |             |  
-| MASLtype | unassigned | string            | ba5eda7a-def5-0000-0000-000000000011 |             |  
+
+MASL Type    | UDT Name      | parent          | UUID                  | parent UUID
+-------------|---------------|-----------------|-----------------------|-------------
+             | MASLtype      | string          | ba5eda7a-def5-...0011 | ba5eda...04
+void         | MASLvoid      | void            | ba5eda7a-def5-...0012 | ba5eda...00
+boolean      | MASLboolean   | boolean         | ba5eda7a-def5-...0013 | ba5eda...01
+integer      | MASLinteger   | integer         | ba5eda7a-def5-...0014 | ba5eda...02
+character    | MASLcharacter | integer         | ba5eda7a-def5-...0015 | ba5eda...02
+byte         | MASLbyte      | integer         | ba5eda7a-def5-...0016 | ba5eda...02
+long_integer | MASLlong      | integer         | ba5eda7a-def5-...0017 | ba5eda...02
+real         | MASLreal      | real            | ba5eda7a-def5-...0018 | ba5eda...03
+string       | MASLstring    | string          | ba5eda7a-def5-...0019 | ba5eda...04
+date         | MASLdate      | date            | ba5eda7a-def5-...001a | ba5eda...0e
+duration     | MASLduration  | integer         | ba5eda7a-def5-...001b | ba5eda...02
+timestamp    | MASLtimestamp | timestamp       | ba5eda7a-def5-...001c | ba5eda...10
+timer        | MASLtimer     | inst_ref<Timer> | ba5eda7a-def5-...001d | ba5eda...0f
+device       | MASLdevice    | MASLtype        | ba5eda7a-def5-...001e | ba5eda...11
+enum         | MASLenum      | MASLtype        | ba5eda7a-def5-...001f | ba5eda...11
+structure    | MASLduration  | MASLtype        | ba5eda7a-def5-...0020 | ba5eda...11
+instance     | MASLinstance  | MASLtype        | ba5eda7a-def5-...0021 | ba5eda...11
+
 
 7. Design Comments
 ------------------
-If research carried out during this phase shows that a requirement stated in the
-analysis note is infeasible or needs some modification, enumerate those changes
-here. If there was no preceding analysis note, then this section documents any
-deviations from the design as presented at the design review.
 
 8. Unit Test
 ------------
-Outline all the unit tests that need to pass and describe the method that you
-will use to design and perform the tests.
 
 End
 ---
