@@ -100,6 +100,7 @@
   .end if
 .end function
 .//
+.// java same
 .function val_literal_boolean_values
   .select many v_lbos from instances of V_LBO
   .for each v_lbo in v_lbos
@@ -109,6 +110,7 @@
   .end for
 .end function
 .//
+.// java same
 .function val_literal_string_values
   .select any te_string from instances of TE_STRING
   .select many v_lsts from instances of V_LST
@@ -132,6 +134,7 @@
   .end for
 .end function
 .//
+.// java same
 .function val_literal_integer_values
   .select many v_lins from instances of V_LIN
   .for each v_lin in v_lins
@@ -141,24 +144,31 @@
   .end for
 .end function
 .//
+.// java same
 .function val_literal_real_values
   .select many v_lrls from instances of V_LRL
   .for each v_lrl in v_lrls
     .select one te_val related by v_lrl->V_VAL[R801]->TE_VAL[R2040]
     .assign te_val.OAL = v_lrl.Value
-    .assign te_val.buffer = v_lrl.Value
+    .assign te_val.buffer = v_lrl.Value + "f"
   .end for
 .end function
 .//
 .function val_literal_enumerations
+  .select any te_target from instances of TE_TARGET
   .select many v_lens from instances of V_LEN
   .for each v_len in v_lens
     .select one te_val related by v_len->V_VAL[R801]->TE_VAL[R2040]
     .select one te_enum related by v_len->S_ENUM[R824]->TE_ENUM[R2027]
     .assign te_val.OAL = te_enum.Name
     .assign te_val.buffer = te_enum.GeneratedName
+    .if ( "Java" == te_target.language )
+      .assign te_val.buffer = te_enum.GeneratedName
+      $Cr{s_dt.Name}_c.$_{s_enum.Name}
+    .end if
   .end for
 .end function
+.select one enum related by p_enum_val->S_ENUM[R824]
 .//
 .function val_constant_values
   .select many v_scvs from instances of V_SCV
