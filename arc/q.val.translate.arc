@@ -168,7 +168,6 @@
     .end if
   .end for
 .end function
-.select one enum related by p_enum_val->S_ENUM[R824]
 .//
 .function val_constant_values
   .select many v_scvs from instances of V_SCV
