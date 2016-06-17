@@ -8645,7 +8645,7 @@ ooaofooa_WireSynchServiceOoaBridge( c_t * p_ee_key_letters, c_t * p_initiant, c_
 void
 ooaofooa_a0()
 {
-  ooaofooa_TE_C * te_c=0;ooaofooa_TE_SYS * te_sys=0;Escher_ObjectSet_s te_cs_space={0}; Escher_ObjectSet_s * te_cs = &te_cs_space;ooaofooa_S_DT * stringpointer_s_dt=0;
+  ooaofooa_TE_C * te_c=0;ooaofooa_TE_SYS * te_sys=0;ooaofooa_TE_TARGET * te_target=0;Escher_ObjectSet_s te_cs_space={0}; Escher_ObjectSet_s * te_cs = &te_cs_space;ooaofooa_S_DT * stringpointer_s_dt=0;
   /* ::parm_sort(  ) */
   ooaofooa_parm_sort();
   /* ::rel_pseudoformalize(  ) */
@@ -8697,6 +8697,44 @@ ooaofooa_a0()
     Escher_ClearSet( o_attrs );
   }
 mark_pass("1"); // Ccode
+  /* SELECT any te_target FROM INSTANCES OF TE_TARGET */
+  te_target = (ooaofooa_TE_TARGET *) Escher_SetGetAny( &pG_ooaofooa_TE_TARGET_extent.active );
+  /* IF ( ( not_empty te_target and ( te_target.language == Java ) ) ) */
+  if ( ( ( 0 != te_target ) && ( Escher_strcmp( te_target->language, "Java" ) == 0 ) ) ) {
+    ooaofooa_EP_PKG * root_pkg=0;ooaofooa_C_C * c_c=0;ooaofooa_PE_PE * pe_pe=0;
+    /* SELECT any root_pkg FROM INSTANCES OF EP_PKG WHERE ( SELECTED.Name == ooaofgraphics ) */
+    root_pkg = 0;
+    { ooaofooa_EP_PKG * selected;
+      Escher_Iterator_s iterroot_pkgooaofooa_EP_PKG;
+      Escher_IteratorReset( &iterroot_pkgooaofooa_EP_PKG, &pG_ooaofooa_EP_PKG_extent.active );
+      while ( (selected = (ooaofooa_EP_PKG *) Escher_IteratorNext( &iterroot_pkgooaofooa_EP_PKG )) != 0 ) {
+        if ( ( Escher_strcmp( selected->Name, "ooaofgraphics" ) == 0 ) ) {
+          root_pkg = selected;
+          break;
+        }
+      }
+    }
+    /* SELECT one pe_pe RELATED BY root_pkg->PE_PE[R8001] */
+    pe_pe = ( 0 != root_pkg ) ? root_pkg->PE_PE_R8001 : 0;
+    /* IF ( empty pe_pe ) */
+    if ( ( 0 == pe_pe ) ) {
+      /* CREATE OBJECT INSTANCE pe_pe OF PE_PE */
+      pe_pe = (ooaofooa_PE_PE *) Escher_CreateInstance( ooaofooa_DOMAIN_ID, ooaofooa_PE_PE_CLASS_NUMBER );
+      pe_pe->Element_ID = Escher_ID_factory();
+      /* RELATE root_pkg TO pe_pe ACROSS R8001 */
+      ooaofooa_EP_PKG_R8001_Link( pe_pe, root_pkg );
+    }
+    /* SELECT one c_c RELATED BY pe_pe->C_C[R8003] */
+    c_c = ( 0 != pe_pe ) ? pe_pe->C_C_R8003_contained_in : 0;
+    /* IF ( empty c_c ) */
+    if ( ( 0 == c_c ) ) {
+      /* CREATE OBJECT INSTANCE c_c OF C_C */
+      c_c = (ooaofooa_C_C *) Escher_CreateInstance( ooaofooa_DOMAIN_ID, ooaofooa_C_C_CLASS_NUMBER );
+      c_c->Id = Escher_ID_factory();
+      /* RELATE pe_pe TO c_c ACROSS R8003 */
+      ooaofooa_PE_PE_R8003_Link_contains( c_c, pe_pe );
+    }
+  }
   /* ::sys_populate(  ) */
   ooaofooa_sys_populate();
 mark_pass("2"); // Ccode

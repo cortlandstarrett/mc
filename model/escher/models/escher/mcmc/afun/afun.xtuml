@@ -56,6 +56,22 @@ if ( not_empty stringpointer_s_dt )
   ::MapDataTypeAsPointer( component_name:"*", dt_name:"stringpointer", pointer_type:"c_t", include_file:"" );
 end if;
 
+// if we are in Java mode, there will be no components. We must create one
+select any te_target from instances of TE_TARGET;
+if ( not_empty te_target and te_target.language == "Java" )
+  select any root_pkg from instances of EP_PKG where ( selected.Name == "ooaofgraphics" );
+  select one pe_pe related by root_pkg->PE_PE[R8001];
+  if ( empty pe_pe )
+    create object instance pe_pe of PE_PE;
+    relate root_pkg to pe_pe across R8001;
+  end if;
+  select one c_c related by pe_pe->C_C[R8003];
+  if ( empty c_c )
+    create object instance c_c of C_C;
+    relate pe_pe to c_c across R8003;
+  end if;
+end if;
+
 ::sys_populate();
 
 select any te_sys from instances of TE_SYS;
