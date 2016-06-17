@@ -676,9 +676,11 @@ ooaofooa_EP_PKG_getContainingPackage( ooaofooa_C_C * p_c_c )
  * Domain Function:  EnableJavaMode
  */
 void
-ooaofooa_EnableJavaMode()
+ooaofooa_EnableJavaMode( c_t * p_root_package )
 {
-  ooaofooa_TE_TARGET * te_target=0;
+  ooaofooa_TM_SYSTAG * tm_systag;ooaofooa_TM_SYSTAG * r;c_t * root_package=0;ooaofooa_TE_TARGET * te_target=0;
+  /* ASSIGN root_package = PARAM.root_package */
+  root_package = Escher_strcpy( root_package, p_root_package );
   /* SELECT any te_target FROM INSTANCES OF TE_TARGET */
   te_target = (ooaofooa_TE_TARGET *) Escher_SetGetAny( &pG_ooaofooa_TE_TARGET_extent.active );
   /* IF ( not_empty te_target ) */
@@ -686,6 +688,12 @@ ooaofooa_EnableJavaMode()
     /* ASSIGN te_target.language = Java */
     te_target->language = Escher_strcpy( te_target->language, "Java" );
   }
+  /* ASSIGN r = ::TM_SYSTAG_select() */
+  r = ooaofooa_TM_SYSTAG_select();
+  /* ASSIGN tm_systag = r */
+  tm_systag = r;
+  /* ASSIGN tm_systag.JavaRootPackage = root_package */
+  tm_systag->JavaRootPackage = Escher_strcpy( tm_systag->JavaRootPackage, root_package );
 }
 
 /*
@@ -8701,38 +8709,44 @@ mark_pass("1"); // Ccode
   te_target = (ooaofooa_TE_TARGET *) Escher_SetGetAny( &pG_ooaofooa_TE_TARGET_extent.active );
   /* IF ( ( not_empty te_target and ( te_target.language == Java ) ) ) */
   if ( ( ( 0 != te_target ) && ( Escher_strcmp( te_target->language, "Java" ) == 0 ) ) ) {
-    ooaofooa_EP_PKG * root_pkg=0;ooaofooa_C_C * c_c=0;ooaofooa_PE_PE * pe_pe=0;
-    /* SELECT any root_pkg FROM INSTANCES OF EP_PKG WHERE ( SELECTED.Name == ooaofgraphics ) */
+    ooaofooa_TM_SYSTAG * sys_tag;ooaofooa_EP_PKG * root_pkg=0;
+    /* ASSIGN sys_tag = ::TM_SYSTAG_select() */
+    sys_tag = ooaofooa_TM_SYSTAG_select();
+    /* SELECT any root_pkg FROM INSTANCES OF EP_PKG WHERE ( SELECTED.Name == sys_tag.JavaRootPackage ) */
     root_pkg = 0;
     { ooaofooa_EP_PKG * selected;
       Escher_Iterator_s iterroot_pkgooaofooa_EP_PKG;
       Escher_IteratorReset( &iterroot_pkgooaofooa_EP_PKG, &pG_ooaofooa_EP_PKG_extent.active );
       while ( (selected = (ooaofooa_EP_PKG *) Escher_IteratorNext( &iterroot_pkgooaofooa_EP_PKG )) != 0 ) {
-        if ( ( Escher_strcmp( selected->Name, "ooaofgraphics" ) == 0 ) ) {
+        if ( ( Escher_strcmp( selected->Name, sys_tag->JavaRootPackage ) == 0 ) ) {
           root_pkg = selected;
           break;
         }
       }
     }
-    /* SELECT one pe_pe RELATED BY root_pkg->PE_PE[R8001] */
-    pe_pe = ( 0 != root_pkg ) ? root_pkg->PE_PE_R8001 : 0;
-    /* IF ( empty pe_pe ) */
-    if ( ( 0 == pe_pe ) ) {
-      /* CREATE OBJECT INSTANCE pe_pe OF PE_PE */
-      pe_pe = (ooaofooa_PE_PE *) Escher_CreateInstance( ooaofooa_DOMAIN_ID, ooaofooa_PE_PE_CLASS_NUMBER );
-      pe_pe->Element_ID = Escher_ID_factory();
-      /* RELATE root_pkg TO pe_pe ACROSS R8001 */
-      ooaofooa_EP_PKG_R8001_Link( pe_pe, root_pkg );
-    }
-    /* SELECT one c_c RELATED BY pe_pe->C_C[R8003] */
-    c_c = ( 0 != pe_pe ) ? pe_pe->C_C_R8003_contained_in : 0;
-    /* IF ( empty c_c ) */
-    if ( ( 0 == c_c ) ) {
-      /* CREATE OBJECT INSTANCE c_c OF C_C */
-      c_c = (ooaofooa_C_C *) Escher_CreateInstance( ooaofooa_DOMAIN_ID, ooaofooa_C_C_CLASS_NUMBER );
-      c_c->Id = Escher_ID_factory();
-      /* RELATE pe_pe TO c_c ACROSS R8003 */
-      ooaofooa_PE_PE_R8003_Link_contains( c_c, pe_pe );
+    /* IF ( not_empty root_pkg ) */
+    if ( ( 0 != root_pkg ) ) {
+      ooaofooa_C_C * c_c=0;ooaofooa_PE_PE * pe_pe=0;
+      /* SELECT one pe_pe RELATED BY root_pkg->PE_PE[R8001] */
+      pe_pe = ( 0 != root_pkg ) ? root_pkg->PE_PE_R8001 : 0;
+      /* IF ( empty pe_pe ) */
+      if ( ( 0 == pe_pe ) ) {
+        /* CREATE OBJECT INSTANCE pe_pe OF PE_PE */
+        pe_pe = (ooaofooa_PE_PE *) Escher_CreateInstance( ooaofooa_DOMAIN_ID, ooaofooa_PE_PE_CLASS_NUMBER );
+        pe_pe->Element_ID = Escher_ID_factory();
+        /* RELATE root_pkg TO pe_pe ACROSS R8001 */
+        ooaofooa_EP_PKG_R8001_Link( pe_pe, root_pkg );
+      }
+      /* SELECT one c_c RELATED BY pe_pe->C_C[R8003] */
+      c_c = ( 0 != pe_pe ) ? pe_pe->C_C_R8003_contained_in : 0;
+      /* IF ( empty c_c ) */
+      if ( ( 0 == c_c ) ) {
+        /* CREATE OBJECT INSTANCE c_c OF C_C */
+        c_c = (ooaofooa_C_C *) Escher_CreateInstance( ooaofooa_DOMAIN_ID, ooaofooa_C_C_CLASS_NUMBER );
+        c_c->Id = Escher_ID_factory();
+        /* RELATE pe_pe TO c_c ACROSS R8003 */
+        ooaofooa_PE_PE_R8003_Link_contains( c_c, pe_pe );
+      }
     }
   }
   /* ::sys_populate(  ) */
@@ -11539,8 +11553,8 @@ ooaofooa_mark_all( c_t * p_f, c_t * p_p1, c_t * p_p2, c_t * p_p3, c_t * p_p4, c_
       ooaofooa_AssignDirectToUDTPackage( p1 );
     }
     else if ( ( Escher_strcmp( "EnableJavaMode", f ) == 0 ) ) {
-      /* ::EnableJavaMode(  ) */
-      ooaofooa_EnableJavaMode();
+      /* ::EnableJavaMode( root_package:p1 ) */
+      ooaofooa_EnableJavaMode( p1 );
     }
     else if ( ( Escher_strcmp( "EnableTasking", f ) == 0 ) ) {
       i_t i3;i_t r;

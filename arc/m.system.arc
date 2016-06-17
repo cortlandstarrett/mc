@@ -258,10 +258,14 @@
 .// Enable Java mode for mcmc
 .//============================================================================
 .function EnableJavaMode
+  .param string root_package
   .select any te_target from instances of TE_TARGET
   .if ( not_empty te_target )
     .assign te_target.language = "Java"
   .end if
+  .invoke r = TM_SYSTAG_select()
+  .assign tm_systag = r.result
+  .assign tm_systag.JavaRootPackage = root_package
 .end function
 .//
 .function mark_all
@@ -304,7 +308,7 @@
       .invoke AssignDirectToUDTPackage(p1)
     .// system
     .elif ( "EnableJavaMode" == f )
-      .invoke EnableJavaMode()
+      .invoke EnableJavaMode( p1 )
     .elif ( "EnableTasking" == f )
       .// EnableTasking("flavor","serialize","number_of_threads":integer)
       .invoke r = T_atoi( p3 )
