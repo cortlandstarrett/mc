@@ -59,7 +59,8 @@ end if;
 // if we are in Java mode, there will be no components. We must create one
 select any te_target from instances of TE_TARGET;
 if ( not_empty te_target and te_target.language == "Java" )
-  select any root_pkg from instances of EP_PKG where ( selected.Name == "ooaofgraphics" );
+  sys_tag = ::TM_SYSTAG_select();
+  select any root_pkg from instances of EP_PKG where ( selected.Name == sys_tag.JavaRootPackage );
   select one pe_pe related by root_pkg->PE_PE[R8001];
   if ( empty pe_pe )
     create object instance pe_pe of PE_PE;
