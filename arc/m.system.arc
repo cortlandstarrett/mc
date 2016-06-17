@@ -254,6 +254,16 @@
   .assign tm_systag.AllPortsPoly = true
 .end function
 .//
+.//============================================================================
+.// Enable Java mode for mcmc
+.//============================================================================
+.function EnableJavaMode
+  .select any te_target from instances of TE_TARGET
+  .if ( not_empty te_target )
+    .assign te_target.language = "Java"
+  .end if
+.end function
+.//
 .function mark_all
   .param string pass
   .param string f
@@ -293,6 +303,8 @@
       .// AssignDirectToUDTPackage("package_name")
       .invoke AssignDirectToUDTPackage(p1)
     .// system
+    .elif ( "EnableJavaMode" == f )
+      .invoke EnableJavaMode()
     .elif ( "EnableTasking" == f )
       .// EnableTasking("flavor","serialize","number_of_threads":integer)
       .invoke r = T_atoi( p3 )

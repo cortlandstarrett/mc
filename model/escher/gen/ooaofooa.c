@@ -673,6 +673,22 @@ ooaofooa_EP_PKG_getContainingPackage( ooaofooa_C_C * p_c_c )
 }
 
 /*
+ * Domain Function:  EnableJavaMode
+ */
+void
+ooaofooa_EnableJavaMode()
+{
+  ooaofooa_TE_TARGET * te_target=0;
+  /* SELECT any te_target FROM INSTANCES OF TE_TARGET */
+  te_target = (ooaofooa_TE_TARGET *) Escher_SetGetAny( &pG_ooaofooa_TE_TARGET_extent.active );
+  /* IF ( not_empty te_target ) */
+  if ( ( 0 != te_target ) ) {
+    /* ASSIGN te_target.language = Java */
+    te_target->language = Escher_strcpy( te_target->language, "Java" );
+  }
+}
+
+/*
  * Domain Function:  EnableTasking
  */
 void
@@ -11483,6 +11499,10 @@ ooaofooa_mark_all( c_t * p_f, c_t * p_p1, c_t * p_p2, c_t * p_p3, c_t * p_p4, c_
     else if ( ( Escher_strcmp( "AssignDirectToUDTPackage", f ) == 0 ) ) {
       /* ::AssignDirectToUDTPackage( package_name:p1 ) */
       ooaofooa_AssignDirectToUDTPackage( p1 );
+    }
+    else if ( ( Escher_strcmp( "EnableJavaMode", f ) == 0 ) ) {
+      /* ::EnableJavaMode(  ) */
+      ooaofooa_EnableJavaMode();
     }
     else if ( ( Escher_strcmp( "EnableTasking", f ) == 0 ) ) {
       i_t i3;i_t r;

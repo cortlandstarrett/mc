@@ -1951,6 +1951,16 @@ r = ::TM_SYSTAG_select();
 tm_systag = r;
 tm_systag.AllPortsPoly = true;
 @@@
+EnableJavaMode@void@@@
+//
+//============================================================================
+// Enable Java mode for mcmc
+//============================================================================
+select any te_target from instances of TE_TARGET;
+if ( not_empty te_target )
+  te_target.language = "Java";
+end if;
+@@@
 mark_all@void@@pass@string@@f@string@@p1@string@@p2@string@@p3@string@@p4@string@@p5@string@@@
 //
 pass = param.pass;
@@ -1991,6 +2001,8 @@ if ( "1" == pass )
     // AssignDirectToUDTPackage("package_name")
     ::AssignDirectToUDTPackage( package_name:p1 );
     // system
+  elif ( "EnableJavaMode" == f )
+    ::EnableJavaMode();
   elif ( "EnableTasking" == f )
     // EnableTasking("flavor","serialize","number_of_threads":integer)
     r = ::T_atoi( s:p3 );

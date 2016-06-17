@@ -79,6 +79,7 @@
 {"dma_factory","te_dma"},
 {"ee_insert","head_te_ee","te_ee"},
 {"ee_sort","te_ees"},
+{"EnableJavaMode"},
 {"EnableTasking","flavor","serialize","number_of_threads"},
 {"EP_PKG_getContainingPackage","c_c"},
 {"eq_factory","te_eq"},
