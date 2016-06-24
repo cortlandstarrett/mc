@@ -367,6 +367,7 @@ substitutionvariable:
         {char * p="i", * f=$2;
          if (0==strcmp(f,"")) {strcpy(sv[svi],P1($4));}
          else if (0==strcmp(f,"l")) {p="s";strcpy(sv[svi],P7("T::",f,"(",p,":",$4,")"));}
+         else if (0==strcmp(f,"c")) {p="s";strcpy(sv[svi],P7("T::",f,"(",p,":",$4,")"));}
          else if (0==strcmp(f,"r")) {p="s";strcpy(sv[svi],P7("T::",f,"(",p,":",$4,")"));}
          else if (0==strcmp(f,"t")) {f="s";p="i";strcpy(sv[svi],P7("T::",f,"(",p,":",$4,")"));}
          else if (0==strcmp(f,"u")) {p="s";strcpy(sv[svi],P7("T::",f,"(",p,":",$4,")"));}
