@@ -23788,7 +23788,9 @@ ooaofooa_val_instance_reference_values()
 void
 ooaofooa_val_literal_boolean_values()
 {
-  ooaofooa_V_LBO * v_lbo=0;Escher_ObjectSet_s v_lbos_space={0}; Escher_ObjectSet_s * v_lbos = &v_lbos_space;
+  ooaofooa_V_LBO * v_lbo=0;Escher_ObjectSet_s v_lbos_space={0}; Escher_ObjectSet_s * v_lbos = &v_lbos_space;ooaofooa_TE_TARGET * te_target=0;
+  /* SELECT any te_target FROM INSTANCES OF TE_TARGET */
+  te_target = (ooaofooa_TE_TARGET *) Escher_SetGetAny( &pG_ooaofooa_TE_TARGET_extent.active );
   /* SELECT many v_lbos FROM INSTANCES OF V_LBO */
   Escher_CopySet( v_lbos, &pG_ooaofooa_V_LBO_extent.active );
   /* FOR EACH v_lbo IN v_lbos */
@@ -23809,6 +23811,11 @@ ooaofooa_val_literal_boolean_values()
     te_val->OAL = Escher_strcpy( te_val->OAL, v_lbo->Value );
     /* ASSIGN te_val.buffer = v_lbo.Value */
     te_val->buffer = Escher_strcpy( te_val->buffer, v_lbo->Value );
+    /* IF ( ( Java == te_target.language ) ) */
+    if ( ( Escher_strcmp( "Java", te_target->language ) == 0 ) ) {
+      /* ASSIGN te_val.buffer = T::l(s:v_lbo.Value) */
+      te_val->buffer = Escher_strcpy( te_val->buffer, T_l( v_lbo->Value ) );
+    }
   }}}
   Escher_ClearSet( v_lbos );
 }
@@ -23819,7 +23826,9 @@ ooaofooa_val_literal_boolean_values()
 void
 ooaofooa_val_literal_enumerations()
 {
-  ooaofooa_V_LEN * v_len=0;Escher_ObjectSet_s v_lens_space={0}; Escher_ObjectSet_s * v_lens = &v_lens_space;
+  ooaofooa_V_LEN * v_len=0;Escher_ObjectSet_s v_lens_space={0}; Escher_ObjectSet_s * v_lens = &v_lens_space;ooaofooa_TE_TARGET * te_target=0;
+  /* SELECT any te_target FROM INSTANCES OF TE_TARGET */
+  te_target = (ooaofooa_TE_TARGET *) Escher_SetGetAny( &pG_ooaofooa_TE_TARGET_extent.active );
   /* SELECT many v_lens FROM INSTANCES OF V_LEN */
   Escher_CopySet( v_lens, &pG_ooaofooa_V_LEN_extent.active );
   /* FOR EACH v_len IN v_lens */
@@ -23847,6 +23856,34 @@ ooaofooa_val_literal_enumerations()
     te_val->OAL = Escher_strcpy( te_val->OAL, te_enum->Name );
     /* ASSIGN te_val.buffer = te_enum.GeneratedName */
     te_val->buffer = Escher_strcpy( te_val->buffer, te_enum->GeneratedName );
+    /* IF ( ( Java == te_target.language ) ) */
+    if ( ( Escher_strcmp( "Java", te_target->language ) == 0 ) ) {
+      c_t * enum_name=0;c_t * dt_name=0;c_t * capital_name=0;ooaofooa_S_DT * s_dt=0;ooaofooa_S_ENUM * s_enum=0;ooaofooa_V_VAL * v_val=0;
+      /* SELECT one v_val RELATED BY v_len->V_VAL[R801] */
+      v_val = ( 0 != v_len ) ? v_len->V_VAL_R801 : 0;
+      /* SELECT one s_enum RELATED BY v_len->S_ENUM[R824] */
+      s_enum = ( 0 != v_len ) ? v_len->S_ENUM_R824_has_value : 0;
+      /* SELECT any s_dt FROM INSTANCES OF S_DT WHERE ( SELECTED.DT_ID == v_val.DT_ID ) */
+      s_dt = 0;
+      { ooaofooa_S_DT * selected;
+        Escher_Iterator_s iters_dtooaofooa_S_DT;
+        Escher_IteratorReset( &iters_dtooaofooa_S_DT, &pG_ooaofooa_S_DT_extent.active );
+        while ( (selected = (ooaofooa_S_DT *) Escher_IteratorNext( &iters_dtooaofooa_S_DT )) != 0 ) {
+          if ( ( selected->DT_ID == v_val->DT_ID ) ) {
+            s_dt = selected;
+            break;
+          }
+        }
+      }
+      /* ASSIGN capital_name = T::c(s:s_dt.Name) */
+      capital_name = Escher_strcpy( capital_name, T_c( s_dt->Name ) );
+      /* ASSIGN dt_name = T::r(s:capital_name) */
+      dt_name = Escher_strcpy( dt_name, T_r( capital_name ) );
+      /* ASSIGN enum_name = T::underscore(s:s_enum.Name) */
+      enum_name = Escher_strcpy( enum_name, T_underscore( s_enum->Name ) );
+      /* ASSIGN te_val.buffer = ( ( dt_name + _c. ) + enum_name ) */
+      te_val->buffer = Escher_strcpy( te_val->buffer, Escher_stradd( Escher_stradd( dt_name, "_c." ), enum_name ) );
+    }
   }}}
   Escher_ClearSet( v_lens );
 }
@@ -23907,8 +23944,8 @@ ooaofooa_val_literal_real_values()
 }}}
     /* ASSIGN te_val.OAL = v_lrl.Value */
     te_val->OAL = Escher_strcpy( te_val->OAL, v_lrl->Value );
-    /* ASSIGN te_val.buffer = v_lrl.Value */
-    te_val->buffer = Escher_strcpy( te_val->buffer, v_lrl->Value );
+    /* ASSIGN te_val.buffer = ( v_lrl.Value + f ) */
+    te_val->buffer = Escher_strcpy( te_val->buffer, Escher_stradd( v_lrl->Value, "f" ) );
   }}}
   Escher_ClearSet( v_lrls );
 }

@@ -101,11 +101,15 @@ end if;
 @@@
 val_literal_boolean_values@void@@@
 //
+select any te_target from instances of TE_TARGET;
 select many v_lbos from instances of V_LBO;
 for each v_lbo in v_lbos
   select one te_val related by v_lbo->V_VAL[R801]->TE_VAL[R2040];
   te_val.OAL = v_lbo.Value;
   te_val.buffer = v_lbo.Value;
+  if ( "Java" == te_target.language )
+    te_val.buffer = T::l(s:v_lbo.Value);
+  end if;
 end for;
 @@@
 val_literal_string_values@void@@@
@@ -129,6 +133,7 @@ for each v_lst in v_lsts
   te_val.dimensions = 1;
   te_val.array_spec = ( "[" + te_string.max_string_length ) + "]";
   //TODO assign dimension
+  // java same
 end for;
 @@@
 val_literal_integer_values@void@@@
@@ -138,6 +143,7 @@ for each v_lin in v_lins
   select one te_val related by v_lin->V_VAL[R801]->TE_VAL[R2040];
   te_val.OAL = v_lin.Value;
   te_val.buffer = v_lin.Value;
+  // java same
 end for;
 @@@
 val_literal_real_values@void@@@
@@ -146,17 +152,28 @@ select many v_lrls from instances of V_LRL;
 for each v_lrl in v_lrls
   select one te_val related by v_lrl->V_VAL[R801]->TE_VAL[R2040];
   te_val.OAL = v_lrl.Value;
-  te_val.buffer = v_lrl.Value;
+  te_val.buffer = v_lrl.Value + "f";
+  // java same
 end for;
 @@@
 val_literal_enumerations@void@@@
 //
+select any te_target from instances of TE_TARGET;
 select many v_lens from instances of V_LEN;
 for each v_len in v_lens
   select one te_val related by v_len->V_VAL[R801]->TE_VAL[R2040];
   select one te_enum related by v_len->S_ENUM[R824]->TE_ENUM[R2027];
   te_val.OAL = te_enum.Name;
   te_val.buffer = te_enum.GeneratedName;
+  if ( "Java" == te_target.language )
+    select one v_val related by v_len->V_VAL[R801];
+    select one s_enum related by v_len->S_ENUM[R824];
+    select any s_dt from instances of S_DT where ( selected.DT_ID == v_val.DT_ID );
+    capital_name = T::c(s:s_dt.Name);
+    dt_name = T::r(s:capital_name);
+    enum_name = T::underscore(s:s_enum.Name);
+    te_val.buffer = dt_name + "_c." + enum_name;
+  end if;
 end for;
 @@@
 val_constant_values@void@@@

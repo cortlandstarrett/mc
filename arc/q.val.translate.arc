@@ -100,17 +100,19 @@
   .end if
 .end function
 .//
-.// java same
 .function val_literal_boolean_values
+  .select any te_target from instances of TE_TARGET
   .select many v_lbos from instances of V_LBO
   .for each v_lbo in v_lbos
     .select one te_val related by v_lbo->V_VAL[R801]->TE_VAL[R2040]
     .assign te_val.OAL = v_lbo.Value
     .assign te_val.buffer = v_lbo.Value
+    .if ( "Java" == te_target.language )
+      .assign te_val.buffer = "$l{v_lbo.Value}"
+    .end if
   .end for
 .end function
 .//
-.// java same
 .function val_literal_string_values
   .select any te_string from instances of TE_STRING
   .select many v_lsts from instances of V_LST
@@ -131,26 +133,27 @@
     .assign te_val.dimensions = 1
     .assign te_val.array_spec = ( "[" + te_string.max_string_length ) + "]"
     .//TODO assign dimension
+    .// java same
   .end for
 .end function
 .//
-.// java same
 .function val_literal_integer_values
   .select many v_lins from instances of V_LIN
   .for each v_lin in v_lins
     .select one te_val related by v_lin->V_VAL[R801]->TE_VAL[R2040]
     .assign te_val.OAL = v_lin.Value
     .assign te_val.buffer = v_lin.Value
+    .// java same
   .end for
 .end function
 .//
-.// java same
 .function val_literal_real_values
   .select many v_lrls from instances of V_LRL
   .for each v_lrl in v_lrls
     .select one te_val related by v_lrl->V_VAL[R801]->TE_VAL[R2040]
     .assign te_val.OAL = v_lrl.Value
     .assign te_val.buffer = v_lrl.Value + "f"
+    .// java same
   .end for
 .end function
 .//
@@ -163,8 +166,13 @@
     .assign te_val.OAL = te_enum.Name
     .assign te_val.buffer = te_enum.GeneratedName
     .if ( "Java" == te_target.language )
-      .assign te_val.buffer = te_enum.GeneratedName
-      $Cr{s_dt.Name}_c.$_{s_enum.Name}
+      .select one v_val related by v_len->V_VAL[R801]
+      .select one s_enum related by v_len->S_ENUM[R824]
+      .select any s_dt from instances of S_DT where ( selected.DT_ID == v_val.DT_ID )
+      .assign capital_name = "$c{s_dt.Name}"
+      .assign dt_name = "$r{capital_name}"
+      .assign enum_name = "$_{s_enum.Name}"
+      .assign te_val.buffer = dt_name + "_c." + enum_name
     .end if
   .end for
 .end function
