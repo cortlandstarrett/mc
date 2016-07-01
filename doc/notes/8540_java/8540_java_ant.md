@@ -78,7 +78,7 @@ need to be modified to check for the `TE_ABA` instances.
 
 MC-Java also translates some function blocks for UI actions and CME pre-existing
 instance data. In this case, a Java version of `mcmc` would not be desirable
-because the generated output is ot generic Java. `mcmc` will need to be extended
+because the generated output is not generic Java. `mcmc` will need to be extended
 to check for these situations and leave `ACT_` and `V_` instances for these
 functions.
 
