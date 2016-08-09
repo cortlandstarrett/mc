@@ -53,7 +53,7 @@ INSERT INTO GD_GE
 	"15343df7-4335-41a1-93bf-5b14dcf08e0b",
 	108,
 	0,
-	'maslin::maslin');
+	'maslin::masl2xtuml');
 INSERT INTO GD_SHP
 	VALUES ("15a0cccd-04aa-4483-b58a-62ef8c2eb979");
 INSERT INTO GD_NCS
