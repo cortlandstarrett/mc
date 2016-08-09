@@ -128,7 +128,7 @@ INSERT INTO O_ATTR
 	"c3444c03-ef4a-4796-9a59-dcc972c23be8",
 	"5ff08e8e-782d-41af-850c-1ee8e1f414cd",
 	'identifier1',
-        '',
+	'',
 	'',
 	'identifier1',
 	0,
