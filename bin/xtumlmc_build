@@ -1247,12 +1247,32 @@ sub xtuml2masl
 
   # if the eclipse flag is not set, run the pre-builder
   if ( $eclipse eq "" ) {
-    print STDERR "Invoking BridgePoint pre-builder...\n";
     # the WORKSPACE env variable is expected to be set properly
     my ($volume, $directory, $file) = File::Spec->splitpath(__FILE__);
+    my $input_count = 0;
     foreach my $inproj (@inputs) {
       my $proj = basename($inproj);
-      system( "$directory/CLI.sh Build -prebuildOnly -doNotParse -project $proj " );
+      if ( 0 < $num_proj[$input_count] ) {
+        print STDERR "Invoking BridgePoint pre-builder on project $proj...\n";
+        system( "$directory/CLI.sh Build -prebuildOnly -doNotParse -project $proj " );
+      } else {
+        print STDERR "Scooping domain into sql file for $proj...\n";
+        # Accumulate model data.
+        if ( ! -e "$inproj/gen" ) {
+          xtumlmc_mkdir( "$inproj/gen" );
+        }
+        if ( ! -e "$inproj/gen/code_generation" ) {
+          xtumlmc_mkdir( "$inproj/gen/code_generation" );
+        } else {
+          xtumlmc_rm( "$inproj/gen/code_generation/$proj.sql");
+        }
+        &ConvertMultiFileToSingleFile ( "$inproj/models", "$inproj/gen/code_generation/$proj.sql" );
+        # Get the global native types.
+        my $mc_bin_dir = abs_path( dirname($0) );
+        my $globaltypes = glob("$mc_bin_dir/../../../plugins/org.xtuml.bp.pkg*/globals/Globals.xtuml");
+        xtumlmc_copy( "$globaltypes","$inproj/gen/code_generation/globals.sql");
+      }
+      $input_count++;
     }
   }
 
