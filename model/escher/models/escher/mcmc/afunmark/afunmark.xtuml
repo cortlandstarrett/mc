@@ -2431,7 +2431,7 @@ INSERT INTO S_DT_PROXY
 	'inst_ref<Interface Instance>',
 	'',
 	'',
-	'../../../../../mcooa/models/mcooa/extensions/Translation Extensions/Translation Extensions.xtuml');
+	'../../../../../mcooa/models/mcooa/extensions/TranslationExtensions/TranslationExtensions.xtuml');
 INSERT INTO S_SPARM
 	VALUES ("28253e5f-43ae-49e7-a2e8-b3d003d611de",
 	"21ec9e43-baa6-44df-ba90-701eb7476d79",
@@ -3919,7 +3919,7 @@ INSERT INTO S_DT_PROXY
 	'inst_ref_set<Extended Port>',
 	'',
 	'',
-	'../../../../../mcooa/models/mcooa/extensions/Translation Extensions/Translation Extensions.xtuml');
+	'../../../../../mcooa/models/mcooa/extensions/TranslationExtensions/TranslationExtensions.xtuml');
 INSERT INTO S_SPARM
 	VALUES ("be2dc5e5-42f4-4b66-aa8a-b6c9cdc1c6a6",
 	"d9b877a6-0289-49a9-8533-151998565aec",
@@ -4734,7 +4734,7 @@ INSERT INTO S_DT_PROXY
 	'inst_ref<System Tags>',
 	'',
 	'',
-	'../../../../../mcooa/models/mcooa/extensions/Translation Marking/Translation Marking.xtuml');
+	'../../../../../mcooa/models/mcooa/extensions/TranslationMarking/TranslationMarking.xtuml');
 INSERT INTO S_SYNC
 	VALUES ("e5353e6f-bb1a-408c-9acb-417f3a6755f2",
 	"00000000-0000-0000-0000-000000000000",

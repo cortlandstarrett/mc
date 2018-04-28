@@ -70,7 +70,7 @@ INSERT INTO S_DT_PROXY
 	'inst_ref<Extended Class>',
 	'',
 	'',
-	'../../../../../mcooa/models/mcooa/extensions/Translation Extensions/Translation Extensions.xtuml');
+	'../../../../../mcooa/models/mcooa/extensions/TranslationExtensions/TranslationExtensions.xtuml');
 INSERT INTO PE_PE
 	VALUES ("d1c8a8b3-9285-43a2-88a3-9e6184d20a70",
 	1,
@@ -615,7 +615,7 @@ INSERT INTO S_DT_PROXY
 	'inst_ref<Extended Block>',
 	'',
 	'',
-	'../../../../../mcooa/models/mcooa/extensions/Translation OAL/Translation OAL.xtuml');
+	'../../../../../mcooa/models/mcooa/extensions/TranslationOAL/TranslationOAL.xtuml');
 INSERT INTO S_SPARM
 	VALUES ("2d026605-bd1e-458d-83c0-2b9b9183cb7e",
 	"9a8f61e1-582a-4334-9e42-3a7f05776533",
@@ -631,7 +631,7 @@ INSERT INTO S_DT_PROXY
 	'inst_ref<Action Block Anchor>',
 	'',
 	'',
-	'../../../../../mcooa/models/mcooa/extensions/Translation Extensions/Translation Extensions.xtuml');
+	'../../../../../mcooa/models/mcooa/extensions/TranslationExtensions/TranslationExtensions.xtuml');
 INSERT INTO PE_PE
 	VALUES ("9a8f61e1-582a-4334-9e42-3a7f05776533",
 	1,
@@ -667,7 +667,7 @@ INSERT INTO S_DT_PROXY
 	'inst_ref<Extended Statement>',
 	'',
 	'',
-	'../../../../../mcooa/models/mcooa/extensions/Translation OAL/Translation OAL.xtuml');
+	'../../../../../mcooa/models/mcooa/extensions/TranslationOAL/TranslationOAL.xtuml');
 INSERT INTO S_SPARM
 	VALUES ("72824680-65b6-4a64-b35a-50ea684c8334",
 	"0ecd7884-0f91-4a1d-8f04-5c602e6dbe54",
@@ -3512,7 +3512,7 @@ INSERT INTO S_DT_PROXY
 	'inst_ref<Extended Message Action>',
 	'',
 	'',
-	'../../../../../mcooa/models/mcooa/extensions/Translation Extensions/Translation Extensions.xtuml');
+	'../../../../../mcooa/models/mcooa/extensions/TranslationExtensions/TranslationExtensions.xtuml');
 INSERT INTO S_SPARM
 	VALUES ("e3f36c09-1051-493a-9671-ddc45610cb72",
 	"04c15c15-2533-46d2-b998-18f04eeb2863",

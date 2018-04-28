@@ -32,7 +32,7 @@ INSERT INTO GD_GE
 	"08381c43-a334-45bd-a718-37cccb80c24f",
 	108,
 	0,
-	'mcooa::extensions::Translation Extensions');
+	'mcooa::extensions::TranslationExtensions');
 INSERT INTO GD_SHP
 	VALUES ("72b2f97f-1782-4b95-bf43-e143ff1a722c");
 INSERT INTO GD_NCS
@@ -56,7 +56,7 @@ INSERT INTO GD_GE
 	"81da0a01-baff-4b20-9ddb-851a1ffd35c5",
 	108,
 	0,
-	'mcooa::extensions::Translation Marking');
+	'mcooa::extensions::TranslationMarking');
 INSERT INTO GD_SHP
 	VALUES ("c70998f2-7c78-446a-8f6d-06b846b25009");
 INSERT INTO GD_NCS
@@ -80,7 +80,7 @@ INSERT INTO GD_GE
 	"04e90aa8-ed7d-405a-9a83-0e8aef728977",
 	108,
 	0,
-	'mcooa::extensions::Translation OAL');
+	'mcooa::extensions::TranslationOAL');
 INSERT INTO GD_SHP
 	VALUES ("f9cbf76a-cf3f-4e93-9e9e-68c5d70cac6a");
 INSERT INTO GD_NCS
