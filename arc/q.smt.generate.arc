@@ -251,6 +251,13 @@
   .if ( not_empty v_pvl )
     .assign is_parameter = true
   .end if
+.select one s_range related by l_v_val->S_DT[R820]->S_UDT[R17]->S_RANGE[R57]
+.if ( not_empty s_range )
+  .// CDS - need to find here whether to use integer or real range callout.
+  .// Alternately, place the range check in the parameter list.
+  .// Alternately, place the range check here and only call the callout upon failure using a trigraph.
+  .assign te_assign.rval = "UserIntegerRangeCallout(${te_assign.rval},${s_range.Min},${s_range.Max})"
+.end if
   .include "${te_file.arc_path}/t.smt.assign.c"
   .assign te_smt.OAL = "ASSIGN ${l_te_val.OAL} = ${r_te_val.OAL}"
 .end function

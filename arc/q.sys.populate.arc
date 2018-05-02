@@ -1468,7 +1468,8 @@
           .assign dim_index = dim_index + 1
         .end while
         .assign te_attr.array_spec = array_spec
-        .select one te_dt related by o_attr->S_DT[R114]->TE_DT[R2021]
+        .select one s_dt related by o_attr->S_DT[R114]
+        .select one te_dt related by s_dt->TE_DT[R2021]
         .// Potentially substitute data type for base attribute data type.
         .if ( 7 == te_dt.Core_Typ )
           .// referential attribute
@@ -1476,6 +1477,11 @@
           .assign te_dt = r2.result
         .end if
         .assign te_attr.GeneratedType = te_dt.ExtName
+        .if ( "" == te_attr.DefaultValue )
+          .if ( "" != s_dt.DefaultValue )
+            .assign te_attr.DefaultValue = te_dt.Initial_Value
+          .end if
+        .end if
         .assign o_attr_Descrip_Persistent = "${o_attr.Descrip:Persistent}"
         .if ( o_attr_Descrip_Persistent != "false" )
           .if ( 5 == te_dt.Core_Typ )

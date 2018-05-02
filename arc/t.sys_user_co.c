@@ -262,4 +262,23 @@ ${te_callout.persistence_error}f( i_t error_code )
   /* Insert implementation specific code here.  */
   SYS_USER_CO_PRINTF( "${te_callout.persistence_error}\n" )
 }
+
+/* CDS document me */
+i_t UserIntegerRangeCallout( i_t value, i_t minimum, i_t maximum )
+{
+  /* Insert implementation specific code here.  */
+  if ((value<minimum)||(maximum<value)) {
+    SYS_USER_CO_PRINTF( "UserIntegerRangeCallout" )
+  }
+  return value;
+}
+/* CDS document me */
+r_t UserRealRangeCallout( r_t value, r_t minimum, r_t maximum )
+{
+  /* Insert implementation specific code here.  */
+  if ((value<minimum)||(maximum<value)) {
+    SYS_USER_CO_PRINTF( "UserRealRangeCallout" )
+  }
+  return value;
+}
 .//

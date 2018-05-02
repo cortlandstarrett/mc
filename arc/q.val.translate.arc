@@ -220,6 +220,17 @@
     .if ( 10 == te_dt.Core_Typ )
       .// Cast event types to the base event type for passing (to timers).
       .assign te_val.buffer = ( "(" + te_dt.ExtName ) + ( ")" + te_val.buffer )
+    .else
+.// CDS - Do range checking here.
+.select one te_dt related by te_par->TE_PARM[R2091]->TE_DT[R2049]->S_DT[R2021]
+.select one s_range related by te_dt->S_UDT[R17]->S_RANGE[R57]
+.if ( not_empty s_range )
+  .// CDS - need to find here whether to use integer or real range callout.
+  .// Alternately, place the range check in the parameter list.
+  .// Alternately, place the range check here and only call the callout upon failure using a trigraph.
+  .assign te_val.buffer = "UserIntegerRangeCallout(${te_val.buffer},${s_range.Min},${s_range.Max})"
+  .print "CDS - debug FOUND Range for ${v_par.Name} ${te_dt.Name}"
+.end if
     .end if
   .end for
 .end function
