@@ -304,8 +304,11 @@ void ${te_callout.persistence_error}f( i_t );
 #define ${te_callout.persistence_error}( i1 ) ${te_callout.persistence_error}f( i1 )
 #endif
 
-i_t UserIntegerRangeCallout( i_t, i_t, i_t );
-r_t UserRealRangeCallout( r_t, r_t, r_t );
+i_t Escher_range_check_integer( const i_t, const i_t, const i_t );
+r_t Escher_range_check_real( const r_t, const r_t, const r_t );
+/* CDS - document me
+ */
+void UserRangeCallout( c_t * );
 
 ${te_target.c2cplusplus_linkage_end}
 #endif  /* ${te_prefix.define_usw}$u{te_file.callout}_$u{te_file.hdr_file_ext} */

@@ -221,16 +221,14 @@
       .// Cast event types to the base event type for passing (to timers).
       .assign te_val.buffer = ( "(" + te_dt.ExtName ) + ( ")" + te_val.buffer )
     .else
-.// CDS - Do range checking here.
-.select one te_dt related by te_par->TE_PARM[R2091]->TE_DT[R2049]->S_DT[R2021]
-.select one s_range related by te_dt->S_UDT[R17]->S_RANGE[R57]
-.if ( not_empty s_range )
-  .// CDS - need to find here whether to use integer or real range callout.
-  .// Alternately, place the range check in the parameter list.
-  .// Alternately, place the range check here and only call the callout upon failure using a trigraph.
-  .assign te_val.buffer = "UserIntegerRangeCallout(${te_val.buffer},${s_range.Min},${s_range.Max})"
-  .print "CDS - debug FOUND Range for ${v_par.Name} ${te_dt.Name}"
-.end if
+      .select one l_s_range related by te_par->TE_PARM[R2091]->TE_DT[R2049]->S_DT[R2021]->S_UDT[R17]->S_RANGE[R57]
+      .if ( not_empty l_s_range )
+        .select one r_s_range related by v_val->S_DT[R820]->S_UDT[R17]->S_RANGE[R57]
+        .if ( empty r_s_range )
+          .// CDS - Maybe we need to range check even when r_s_range exists but is different from l_s_range?
+          .assign te_val.buffer = "Escher_range_check_integer( " + te_val.buffer + ", " + l_s_range.Min + ", " + l_s_range.Max + " )"
+        .end if
+      .end if
     .end if
   .end for
 .end function
@@ -566,6 +564,13 @@
       .else
         .assign te_val.buffer = ( ( "( " + l_te_val.buffer ) + ( " " + v_bin.Operator ) ) + ( ( " " + r_te_val.buffer ) + " )" )
       .end if
+    .end if
+    .// The range constraint comes from the result V_VAL.  This means that
+    .// the MC is using what the OAL parser tells us.  Determining the type
+    .// of the resulting value is the job of the parser before us.
+    .select one s_range related by v_bin->V_VAL[R801]->S_DT[R820]->S_UDT[R17]->S_RANGE[R57]
+    .if ( not_empty s_range )
+      .assign te_val.buffer = "Escher_range_check_integer( " + te_val.buffer + ", " + s_range.Min + ", " + s_range.Max + " )"
     .end if
     .// future support for vector arithmetic goes here
     .assign te_val.dimensions = r_te_val.dimensions

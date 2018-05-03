@@ -251,13 +251,16 @@
   .if ( not_empty v_pvl )
     .assign is_parameter = true
   .end if
-.select one s_range related by l_v_val->S_DT[R820]->S_UDT[R17]->S_RANGE[R57]
-.if ( not_empty s_range )
-  .// CDS - need to find here whether to use integer or real range callout.
-  .// Alternately, place the range check in the parameter list.
-  .// Alternately, place the range check here and only call the callout upon failure using a trigraph.
-  .assign te_assign.rval = "UserIntegerRangeCallout(${te_assign.rval},${s_range.Min},${s_range.Max})"
-.end if
+  .select one l_s_range related by l_v_val->S_DT[R820]->S_UDT[R17]->S_RANGE[R57]
+  .if ( not_empty l_s_range )
+    .if ( not_empty l_s_range )
+      .select one r_s_range related by r_v_val->S_DT[R820]->S_UDT[R17]->S_RANGE[R57]
+      .if ( empty r_s_range )
+        .// CDS - Maybe we need to range check even when r_s_range exists but is different from l_s_range?
+        .assign te_assign.rval = "Escher_range_check_integer( " + te_assign.rval + ", " + l_s_range.Min + ", " + l_s_range.Max + " )"
+      .end if
+    .end if
+  .end if
   .include "${te_file.arc_path}/t.smt.assign.c"
   .assign te_smt.OAL = "ASSIGN ${l_te_val.OAL} = ${r_te_val.OAL}"
 .end function

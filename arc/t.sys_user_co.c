@@ -263,22 +263,30 @@ ${te_callout.persistence_error}f( i_t error_code )
   SYS_USER_CO_PRINTF( "${te_callout.persistence_error}\n" )
 }
 
-/* CDS document me */
-i_t UserIntegerRangeCallout( i_t value, i_t minimum, i_t maximum )
+i_t Escher_range_check_integer( const i_t val, const i_t min, const i_t max )
+{
+  if ( ( val < min ) || ( max < val ) ) {
+    UserRangeCallout( "integer value out of range" );
+  }
+  return val;
+}
+r_t Escher_range_check_real( const r_t val, const r_t min, const r_t max )
+{
+  if ( ( val < min ) || ( max < val ) ) {
+    UserRangeCallout( "real value out of range" );
+  }
+  return val;
+}
+/*
+ * CDS - document me
+ * te_callout.range
+ *
+ * This function is invoked when a value is found out of range.
+ */
+void UserRangeCallout( c_t * message )
 {
   /* Insert implementation specific code here.  */
-  if ((value<minimum)||(maximum<value)) {
-    SYS_USER_CO_PRINTF( "UserIntegerRangeCallout" )
-  }
-  return value;
+  SYS_USER_CO_PRINTF( "UserRangeCallout" )
 }
-/* CDS document me */
-r_t UserRealRangeCallout( r_t value, r_t minimum, r_t maximum )
-{
-  /* Insert implementation specific code here.  */
-  if ((value<minimum)||(maximum<value)) {
-    SYS_USER_CO_PRINTF( "UserRealRangeCallout" )
-  }
-  return value;
-}
+
 .//
