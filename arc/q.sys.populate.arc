@@ -514,6 +514,47 @@
     .end if
   .end for
   .//
+  .// Initialize information for enumeration data types.
+  .select many s_edts from instances of S_EDT
+  .for each s_edt in s_edts
+    .select one s_dt related by s_edt->S_DT[R17]
+    .select one te_dt related by s_dt->TE_DT[R2021]
+    .// NOTE: We should allow the size of an enum to be colored.
+    .// For now use small type.
+    .if ( te_sys.AUTOSAR )
+      .assign te_dt.ExtName = "en_" + te_dt.Name 
+    .elif ( "C" == te_target.language )
+      .assign te_dt.ExtName = ( te_sys.Name + "_" ) + ( te_dt.Name + "_t" )
+    .else
+      .assign te_dt.ExtName = te_dt.Name + "_t"
+    .end if
+    .// CDS We should some day pass along the EDT.
+    .assign te_dt.Core_Typ = 2
+    .assign te_dt.Is_Enum = true 
+    .assign te_dt.Initial_Value = ( te_dt.Owning_Dom_Name + "_" ) + ( te_dt.Name + "__UNINITIALIZED__e" )
+    .assign te_dt.Value = "-1"
+    .assign te_dt.string_format = "%d"
+    .if ( te_dt.Owning_Dom_Name == "sys" )
+      .assign te_dt.Include_File = ( te_file.types + "." ) + te_file.hdr_file_ext
+    .end if
+    .//
+    .// Create the Generated Enumerators and link them to the real ones.
+    .select many s_enums related by s_edt->S_ENUM[R27]
+    .for each s_enum in s_enums
+      .create object instance te_enum of TE_ENUM
+      .relate s_enum to te_enum across R2027
+      .assign te_enum.Name = s_enum.Name
+      .assign te_enum.GeneratedName = ( ( te_dt.Owning_Dom_Name + "_" ) + ( te_dt.Name + "_" ) ) + ( "$r{te_enum.Name}" + "_e" )
+      .assign value = "${s_enum.Descrip:value}"
+      .if ( "" == value )
+        .assign value = "${s_enum.Descrip:Value}"
+        .if ( "" == value )
+          .assign value = "${s_enum.Descrip:VALUE}"
+        .end if
+      .end if
+      .assign te_enum.Value = value
+    .end for
+  .end for
   .// Initialize information for user data types.
   .select many s_udts from instances of S_UDT
   .for each s_udt in s_udts
@@ -561,47 +602,6 @@
     .end if
   .end for
   .//
-  .// Initialize information for enumeration data types.
-  .select many s_edts from instances of S_EDT
-  .for each s_edt in s_edts
-    .select one s_dt related by s_edt->S_DT[R17]
-    .select one te_dt related by s_dt->TE_DT[R2021]
-    .// NOTE: We should allow the size of an enum to be colored.
-    .// For now use small type.
-    .if ( te_sys.AUTOSAR )
-      .assign te_dt.ExtName = "en_" + te_dt.Name 
-    .elif ( "C" == te_target.language )
-      .assign te_dt.ExtName = ( te_sys.Name + "_" ) + ( te_dt.Name + "_t" )
-    .else
-      .assign te_dt.ExtName = te_dt.Name + "_t"
-    .end if
-    .// CDS We should some day pass along the EDT.
-    .assign te_dt.Core_Typ = 2
-    .assign te_dt.Is_Enum = true 
-    .assign te_dt.Initial_Value = ( te_dt.Owning_Dom_Name + "_" ) + ( te_dt.Name + "__UNINITIALIZED__e" )
-    .assign te_dt.Value = "-1"
-    .assign te_dt.string_format = "%d"
-    .if ( te_dt.Owning_Dom_Name == "sys" )
-      .assign te_dt.Include_File = ( te_file.types + "." ) + te_file.hdr_file_ext
-    .end if
-    .//
-    .// Create the Generated Enumerators and link them to the real ones.
-    .select many s_enums related by s_edt->S_ENUM[R27]
-    .for each s_enum in s_enums
-      .create object instance te_enum of TE_ENUM
-      .relate s_enum to te_enum across R2027
-      .assign te_enum.Name = s_enum.Name
-      .assign te_enum.GeneratedName = ( ( te_dt.Owning_Dom_Name + "_" ) + ( te_dt.Name + "_" ) ) + ( "$r{te_enum.Name}" + "_e" )
-      .assign value = "${s_enum.Descrip:value}"
-      .if ( "" == value )
-        .assign value = "${s_enum.Descrip:Value}"
-        .if ( "" == value )
-          .assign value = "${s_enum.Descrip:VALUE}"
-        .end if
-      .end if
-      .assign te_enum.Value = value
-    .end for
-  .end for
   .//
   .// Initialize structured data types.
   .select many s_sdts from instances of S_SDT
