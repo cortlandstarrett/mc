@@ -377,6 +377,19 @@ ${rendered_relationships}
       .include "${te_file.arc_path}/t.class.ops.c"
     .end if
   .end if
+.//
+.//
+.//
+.//
+
+.invoke r = A2L_class_attribute_offsets( te_class, te_c )
+${r.body}
+
+
+.//
+.//
+.//
+.//
 ${object_extent.body}\
   .//
   .// *** Active object specifics section
@@ -473,3 +486,112 @@ ${file_epilogue.body}
   .end for
 .end function
 .//
+.//
+.//
+.//
+.//
+.//
+.//
+.function A2L_class_attribute_offsets
+  .param inst_ref te_class
+  .param inst_ref te_c
+  .select one o_obj related by te_class->O_OBJ[R2019]
+  .invoke obj_data_class = A2L_class_data( o_obj )
+${obj_data_class.body}
+.end function
+.function A2L_class_data
+  .param inst_ref o_obj
+  .select any te_instance from instances of TE_INSTANCE
+  .select any te_target from instances of TE_TARGET
+  .select any te_typemap from instances of TE_TYPEMAP
+  .select one te_class related by o_obj->TE_CLASS[R2019]
+  .select one sm_ism related by o_obj->SM_ISM[R518]
+  .assign cs = ""
+  .assign offset = 0
+  .if ( not_empty sm_ism )
+    .assign cs = "  ${te_typemap.state_number_name} ${te_instance.current_state} offset:0 size:1 UBYTE,"
+    .assign offset = 1
+  .end if
+  .invoke data_members = A2L_attribute_members( te_class, offset )
+  .assign abody = ""
+  .assign abody = abody + data_members.body
+  .//
+/* 
+  Copyright ClearMotion
+  A2L offsets and sizes for ${te_class.Name}(${te_class.Key_Lett}) {
+${cs}
+${abody}
+  };
+*/
+.end function
+.function A2L_attribute_members
+  .param inst_ref te_class
+  .param integer offset_in
+  .assign offset = offset_in
+  .assign size = 1
+  .assign flavor = "UBYTE"
+  .select any te_string from instances of TE_STRING
+  .// get first attribute
+  .select any te_attr related by te_class->TE_ATTR[R2061]
+  .while ( not_empty te_attr )
+    .select one prev_te_attr related by te_attr->TE_ATTR[R2087.'succeeds']
+    .if ( empty prev_te_attr )
+      .break while
+    .end if
+    .assign te_attr = prev_te_attr
+  .end while
+  .while ( not_empty te_attr )
+    .select one o_attr related by te_attr->O_ATTR[R2033]
+    .select one te_dt related by o_attr->S_DT[R114]->TE_DT[R2021]
+    .if ( te_dt.Core_Typ != 6 )
+      .if ( te_attr.translate )
+        .if ( te_dt.Core_Typ == 0 )
+          .// void
+          .assign size = 0
+          .assign flavor = ""
+        .elif ( te_dt.Core_Typ == 1 )
+          .// boolean
+          .assign size = 1
+          .assign flavor = "UBYTE"
+        .elif ( te_dt.Core_Typ == 2 )
+          .// integer
+          .assign size = 4
+          .assign flavor = "SLONG"
+        .elif ( te_dt.Core_Typ == 3 )
+          .// real
+          .assign size = 8
+          .assign flavor = "FLOAT64_IEEE"
+        .elif ( te_dt.Core_Typ == 4 )
+          .// string
+          .assign size = 32
+          .assign flavor = "UBYTE"
+        .elif ( te_dt.Core_Typ == 5 )
+          .// unique_id
+          .assign size = 4
+          .assign flavor = "ULONG"
+        .elif ( te_dt.Core_Typ == 6 )
+          .// current_state
+          .assign size = 1
+          .assign flavor = "UBYTE"
+        .else
+          .// instance reference
+          .assign size = 4
+          .assign flavor = "UWORD"
+        .end if
+        .assign bit_field_width = "${o_attr.Descrip:BIT_WIDTH}"
+        .if ( "${bit_field_width}" != "" )
+          .assign size = 2
+          .assign flavor = UWORD
+  ui_t ${te_attr.GeneratedName} : ${bit_field_width} offset:${offset} size:${size} ${flavor},
+        .else
+  ${te_attr.GeneratedType} ${te_attr.GeneratedName}${te_attr.array_spec} offset:${offset} size:${size} ${flavor},
+        .end if
+      .else
+  ${comment}  /* OPTIMIZED OUT */
+      .end if
+    .end if
+    .assign offset = offset + size
+    .// Advance to the next object attribute, if any.
+    .select one te_attr related by te_attr->TE_ATTR[R2087.'precedes']
+  .end while
+.end function
