@@ -1,0 +1,123 @@
+-- BP 7.1.6 content: Package syschar: 3 persistence-version: 7.1.6
+
+INSERT INTO EP_PKG
+	VALUES ("587196fc-7ae0-45f9-a463-1ad134d910e9",
+	"00000000-0000-0000-0000-000000000000",
+	"e723b935-5b1b-4926-84a0-65dfa762079a",
+	'parse_listener_hooks',
+	'Functions in this package have the naming convention:
+"<production_rule>_[enter|exit]" and are executed by the parser when the
+matching production rule is entered/exited. Each function must have the four
+parameters "start_line", "start_column", "end_line", "end_column", and
+"rule_text". The remaining parameters must correspond exactly to the terminal
+nodes in the order the are defined in the production rule. Each of these token
+parameters must be of type "string" and is populated with the exact text matched
+by the lexer. All of these functions must return void.',
+	0);
+INSERT INTO GD_MD
+	VALUES ("a81703f1-bda5-465b-8291-bcf29b79ec06",
+	112,
+	"587196fc-7ae0-45f9-a463-1ad134d910e9",
+	108,
+	0,
+	0,
+	1,
+	1,
+	1,
+	12,
+	1,
+	0,
+	0,
+	0,
+	0,
+	0,
+	'',
+	'aslloader::load::parse_listener_hooks');
+INSERT INTO DIM_DIA
+	VALUES ("a81703f1-bda5-465b-8291-bcf29b79ec06",
+	'',
+	1.000000,
+	0.000000,
+	0.000000,
+	"00000000-0000-0000-0000-000000000000");
+INSERT INTO S_SYNC
+	VALUES ("bef7f46d-e13e-4a32-9716-f82114ece1c4",
+	"00000000-0000-0000-0000-000000000000",
+	'statement_exit',
+	'',
+	'',
+	"ba5eda7a-def5-0000-0000-000000000000",
+	3,
+	'',
+	0,
+	1);
+INSERT INTO S_SPARM
+	VALUES ("c9c7ba41-5707-4166-80ef-87cbb6905207",
+	"bef7f46d-e13e-4a32-9716-f82114ece1c4",
+	'start_line',
+	"ba5eda7a-def5-0000-0000-000000000002",
+	0,
+	'',
+	"00000000-0000-0000-0000-000000000000",
+	'');
+INSERT INTO S_SPARM
+	VALUES ("20267b1a-4c13-48a2-92b7-dcca182f7308",
+	"bef7f46d-e13e-4a32-9716-f82114ece1c4",
+	'end_line',
+	"ba5eda7a-def5-0000-0000-000000000002",
+	0,
+	'',
+	"3bedee5b-d607-490b-b6fa-79b02f10ecb1",
+	'');
+INSERT INTO S_SPARM
+	VALUES ("3bedee5b-d607-490b-b6fa-79b02f10ecb1",
+	"bef7f46d-e13e-4a32-9716-f82114ece1c4",
+	'start_column',
+	"ba5eda7a-def5-0000-0000-000000000002",
+	0,
+	'',
+	"c9c7ba41-5707-4166-80ef-87cbb6905207",
+	'');
+INSERT INTO S_SPARM
+	VALUES ("c99c4695-040a-4da4-86c8-3127b58d651b",
+	"bef7f46d-e13e-4a32-9716-f82114ece1c4",
+	'end_column',
+	"ba5eda7a-def5-0000-0000-000000000002",
+	0,
+	'',
+	"20267b1a-4c13-48a2-92b7-dcca182f7308",
+	'');
+INSERT INTO S_SPARM
+	VALUES ("8083f327-8df4-4eca-a6c0-6e0f95bfedeb",
+	"bef7f46d-e13e-4a32-9716-f82114ece1c4",
+	'rule_text',
+	"ba5eda7a-def5-0000-0000-000000000004",
+	0,
+	'',
+	"c99c4695-040a-4da4-86c8-3127b58d651b",
+	'');
+INSERT INTO PE_PE
+	VALUES ("bef7f46d-e13e-4a32-9716-f82114ece1c4",
+	1,
+	"587196fc-7ae0-45f9-a463-1ad134d910e9",
+	"00000000-0000-0000-0000-000000000000",
+	1);
+INSERT INTO PE_PE
+	VALUES ("587196fc-7ae0-45f9-a463-1ad134d910e9",
+	1,
+	"879fbd63-0df8-4e06-9e47-92fcc3371e13",
+	"00000000-0000-0000-0000-000000000000",
+	7);
+INSERT INTO EP_PKG_PROXY
+	VALUES ("879fbd63-0df8-4e06-9e47-92fcc3371e13",
+	"e723b935-5b1b-4926-84a0-65dfa762079a",
+	"e723b935-5b1b-4926-84a0-65dfa762079a",
+	'load',
+	'',
+	0,
+	'../load.xtuml');
+INSERT INTO S_SYS_PROXY
+	VALUES ("e723b935-5b1b-4926-84a0-65dfa762079a",
+	'aslloader',
+	1,
+	'../../aslloader.xtuml');

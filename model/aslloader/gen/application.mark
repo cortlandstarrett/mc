@@ -1,0 +1,2 @@
+*,RootPackage,*,aslloader::test
+test::ASLLoader,InitFunction,Component,init

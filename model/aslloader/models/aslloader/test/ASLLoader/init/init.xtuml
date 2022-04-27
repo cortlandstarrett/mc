@@ -1,0 +1,97 @@
+-- BP 7.1.6 content: Package syschar: 3 persistence-version: 7.1.6
+
+INSERT INTO EP_PKG
+	VALUES ("e349e333-c901-47e9-9379-fcb97371a971",
+	"00000000-0000-0000-0000-000000000000",
+	"e723b935-5b1b-4926-84a0-65dfa762079a",
+	'init',
+	'',
+	0);
+INSERT INTO GD_MD
+	VALUES ("ae5fff23-b22f-4e21-be02-1bca8d39440c",
+	112,
+	"e349e333-c901-47e9-9379-fcb97371a971",
+	108,
+	0,
+	0,
+	1,
+	1,
+	1,
+	12,
+	1,
+	0,
+	0,
+	0,
+	0,
+	0,
+	'',
+	'aslloader::test::ASLLoader::init');
+INSERT INTO DIM_DIA
+	VALUES ("ae5fff23-b22f-4e21-be02-1bca8d39440c",
+	'',
+	1.000000,
+	0.000000,
+	0.000000,
+	"00000000-0000-0000-0000-000000000000");
+INSERT INTO S_SYNC
+	VALUES ("487c0b3b-5cdc-4da8-893e-5d225534ba57",
+	"00000000-0000-0000-0000-000000000000",
+	'init',
+	'',
+	'LOG::LogInfo(message:"Initializing ASL loader...");
+
+// Set up command line for input MASL file.
+CMD::register_value(name:"i", value_name:"input", usage:"Path to a ASL file", default_value:"", required:true);
+CMD::read_command_line();
+
+// TODO: initialize PEI here (e.g. built in types)
+
+// Parse and load input ASL
+LOG::LogInfo( message: "Parsing ASL..." );
+args[1] = CMD::get_value(name:"i");
+args[0] = "-i";
+LOAD::load(java_class:"org.xtuml.aslloader.parser.AslImportParser", args:args);
+
+// TODO: perform post-load resolution tasks (e.g. resolving referential attributes)
+
+// Print out a summary
+LOG::LogInfo(message:"ASL summary:");
+select many statements from instances of AslStatement;
+LOG::LogInfo(message:"    " + STRING::itoa(i:cardinality statements) + " statements");
+
+// Exit
+control stop;',
+	"ba5eda7a-def5-0000-0000-000000000000",
+	1,
+	'',
+	0,
+	1);
+INSERT INTO PE_PE
+	VALUES ("487c0b3b-5cdc-4da8-893e-5d225534ba57",
+	1,
+	"e349e333-c901-47e9-9379-fcb97371a971",
+	"00000000-0000-0000-0000-000000000000",
+	1);
+INSERT INTO PE_PE
+	VALUES ("e349e333-c901-47e9-9379-fcb97371a971",
+	1,
+	"00000000-0000-0000-0000-000000000000",
+	"eb0373a3-7e29-4967-8cca-2818465b2620",
+	7);
+INSERT INTO C_C_PROXY
+	VALUES ("eb0373a3-7e29-4967-8cca-2818465b2620",
+	"00000000-0000-0000-0000-000000000000",
+	"00000000-0000-0000-0000-000000000000",
+	'ASLLoader',
+	'',
+	0,
+	"00000000-0000-0000-0000-000000000000",
+	0,
+	'',
+	'',
+	'../ASLLoader.xtuml');
+INSERT INTO S_SYS_PROXY
+	VALUES ("e723b935-5b1b-4926-84a0-65dfa762079a",
+	'aslloader',
+	1,
+	'../../../aslloader.xtuml');

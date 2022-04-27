@@ -1,0 +1,69 @@
+-- BP 7.1.6 content: Package syschar: 3 persistence-version: 7.1.6
+
+INSERT INTO EP_PKG
+	VALUES ("9eeb4c80-776d-4693-89a0-4c429c3a3eb6",
+	"00000000-0000-0000-0000-000000000000",
+	"e723b935-5b1b-4926-84a0-65dfa762079a",
+	'load',
+	'',
+	0);
+INSERT INTO GD_MD
+	VALUES ("56774ba9-bb0f-4b81-bae0-1eed791d634f",
+	112,
+	"9eeb4c80-776d-4693-89a0-4c429c3a3eb6",
+	108,
+	0,
+	0,
+	1,
+	1,
+	1,
+	12,
+	1,
+	0,
+	0,
+	0,
+	0,
+	0,
+	'',
+	'aslloader::test::ASLLoader::load');
+INSERT INTO DIM_DIA
+	VALUES ("56774ba9-bb0f-4b81-bae0-1eed791d634f",
+	'',
+	1.000000,
+	0.000000,
+	0.000000,
+	"00000000-0000-0000-0000-000000000000");
+INSERT INTO EP_PKGREF
+	VALUES ("9eeb4c80-776d-4693-89a0-4c429c3a3eb6",
+	"879fbd63-0df8-4e06-9e47-92fcc3371e13");
+INSERT INTO EP_PKG_PROXY
+	VALUES ("879fbd63-0df8-4e06-9e47-92fcc3371e13",
+	"e723b935-5b1b-4926-84a0-65dfa762079a",
+	"e723b935-5b1b-4926-84a0-65dfa762079a",
+	'load',
+	'',
+	0,
+	'../../../load/load.xtuml');
+INSERT INTO PE_PE
+	VALUES ("9eeb4c80-776d-4693-89a0-4c429c3a3eb6",
+	1,
+	"00000000-0000-0000-0000-000000000000",
+	"eb0373a3-7e29-4967-8cca-2818465b2620",
+	7);
+INSERT INTO C_C_PROXY
+	VALUES ("eb0373a3-7e29-4967-8cca-2818465b2620",
+	"00000000-0000-0000-0000-000000000000",
+	"00000000-0000-0000-0000-000000000000",
+	'ASLLoader',
+	'',
+	0,
+	"00000000-0000-0000-0000-000000000000",
+	0,
+	'',
+	'',
+	'../ASLLoader.xtuml');
+INSERT INTO S_SYS_PROXY
+	VALUES ("e723b935-5b1b-4926-84a0-65dfa762079a",
+	'aslloader',
+	1,
+	'../../../aslloader.xtuml');
