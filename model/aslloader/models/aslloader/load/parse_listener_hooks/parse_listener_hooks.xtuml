@@ -8,11 +8,11 @@ INSERT INTO EP_PKG
 	'Functions in this package have the naming convention:
 "<production_rule>_[enter|exit]" and are executed by the parser when the
 matching production rule is entered/exited. Each function must have the four
-parameters "start_line", "start_column", "end_line", "end_column", and
-"rule_text". The remaining parameters must correspond exactly to the terminal
-nodes in the order the are defined in the production rule. Each of these token
-parameters must be of type "string" and is populated with the exact text matched
-by the lexer. All of these functions must return void.',
+parameters "filename", "start_line", "start_column", and "rule_text". The
+remaining parameters must correspond exactly to the terminal nodes in the order
+the are defined in the production rule. Each of these token parameters must be
+of type "string" and is populated with the exact text matched by the lexer. All
+of these functions must return void.',
 	0);
 INSERT INTO GD_MD
 	VALUES ("a81703f1-bda5-465b-8291-bcf29b79ec06",
@@ -31,7 +31,7 @@ INSERT INTO GD_MD
 	0,
 	0,
 	0,
-	'',
+	'4.1.17',
 	'aslloader::load::parse_listener_hooks');
 INSERT INTO DIM_DIA
 	VALUES ("a81703f1-bda5-465b-8291-bcf29b79ec06",
@@ -45,9 +45,11 @@ INSERT INTO S_SYNC
 	"00000000-0000-0000-0000-000000000000",
 	'statement_exit',
 	'',
-	'',
+	'LOG::LogInfo(message:"Loading statement: " + param.Identifier);
+create object instance smt of AslStatement;
+smt.line_number = param.start_line;',
 	"ba5eda7a-def5-0000-0000-000000000000",
-	3,
+	1,
 	'',
 	0,
 	1);
@@ -58,16 +60,7 @@ INSERT INTO S_SPARM
 	"ba5eda7a-def5-0000-0000-000000000002",
 	0,
 	'',
-	"00000000-0000-0000-0000-000000000000",
-	'');
-INSERT INTO S_SPARM
-	VALUES ("20267b1a-4c13-48a2-92b7-dcca182f7308",
-	"bef7f46d-e13e-4a32-9716-f82114ece1c4",
-	'end_line',
-	"ba5eda7a-def5-0000-0000-000000000002",
-	0,
-	'',
-	"3bedee5b-d607-490b-b6fa-79b02f10ecb1",
+	"e3cd64f4-d11c-40e2-b8c0-aee6e7c984db",
 	'');
 INSERT INTO S_SPARM
 	VALUES ("3bedee5b-d607-490b-b6fa-79b02f10ecb1",
@@ -79,22 +72,49 @@ INSERT INTO S_SPARM
 	"c9c7ba41-5707-4166-80ef-87cbb6905207",
 	'');
 INSERT INTO S_SPARM
-	VALUES ("c99c4695-040a-4da4-86c8-3127b58d651b",
-	"bef7f46d-e13e-4a32-9716-f82114ece1c4",
-	'end_column',
-	"ba5eda7a-def5-0000-0000-000000000002",
-	0,
-	'',
-	"20267b1a-4c13-48a2-92b7-dcca182f7308",
-	'');
-INSERT INTO S_SPARM
 	VALUES ("8083f327-8df4-4eca-a6c0-6e0f95bfedeb",
 	"bef7f46d-e13e-4a32-9716-f82114ece1c4",
 	'rule_text',
 	"ba5eda7a-def5-0000-0000-000000000004",
 	0,
 	'',
-	"c99c4695-040a-4da4-86c8-3127b58d651b",
+	"3bedee5b-d607-490b-b6fa-79b02f10ecb1",
+	'');
+INSERT INTO S_SPARM
+	VALUES ("e3cd64f4-d11c-40e2-b8c0-aee6e7c984db",
+	"bef7f46d-e13e-4a32-9716-f82114ece1c4",
+	'filename',
+	"ba5eda7a-def5-0000-0000-000000000004",
+	0,
+	'',
+	"00000000-0000-0000-0000-000000000000",
+	'');
+INSERT INTO S_SPARM
+	VALUES ("e901ef36-8213-43db-8959-7a473165d5d4",
+	"bef7f46d-e13e-4a32-9716-f82114ece1c4",
+	'SMT',
+	"ba5eda7a-def5-0000-0000-000000000004",
+	0,
+	'',
+	"8083f327-8df4-4eca-a6c0-6e0f95bfedeb",
+	'');
+INSERT INTO S_SPARM
+	VALUES ("f54b17d3-f4f1-4b0c-98bf-2fa1c867c99b",
+	"bef7f46d-e13e-4a32-9716-f82114ece1c4",
+	'SEMI',
+	"ba5eda7a-def5-0000-0000-000000000004",
+	0,
+	'',
+	"7295c9b1-30ed-473f-be30-8a313dff3b6d",
+	'');
+INSERT INTO S_SPARM
+	VALUES ("7295c9b1-30ed-473f-be30-8a313dff3b6d",
+	"bef7f46d-e13e-4a32-9716-f82114ece1c4",
+	'Identifier',
+	"ba5eda7a-def5-0000-0000-000000000004",
+	0,
+	'',
+	"e901ef36-8213-43db-8959-7a473165d5d4",
 	'');
 INSERT INTO PE_PE
 	VALUES ("bef7f46d-e13e-4a32-9716-f82114ece1c4",
