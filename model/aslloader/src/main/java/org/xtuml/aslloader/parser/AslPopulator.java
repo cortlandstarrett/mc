@@ -1,5 +1,7 @@
 package org.xtuml.aslloader.parser;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import io.ciera.runtime.instanceloading.generic.util.LOAD;
 import io.ciera.runtime.summit.exceptions.XtumlException;
 
@@ -16,6 +18,7 @@ class AslPopulator extends AslParserBaseListener {
   @Override
   public void exitStatement(AslParser.StatementContext ctx) {
     call_function(
+        ctx,
         "statement_exit",
         filename,
         ctx.start.getLine(),
@@ -26,12 +29,16 @@ class AslPopulator extends AslParserBaseListener {
         ctx.SEMI() != null ? ctx.SEMI().getText() : "");
   }
 
-  private Object call_function(String function_name, Object... args) {
+  private Object call_function(ParserRuleContext ctx, String function_name, Object... args) {
     try {
       return loader.call_function(function_name, args);
     } catch (XtumlException e) {
-      // TODO better handling of error here
-      e.printStackTrace();
+      Throwable e1 = e;
+      if (e.getCause() != null && e.getCause().getCause() != null) {
+        e1 = e.getCause().getCause();
+      }
+      new RuntimeException("Semantic error at: " + filename + ":" + ctx.getStart().getLine(), e1)
+          .printStackTrace();
       System.exit(1);
       return null;
     }
