@@ -26,7 +26,7 @@ class AslPopulator extends AslParserBaseListener {
         ctx.getText(),
         ctx.SMT() != null ? ctx.SMT().getText() : "",
         ctx.Identifier() != null ? ctx.Identifier().getText() : "",
-        ctx.SEMI() != null ? ctx.SEMI().getText() : "");
+        ctx.NEWLINE() != null ? ctx.NEWLINE().getText() : "");
   }
 
   private Object call_function(ParserRuleContext ctx, String function_name, Object... args) {
