@@ -35,7 +35,6 @@ DEFAULT                       : 'default';
 DEFINE                        : 'define';
 DELETE                        : 'delete';
 DELETE_TIMER                  : 'Delete_Timer';
-DESCRIPTION                   : '#$DESCRIPTION' NEWLINE; // begin free text description
 DISUNION_OF                   : 'disunion-of';
 DIV                           : '/';
 DO                            : 'do';
@@ -49,9 +48,6 @@ ENDIF                         : 'endif';
 ENDLOOP                       : 'endloop';
 ENDSWITCH                     : 'endswitch';
 ENDUSE                        : '$ENDUSE';
-END_DESCRIPTION               : '#$END_DESCRIPTION' NEWLINE; // end free text description
-END_TOKENH                    : '#$END_TOKENH'; // stop eating high, ignore?
-END_TOKENL                    : '#$END_TOKENL'; // stop eating low, ignore?
 EQUALS                        : '=' | 'equals';
 ERROR                         : 'ERROR';
 EVENT                         : 'event';
@@ -112,8 +108,6 @@ TEXT                          : 'Base_Text_Type';
 THEN                          : 'then';
 THIS                          : 'this';
 TO                            : 'to';
-TOKENH                        : '#$TOKENH'; // eat more stuff?
-TOKENL                        : '#$TOKENL'; // eat stuff?
 TRUE                          : 'TRUE';
 UNASSOCIATE                   : 'unassociate';
 UNDEFINED                     : 'UNDEFINED';
@@ -127,11 +121,21 @@ WITH                          : 'with';
 
 SMT : 'statement';
 
+Identifier                    : ( Letter | '_' ) ( Letter | Digit | '_' )*;
+StringLiteral                 : '"' ( ~('\\'|'"') )* '"';
+IntegerLiteral                : Digit+;
+RealLiteral                   : Digit+
+                                ( ('.' Digit+)
+                                | UnbasedExponent
+                                )
+                              | '.' Digit+ UnbasedExponent?
+                              ;
+fragment UnbasedExponent      : ('e'|'E')('+'|'-')? Digit+ ;
 fragment Digit                : '0'..'9';
 fragment Letter               : 'A'..'Z' | 'a'..'z';
-StringLiteral                 : '"' ( ~('\\'|'"') )* '"';
-Identifier                    : ( Letter | '_' ) ( Letter | Digit | '_' )*;
 Continue_line                 : '\\' (' ' | '\t' | '\f' | '\r' )* NEWLINE -> skip;
+Description                   : '#$DESCRIPTION' .*? '#$END_DESCRIPTION' NEWLINE -> skip; // TODO:  parse req IDs
+TokenH                        : '#$TOKENH' .*? '#$END_TOKENH' NEWLINE -> skip; // TODO:  eat stuff?
+TokenL                        : '#$TOKENL' .*? '#$END_TOKENL' NEWLINE -> skip; // TODO:  eat stuff?
 Comment                       : '#' ~[\r\n]* NEWLINE -> skip;
 Whitespace                    : (' ' | '\t' | '\f' )+ -> skip;
-Description                   : DESCRIPTION END_DESCRIPTION;

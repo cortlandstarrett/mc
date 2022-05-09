@@ -16,17 +16,17 @@ class AslPopulator extends AslParserBaseListener {
   }
 
   @Override
-  public void exitStatement(AslParser.StatementContext ctx) {
+  public void exitAssignStatement(AslParser.AssignStatementContext ctx) {
     call_function(
         ctx,
-        "statement_exit",
+        "assignStatement_exit",
         filename,
         ctx.start.getLine(),
         ctx.start.getCharPositionInLine(),
         ctx.getText(),
-        ctx.SMT() != null ? ctx.SMT().getText() : "",
         ctx.Identifier() != null ? ctx.Identifier().getText() : "",
-        ctx.NEWLINE() != null ? ctx.NEWLINE().getText() : "");
+        ctx.EQUALS() != null ? ctx.EQUALS().getText() : "",
+        ctx.expression() != null ? ctx.expression().getText() : "");
   }
 
   private Object call_function(ParserRuleContext ctx, String function_name, Object... args) {

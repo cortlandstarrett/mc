@@ -43,9 +43,9 @@ INSERT INTO DIM_DIA
 INSERT INTO S_SYNC
 	VALUES ("bef7f46d-e13e-4a32-9716-f82114ece1c4",
 	"00000000-0000-0000-0000-000000000000",
-	'statement_exit',
+	'assignStatement_exit',
 	'',
-	'LOG::LogInfo(message:"Loading statement: " + param.Identifier);
+	'LOG::LogInfo( message:"Loading statement: " + param.Identifier ); //+ param.EQUALS + param.expression );
 create object instance smt of AslStatement;
 smt.line_number = param.start_line;',
 	"ba5eda7a-def5-0000-0000-000000000000",
@@ -92,7 +92,7 @@ INSERT INTO S_SPARM
 INSERT INTO S_SPARM
 	VALUES ("e901ef36-8213-43db-8959-7a473165d5d4",
 	"bef7f46d-e13e-4a32-9716-f82114ece1c4",
-	'SMT',
+	'Identifier',
 	"ba5eda7a-def5-0000-0000-000000000004",
 	0,
 	'',
@@ -101,7 +101,7 @@ INSERT INTO S_SPARM
 INSERT INTO S_SPARM
 	VALUES ("f54b17d3-f4f1-4b0c-98bf-2fa1c867c99b",
 	"bef7f46d-e13e-4a32-9716-f82114ece1c4",
-	'SEMI',
+	'expression',
 	"ba5eda7a-def5-0000-0000-000000000004",
 	0,
 	'',
@@ -110,7 +110,7 @@ INSERT INTO S_SPARM
 INSERT INTO S_SPARM
 	VALUES ("7295c9b1-30ed-473f-be30-8a313dff3b6d",
 	"bef7f46d-e13e-4a32-9716-f82114ece1c4",
-	'Identifier',
+	'EQUALS',
 	"ba5eda7a-def5-0000-0000-000000000004",
 	0,
 	'',

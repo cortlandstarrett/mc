@@ -5,11 +5,15 @@ output \
         The_Return_Value:Base_Integer_Type
 
 #$DESCRIPTION
+some desription text here
 #$END_DESCRIPTION
 
 # comment
 statement hello
 # another comment
 statement world
+a = 1
+b = 1.1
+c = "hello"
 
 enddefine

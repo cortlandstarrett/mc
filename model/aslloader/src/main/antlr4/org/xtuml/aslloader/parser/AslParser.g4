@@ -31,5 +31,12 @@ functionName                  : Identifier DOUBLE_COLON Identifier;
 parameterName                 : Identifier;
 parameterType                 : Identifier | INTEGER | REAL | BOOLEAN;
 statement                     : SMT Identifier NEWLINE
+                              | assignStatement NEWLINE
                               | Description
+                              ;
+assignStatement               : Identifier EQUALS expression;
+expression                    : Identifier
+                              | IntegerLiteral
+                              | RealLiteral
+                              | StringLiteral
                               ;
