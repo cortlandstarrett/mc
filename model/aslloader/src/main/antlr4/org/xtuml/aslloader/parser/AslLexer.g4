@@ -40,6 +40,7 @@ DIV                           : '/';
 DO                            : 'do';
 DOT                           : '.';
 DOUBLE_COLON                  : '::';
+DOUBLE_DOT                    : '..';
 DQUOTE                        : '"';
 ELSE                          : 'else';
 ENDDEFINE                     : 'enddefine';
@@ -118,6 +119,7 @@ USE                           : '$USE';
 USING                         : 'using';
 WHERE                         : 'where';
 WITH                          : 'with';
+XOR                           : 'xor';
 
 SMT : 'statement';
 
