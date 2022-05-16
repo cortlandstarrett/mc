@@ -36,7 +36,7 @@ DEFINE                        : 'define';
 DELETE                        : 'delete';
 DELETE_TIMER                  : 'Delete_Timer';
 DISUNION_OF                   : 'disunion-of';
-DIV                           : '/';
+SLASH                         : '/';
 DO                            : 'do';
 DOT                           : '.';
 DOUBLE_COLON                  : '::';
@@ -121,10 +121,11 @@ WHERE                         : 'where';
 WITH                          : 'with';
 XOR                           : 'xor';
 
-SMT : 'statement';
-
+RelationshipName              : 'R' '1'..'9' Digit*;
 Identifier                    : ( Letter | '_' ) ( Letter | Digit | '_' )*;
+SetIdentifier                 : '{' ( Letter | '_' ) ( Letter | Digit | '_' )* '}';
 StringLiteral                 : '"' ( ~('\\'|'"') )* '"';
+EnumerationLiteral            : '\'' ( Letter | Digit | '_' )+ '\'';
 IntegerLiteral                : Digit+;
 RealLiteral                   : Digit+
                                 ( ('.' Digit+)

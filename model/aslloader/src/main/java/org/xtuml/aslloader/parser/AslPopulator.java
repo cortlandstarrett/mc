@@ -24,7 +24,7 @@ class AslPopulator extends AslParserBaseListener {
         ctx.start.getLine(),
         ctx.start.getCharPositionInLine(),
         ctx.getText(),
-        ctx.Identifier() != null ? ctx.Identifier().getText() : "",
+        ctx.identifier() != null ? ctx.identifier().getText() : "",
         ctx.EQUALS() != null ? ctx.EQUALS().getText() : "",
         ctx.expression() != null ? ctx.expression().getText() : "");
   }

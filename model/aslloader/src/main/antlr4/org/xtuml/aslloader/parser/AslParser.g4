@@ -12,34 +12,69 @@ bodyDefinition                : actionDefinition
                               ;
 
 //---------------------------------------------------------
-// action body definitions
+// action bodies
 //---------------------------------------------------------
-actionDefinition              : DEFINE ACTION functionName NEWLINE blockInput blockOutput statement* ENDDEFINE
-                              ;
-bridgeDefinition              : DEFINE BRIDGE functionName NEWLINE blockInput blockOutput statement* ENDDEFINE
-                              ;
-functionDefinition            : DEFINE FUNCTION functionName NEWLINE blockInput blockOutput statement* ENDDEFINE
-                              ;
-scenarioDefinition            : DEFINE SCENARIO functionName NEWLINE blockInput blockOutput statement* ENDDEFINE
-                              ;
+actionDefinition              : DEFINE ACTION functionName NEWLINE blockInput blockOutput statement* ENDDEFINE;
+bridgeDefinition              : DEFINE BRIDGE functionName NEWLINE blockInput blockOutput statement* ENDDEFINE;
+functionDefinition            : DEFINE FUNCTION functionName NEWLINE blockInput blockOutput statement* ENDDEFINE;
+scenarioDefinition            : DEFINE SCENARIO functionName NEWLINE blockInput blockOutput statement* ENDDEFINE;
 blockInput                    : INPUT blockParameters NEWLINE;
 blockOutput                   : OUTPUT blockParameters NEWLINE;
-blockParameters               : parameterDefinition? ( NEWLINE parameterDefinition )*
-                              ;
+blockParameters               : parameterDefinition? ( NEWLINE parameterDefinition )*;
 parameterDefinition           : parameterName COLON parameterType;
-functionName                  : Identifier DOUBLE_COLON Identifier;
-parameterName                 : Identifier;
-parameterType                 : Identifier | INTEGER | REAL | BOOLEAN;
+functionName                  : identifier DOUBLE_COLON identifier;
+parameterName                 : identifier;
+parameterType                 : identifier | INTEGER | REAL | BOOLEAN;
 
 //---------------------------------------------------------
 // Statement
 //---------------------------------------------------------
-statement                     : SMT Identifier NEWLINE
-                              | assignStatement NEWLINE
+statement                     : assignStatement NEWLINE
+                              | createExpression NEWLINE
+                              | deleteStatement NEWLINE
+                              | linkStatement NEWLINE
                               | Description
                               ;
-assignStatement               : Identifier EQUALS expression; // TODO:  change to constExpression
+assignStatement               : identifier EQUALS expression;
+deleteStatement               : DELETE expression
+                              | DELETE objectName WHERE whereClause
+                              ;
+linkStatement                 : linkType
+                                lhs=identifier relationshipName
+                                (
+                                  rhs=navigateExpression
+                                  (USING assoc=navigateExpression)?
+                                )?
+                              ;
+relationshipSpec              : relationshipReference ( DOT objOrRole=identifier (DOT objectReference)? )?;
+relationshipName              : RelationshipName;
+relationshipReference         : relationshipName;
 
+//---------------------------------------------------------
+// Find Condition  ... CDS can skip postfix, next is link.  Put link statements in test.asl.
+//---------------------------------------------------------
+findCondition                     : findLogicalOr;
+findLogicalOr                     : lhs=findLogicalOr OR rhs=findLogicalXor
+                                  | findLogicalXor
+                                  ;
+findLogicalXor                    : lhs=findLogicalXor XOR rhs=findLogicalAnd
+                                  | findLogicalAnd
+                                  ;
+findLogicalAnd                    : lhs=findLogicalAnd AND rhs=findPrimary
+                                  | findPrimary
+                                  ;
+findPrimary                       : findComparison
+                                  | findUnary
+                                  ;
+findUnary                         : NOT findUnary
+                                  | LEFT_PARENTHESIS findCondition RIGHT_PARENTHESIS
+                                  ;
+findComparison                    : lhs=findName ( EQUALS | NOT_EQUALS | LESS_THAN | GREATER_THAN | LESS_THAN_OR_EQUAL_TO | GREATER_THAN_OR_EQUAL_TO  ) rhs=additiveExp;
+findName                          : att=identifier
+                                    ( DOT comp=identifier
+                                    | LEFT_SQUARE_BRACKET expression RIGHT_SQUARE_BRACKET
+                                    )*
+                                  ;
 
 //---------------------------------------------------------
 // Expression
@@ -65,20 +100,50 @@ relationalExp                 : lhs=relationalExp ( LESS_THAN | GREATER_THAN | L
 additiveExp                   : lhs=additiveExp ( PLUS | MINUS ) rhs=multExp
                               | multExp
                               ;
-multExp                       : lhs=multExp ( STAR | SLASH | MOD | CARAT ) rhs=unaryExp
+multExp                       : lhs=multExp ( STAR | SLASH | CARAT ) rhs=unaryExp // multiplication, division, exponentiation
                               | unaryExp
                               ;
 unaryExp                      : unaryOperator exp=unaryExp
-                              | primaryExpression
+                              | linkExpression
                               ;
-unaryOperator                 : MINUS | PLUS | NOT
-//                            | ABS
+unaryOperator                 : MINUS | PLUS | NOT;
+linkExpression                : navigateExpression
+                              | ( linkType
+                                  lhs=navigateExpression relationshipSpec
+                                  (rhs=navigateExpression)?
+                                )
+                              ;
+linkType                      : LINK | UNLINK;
+navigateExpression            : lhs=navigateExpression
+                                ( relationshipSpec whereClause?
+//                              | WITH rhs=extendedExpression
+//                                relationshipSpec
+//                              | ORDERED_BY sortOrder
+//                              | REVERSE_ORDERED_BY sortOrder
+                                )
+                              | extendedExpression
+                              ;
+extendedExpression            : primaryExpression
+                              | createExpression
+                              | findExpression
+                              ;
+findExpression                : findType objectReference ( WHERE whereClause )?;
+whereClause                   : findCondition;
+findType                      : FIND | FIND_ALL | FIND_ONE | FIND_ONLY;
+createExpression              : CREATE UNIQUE? objectReference ( WITH createArgumentList )?;
+createArgumentList            : (createArgument ( AND createArgument )*)?;
+createArgument                : attributeName EQUALS expression
+//                            | CURRENT_STATE EQUALS stateName
                               ;
 primaryExpression             : literal
                               | parenthesisedExpression
                               | nameExpression
                               ;
+objectReference               : objectName;
+objectName                    : identifier;
+attributeName                 : identifier;
+stateName                     : identifier;
 nameExpression                : identifier;
 parenthesisedExpression       : LEFT_PARENTHESIS expression RIGHT_PARENTHESIS;
-identifier                    : Identifier;
-literal                       : IntegerLiteral | RealLiteral | StringLiteral;
+identifier                    : Identifier | SetIdentifier;
+literal                       : IntegerLiteral | RealLiteral | StringLiteral | TRUE | FALSE | EnumerationLiteral;
