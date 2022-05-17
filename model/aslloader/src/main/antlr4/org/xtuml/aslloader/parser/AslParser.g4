@@ -27,12 +27,13 @@ parameterName                 : identifier;
 parameterType                 : identifier | INTEGER | REAL | BOOLEAN;
 
 //---------------------------------------------------------
-// Statement
+// Statement CDS:  just finished with GENERATE
 //---------------------------------------------------------
 statement                     : assignStatement NEWLINE
-                              | createExpression NEWLINE
                               | deleteStatement NEWLINE
                               | linkStatement NEWLINE
+                              | generateStatement NEWLINE
+                              | callStatement NEWLINE
                               | Description
                               ;
 assignStatement               : identifier EQUALS expression;
@@ -43,15 +44,20 @@ linkStatement                 : linkType
                                 lhs=identifier relationshipName
                                 (
                                   rhs=navigateExpression
-                                  (USING assoc=navigateExpression)?
+                                  ( ( USING | FROM ) assoc=navigateExpression)?
                                 )?
                               ;
 relationshipSpec              : relationshipReference ( DOT objOrRole=identifier (DOT objectReference)? )?;
 relationshipName              : RelationshipName;
 relationshipReference         : relationshipName;
+generateStatement             : GENERATE operationName COLON eventName
+                                LEFT_PARENTHESIS argumentList RIGHT_PARENTHESIS ( TO expression )?
+                              ;
+callStatement                 : LEFT_SQUARE_BRACKET argumentList RIGHT_SQUARE_BRACKET EQUALS
+                                root=nameExpression LEFT_SQUARE_BRACKET argumentList RIGHT_SQUARE_BRACKET;
 
 //---------------------------------------------------------
-// Find Condition  ... CDS can skip postfix, next is link.  Put link statements in test.asl.
+// Find Condition
 //---------------------------------------------------------
 findCondition                     : findLogicalOr;
 findLogicalOr                     : lhs=findLogicalOr OR rhs=findLogicalXor
@@ -108,27 +114,30 @@ unaryExp                      : unaryOperator exp=unaryExp
                               ;
 unaryOperator                 : MINUS | PLUS | NOT;
 linkExpression                : navigateExpression
-                              | ( linkType
-                                  lhs=navigateExpression relationshipSpec
-                                  (rhs=navigateExpression)?
-                                )
+//                            | ( linkType
+//                                lhs=navigateExpression relationshipSpec
+//                                (rhs=navigateExpression)?
+//                              )
                               ;
-linkType                      : LINK | UNLINK;
+linkType                      : LINK | UNLINK | UNASSOCIATE;
 navigateExpression            : lhs=navigateExpression
-                                ( relationshipSpec whereClause?
-//                              | WITH rhs=extendedExpression
-//                                relationshipSpec
-//                              | ORDERED_BY sortOrder
-//                              | REVERSE_ORDERED_BY sortOrder
+                                ( POINTER relationshipSpec whereClause?
+                                )
+                              | objectName whereClause
+                              | postfixExpression
+                              ;
+postfixExpression             : root=postfixExpression
+                                ( LEFT_PARENTHESIS argumentList RIGHT_PARENTHESIS
+                                | DOT identifier
                                 )
                               | extendedExpression
                               ;
-extendedExpression            : primaryExpression
-                              | createExpression
+extendedExpression            : createExpression
                               | findExpression
+                              | primaryExpression
                               ;
-findExpression                : findType objectReference ( WHERE whereClause )?;
-whereClause                   : findCondition;
+findExpression                : findType objectReference ( whereClause )?;
+whereClause                   : WHERE findCondition;
 findType                      : FIND | FIND_ALL | FIND_ONE | FIND_ONLY;
 createExpression              : CREATE UNIQUE? objectReference ( WITH createArgumentList )?;
 createArgumentList            : (createArgument ( AND createArgument )*)?;
@@ -139,11 +148,18 @@ primaryExpression             : literal
                               | parenthesisedExpression
                               | nameExpression
                               ;
+nameExpression                : ( operationName DOUBLE_COLON )? identifier
+                              | ( operationName COLON )? identifier
+                              | identifier
+                              ;
+parenthesisedExpression       : LEFT_PARENTHESIS expression RIGHT_PARENTHESIS;
+argumentList                  : (expression ( COMMA expression )*)? ;
+operationName                 : identifier;
 objectReference               : objectName;
 objectName                    : identifier;
 attributeName                 : identifier;
 stateName                     : identifier;
-nameExpression                : identifier;
-parenthesisedExpression       : LEFT_PARENTHESIS expression RIGHT_PARENTHESIS;
+eventName                     : identifier;
 identifier                    : Identifier | SetIdentifier;
 literal                       : IntegerLiteral | RealLiteral | StringLiteral | TRUE | FALSE | EnumerationLiteral;
+

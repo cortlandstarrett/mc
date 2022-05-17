@@ -121,7 +121,7 @@ WHERE                         : 'where';
 WITH                          : 'with';
 XOR                           : 'xor';
 
-RelationshipName              : 'R' '1'..'9' Digit*;
+RelationshipName              : ( 'R' | 'CPR' | 'cpr' ) '1'..'9' Digit*;
 Identifier                    : ( Letter | '_' ) ( Letter | Digit | '_' )*;
 SetIdentifier                 : '{' ( Letter | '_' ) ( Letter | Digit | '_' )* '}';
 StringLiteral                 : '"' ( ~('\\'|'"') )* '"';
