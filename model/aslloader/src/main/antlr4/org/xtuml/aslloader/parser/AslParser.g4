@@ -14,47 +14,83 @@ bodyDefinition                : actionDefinition
 //---------------------------------------------------------
 // action bodies
 //---------------------------------------------------------
-actionDefinition              : DEFINE ACTION functionName NEWLINE blockInput blockOutput statement* ENDDEFINE;
-bridgeDefinition              : DEFINE BRIDGE functionName NEWLINE blockInput blockOutput statement* ENDDEFINE;
-functionDefinition            : DEFINE FUNCTION functionName NEWLINE blockInput blockOutput statement* ENDDEFINE;
-scenarioDefinition            : DEFINE SCENARIO functionName NEWLINE blockInput blockOutput statement* ENDDEFINE;
+actionDefinition              : DEFINE ACTION actionName NEWLINE blockInput blockOutput statementList ENDDEFINE;
+bridgeDefinition              : DEFINE BRIDGE bridgeName NEWLINE blockInput blockOutput statementList ENDDEFINE;
+functionDefinition            : DEFINE FUNCTION functionName NEWLINE blockInput blockOutput statementList ENDDEFINE;
+scenarioDefinition            : DEFINE SCENARIO scenarioName NEWLINE blockInput blockOutput statementList ENDDEFINE;
 blockInput                    : INPUT blockParameters NEWLINE;
 blockOutput                   : OUTPUT blockParameters NEWLINE;
-blockParameters               : parameterDefinition? ( NEWLINE parameterDefinition )*;
+blockParameters               : parameterDefinition? ( COMMA NEWLINE? parameterDefinition )*;
 parameterDefinition           : parameterName COLON parameterType;
-functionName                  : identifier DOUBLE_COLON identifier;
+actionName                    : identifier;
+bridgeName                    : identifier COLON identifier COLON identifier;  // TODO refine this
+functionName                  : identifier ( COLON | DOUBLE_COLON ) identifier;
+scenarioName                  : identifier;
 parameterName                 : identifier;
-parameterType                 : identifier | INTEGER | REAL | BOOLEAN;
+parameterType                 : identifier | TEXT | INTEGER | REAL | BOOLEAN;
 
 //---------------------------------------------------------
-// Statement CDS:  just finished with GENERATE
+// Statement
 //---------------------------------------------------------
-statement                     : assignStatement NEWLINE
+statementList                 : statement* ;
+statement                     : NEWLINE
+                              | ifStatement NEWLINE
+                              | loopStatement NEWLINE
+                              | forStatement NEWLINE
+                              | structureInstantiation NEWLINE
+                              | structureAssembly NEWLINE
+                              | assignStatement NEWLINE
+                              | enumValueAssignStatement NEWLINE
                               | deleteStatement NEWLINE
                               | linkStatement NEWLINE
                               | generateStatement NEWLINE
                               | callStatement NEWLINE
+                              | breakStatement NEWLINE
+                              | breakifStatement NEWLINE
                               | Description
+                              | AdaInline
+                              | Inline
                               ;
-assignStatement               : identifier EQUALS expression;
+assignStatement               : postfixExpression EQUALS expression;
+enumValueAssignStatement      : identifier OF identifier EQUALS EnumerationLiteral; // TODO:  refine
 deleteStatement               : DELETE expression
                               | DELETE objectName WHERE whereClause
                               ;
 linkStatement                 : linkType
-                                lhs=identifier relationshipName
+                                lhs=navigateExpression relationshipSpec
                                 (
                                   rhs=navigateExpression
                                   ( ( USING | FROM ) assoc=navigateExpression)?
                                 )?
                               ;
-relationshipSpec              : relationshipReference ( DOT objOrRole=identifier (DOT objectReference)? )?;
+relationshipSpec              : relationshipReference ( DOT ( identifier | StringLiteral ) (DOT objectReference)? )?;
 relationshipName              : RelationshipName;
 relationshipReference         : relationshipName;
 generateStatement             : GENERATE operationName COLON eventName
                                 LEFT_PARENTHESIS argumentList RIGHT_PARENTHESIS ( TO expression )?
                               ;
-callStatement                 : LEFT_SQUARE_BRACKET argumentList RIGHT_SQUARE_BRACKET EQUALS
-                                root=nameExpression LEFT_SQUARE_BRACKET argumentList RIGHT_SQUARE_BRACKET;
+ifStatement                   : IF condition THEN NEWLINE
+                                  statementList
+                                elseBlock?
+                                ENDIF
+                              ;
+elseBlock                     : ELSE NEWLINE statementList
+                              ;
+loopStatement                 : LOOP NEWLINE
+                                 statementList
+                                ENDLOOP
+                              ;
+condition                     : logicalOr
+                              ;
+forStatement                  : FOR ( identifier | sequence ) IN SetIdentifier DO NEWLINE
+                                  statementList
+                                ENDFOR
+                              ;
+callStatement                 : sequence EQUALS root=nameExpression LEFT_SQUARE_BRACKET argumentList RIGHT_SQUARE_BRACKET;
+breakStatement                : BREAK;
+breakifStatement              : BREAKIF logicalOr;
+structureInstantiation        : SetIdentifier IS typeName;
+structureAssembly             : APPEND sequence TO SetIdentifier;
 
 //---------------------------------------------------------
 // Find Condition
@@ -112,7 +148,7 @@ multExp                       : lhs=multExp ( STAR | SLASH | CARAT ) rhs=unaryEx
 unaryExp                      : unaryOperator exp=unaryExp
                               | linkExpression
                               ;
-unaryOperator                 : MINUS | PLUS | NOT;
+unaryOperator                 : MINUS | PLUS | NOT | COUNTOF;
 linkExpression                : navigateExpression
 //                            | ( linkType
 //                                lhs=navigateExpression relationshipSpec
@@ -147,7 +183,9 @@ createArgument                : attributeName EQUALS expression
 primaryExpression             : literal
                               | parenthesisedExpression
                               | nameExpression
+                              | sequence
                               ;
+sequence                      : LEFT_SQUARE_BRACKET argumentList RIGHT_SQUARE_BRACKET;
 nameExpression                : ( operationName DOUBLE_COLON )? identifier
                               | ( operationName COLON )? identifier
                               | identifier
@@ -160,6 +198,7 @@ objectName                    : identifier;
 attributeName                 : identifier;
 stateName                     : identifier;
 eventName                     : identifier;
+typeName                      : identifier;
 identifier                    : Identifier | SetIdentifier;
-literal                       : IntegerLiteral | RealLiteral | StringLiteral | TRUE | FALSE | EnumerationLiteral;
+literal                       : IntegerLiteral | RealLiteral | StringLiteral | THIS | TRUE | FALSE | EnumerationLiteral | UNDEFINED;
 

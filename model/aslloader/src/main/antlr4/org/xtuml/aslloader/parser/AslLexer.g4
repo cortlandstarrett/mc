@@ -43,9 +43,11 @@ DOUBLE_COLON                  : '::';
 DOUBLE_DOT                    : '..';
 DQUOTE                        : '"';
 ELSE                          : 'else';
+END_ADAINLINE                 : '#$END_ADAINLINE';
 ENDDEFINE                     : 'enddefine';
 ENDFOR                        : 'endfor';
 ENDIF                         : 'endif';
+ENDINLINE                     : '$ENDINLINE';
 ENDLOOP                       : 'endloop';
 ENDSWITCH                     : 'endswitch';
 ENDUSE                        : '$ENDUSE';
@@ -100,7 +102,6 @@ RIGHT_BRACE                   : '}';
 RIGHT_PARENTHESIS             : ')';
 RIGHT_SQUARE_BRACKET          : ']';
 SCENARIO                      : 'scenario';
-SEMICOLON                     : ';';
 SET_TIMER                     : 'TIM1:Set_Timer';
 STAR                          : '*';
 STRUCTURE                     : 'structure';
@@ -136,8 +137,10 @@ RealLiteral                   : Digit+
 fragment UnbasedExponent      : ('e'|'E')('+'|'-')? Digit+ ;
 fragment Digit                : '0'..'9';
 fragment Letter               : 'A'..'Z' | 'a'..'z';
-Continue_line                 : '\\' (' ' | '\t' | '\f' | '\r' )* NEWLINE -> skip;
+ContinueLine                  : '\\' (' ' | '\t' | '\f' | '\r' )* NEWLINE -> skip;
 Description                   : '#$DESCRIPTION' .*? '#$END_DESCRIPTION' NEWLINE -> skip; // TODO:  parse req IDs
+Inline                        : INLINE .*? ENDINLINE NEWLINE -> skip;
+AdaInline                     : ADA_INLINE .*? END_ADAINLINE NEWLINE -> skip;
 TokenH                        : '#$TOKENH' .*? '#$END_TOKENH' NEWLINE -> skip; // TODO:  eat stuff?
 TokenL                        : '#$TOKENL' .*? '#$END_TOKENL' NEWLINE -> skip; // TODO:  eat stuff?
 Comment                       : '#' ~[\r\n]* NEWLINE -> skip;

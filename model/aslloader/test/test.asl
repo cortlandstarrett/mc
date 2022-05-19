@@ -9,6 +9,41 @@ some desription text here
 #$END_DESCRIPTION
 
 # comment
+if Iteration >= 2 & Iteration <= 5 then
+
+   # Formalise some relationships
+   link firstG R13.Has_many thirdG
+   link firstG R13."Has_many" fourthG
+   link fifthG R13."Has_a"    secondG
+
+endif
+if a != 1 and b != 2 then
+  aa = 5
+endif
+if the_d_r_ih != UNDEFINED and the_results_ih != UNDEFINED then
+  bb = 5
+else
+  cc = 7
+  dd = h
+endif
+loop
+  ee = "hello"
+  breakif ee = "goodbye"
+endloop
+loop
+  ff = "hello"
+  loop
+    gg = 7
+    break
+  endloop
+  breakif ee = "goodbye"
+endloop
+for the_d_r_ih in {Duplicated_Reports} do
+  hh = 1
+endfor
+break
+breakif a = 5
+breakif abc.def = 3.3
 a = 1
 b = 1.1
 c = "hello"
