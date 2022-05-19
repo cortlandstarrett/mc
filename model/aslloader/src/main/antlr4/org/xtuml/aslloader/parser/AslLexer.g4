@@ -53,7 +53,6 @@ ENDSWITCH                     : 'endswitch';
 ENDUSE                        : '$ENDUSE';
 EQUALS                        : '=' | 'equals';
 ERROR                         : 'ERROR';
-EVENT                         : 'event';
 FALSE                         : 'FALSE';
 FIND                          : 'find';
 FIND_ALL                      : 'find-all';
@@ -143,5 +142,6 @@ Inline                        : INLINE .*? ENDINLINE NEWLINE -> skip;
 AdaInline                     : ADA_INLINE .*? END_ADAINLINE NEWLINE -> skip;
 TokenH                        : '#$TOKENH' .*? '#$END_TOKENH' NEWLINE -> skip; // TODO:  eat stuff?
 TokenL                        : '#$TOKENL' .*? '#$END_TOKENL' NEWLINE -> skip; // TODO:  eat stuff?
+MultilineComment              : '#{' .*? '}#' NEWLINE -> skip;
 Comment                       : '#' ~[\r\n]* NEWLINE -> skip;
 Whitespace                    : (' ' | '\t' | '\f' )+ -> skip;

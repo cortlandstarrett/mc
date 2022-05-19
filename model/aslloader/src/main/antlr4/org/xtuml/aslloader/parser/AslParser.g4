@@ -36,6 +36,7 @@ statementList                 : statement* ;
 statement                     : NEWLINE
                               | ifStatement NEWLINE
                               | loopStatement NEWLINE
+                              | caseStatement NEWLINE
                               | forStatement NEWLINE
                               | structureInstantiation NEWLINE
                               | structureAssembly NEWLINE
@@ -47,6 +48,8 @@ statement                     : NEWLINE
                               | callStatement NEWLINE
                               | breakStatement NEWLINE
                               | breakifStatement NEWLINE
+                              | startDomainContext NEWLINE
+                              | endDomainContext NEWLINE
                               | Description
                               | AdaInline
                               | Inline
@@ -66,7 +69,9 @@ linkStatement                 : linkType
 relationshipSpec              : relationshipReference ( DOT ( identifier | StringLiteral ) (DOT objectReference)? )?;
 relationshipName              : RelationshipName;
 relationshipReference         : relationshipName;
-generateStatement             : GENERATE operationName COLON eventName
+createTimer                   : sequence EQUALS root=CREATE_TIMER LEFT_SQUARE_BRACKET argumentList RIGHT_SQUARE_BRACKET;
+generateStatement             : GENERATE
+                                ( ( operationName COLON eventName ) | SET_TIMER | RESET_TIMER )
                                 LEFT_PARENTHESIS argumentList RIGHT_PARENTHESIS ( TO expression )?
                               ;
 ifStatement                   : IF condition THEN NEWLINE
@@ -82,15 +87,30 @@ loopStatement                 : LOOP NEWLINE
                               ;
 condition                     : logicalOr
                               ;
+caseStatement                 : SWITCH expression NEWLINE
+                                 caseAlternative*
+                                 caseOthers?
+                                ENDSWITCH
+                              ;
+caseAlternative               : CASE choiceList NEWLINE statementList
+                              ;
+choiceList                    : expression
+                              ;
+caseOthers                    : DEFAULT NEWLINE statementList
+                              ;
 forStatement                  : FOR ( identifier | sequence ) IN SetIdentifier DO NEWLINE
                                   statementList
                                 ENDFOR
                               ;
-callStatement                 : sequence EQUALS root=nameExpression LEFT_SQUARE_BRACKET argumentList RIGHT_SQUARE_BRACKET;
+callStatement                 : sequence EQUALS
+                                ( nameExpression | CREATE_TIMER | DELETE_TIMER | GET_TIME_REMAINING )
+                                LEFT_SQUARE_BRACKET argumentList RIGHT_SQUARE_BRACKET;
 breakStatement                : BREAK;
 breakifStatement              : BREAKIF logicalOr;
 structureInstantiation        : SetIdentifier IS typeName;
 structureAssembly             : APPEND sequence TO SetIdentifier;
+startDomainContext            : USE domainName;
+endDomainContext              : ENDUSE;
 
 //---------------------------------------------------------
 // Find Condition
@@ -192,6 +212,7 @@ nameExpression                : ( operationName DOUBLE_COLON )? identifier
                               ;
 parenthesisedExpression       : LEFT_PARENTHESIS expression RIGHT_PARENTHESIS;
 argumentList                  : (expression ( COMMA expression )*)? ;
+domainName                    : identifier;
 operationName                 : identifier;
 objectReference               : objectName;
 objectName                    : identifier;
