@@ -74,12 +74,12 @@ INTEGER                       : 'Base_Integer_Type';
 INTERSECTION_OF               : 'intersection-of';
 IS                            : 'is';
 LEFT_BRACE                    : '{';
-LEFT_PARENTHESIS              : '(';
-LEFT_SQUARE_BRACKET           : '[';
+LBRACKET                      : '[';
 LESS_THAN                     : '<' | 'less-than';
 LESS_THAN_OR_EQUAL_TO         : '<=' | 'less-than-or-equal-to';
 LINK                          : 'link' | 'link-counterpart';      // could separate these
 LOOP                          : 'loop';
+LPAREN                        : '(';
 MINUS                         : '-';
 NEWLINE                       : '\n'+;
 NOT                           : '!' | 'not';
@@ -94,12 +94,12 @@ ORDERED                       : 'ordered';
 OUTPUT                        : 'output';
 PLUS                          : '+';
 POINTER                       : '->';
+RBRACKET                      : ']';
 REAL                          : 'Base_Float_Type';
 RESET_TIMER                   : 'TIM2:Reset_Timer';
 REVERSE                       : 'reverse';
 RIGHT_BRACE                   : '}';
-RIGHT_PARENTHESIS             : ')';
-RIGHT_SQUARE_BRACKET          : ']';
+RPAREN                        : ')';
 SCENARIO                      : 'scenario';
 SET_TIMER                     : 'TIM1:Set_Timer';
 STAR                          : '*';
@@ -137,9 +137,9 @@ fragment UnbasedExponent      : ('e'|'E')('+'|'-')? Digit+ ;
 fragment Digit                : '0'..'9';
 fragment Letter               : 'A'..'Z' | 'a'..'z';
 ContinueLine                  : '\\' (' ' | '\t' | '\f' | '\r' )* NEWLINE -> skip;
-Description                   : '#$DESCRIPTION' .*? '#$END_DESCRIPTION' NEWLINE -> skip; // TODO:  parse req IDs
-Inline                        : INLINE .*? ENDINLINE NEWLINE -> skip;
-AdaInline                     : ADA_INLINE .*? END_ADAINLINE NEWLINE -> skip;
+Description                   : '#$DESCRIPTION' .*? '#$END_DESCRIPTION'; // TODO:  parse req IDs
+Inline                        : INLINE .*? ENDINLINE -> skip;
+AdaInline                     : ADA_INLINE .*? END_ADAINLINE -> skip;
 TokenH                        : '#$TOKENH' .*? '#$END_TOKENH' NEWLINE -> skip; // TODO:  eat stuff?
 TokenL                        : '#$TOKENL' .*? '#$END_TOKENL' NEWLINE -> skip; // TODO:  eat stuff?
 MultilineComment              : '#{' .*? '}#' NEWLINE -> skip;

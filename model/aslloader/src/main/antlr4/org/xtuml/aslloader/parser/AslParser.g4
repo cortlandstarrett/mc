@@ -1,61 +1,195 @@
+// TODO:  Check expression recursion differences.
 parser grammar AslParser;
 
 options {tokenVocab=AslLexer;}
 
 
-target                        : bodyDefinition;
+target                        : definition;
 
-bodyDefinition                : actionDefinition
-                              | bridgeDefinition
-                              | functionDefinition
+definition                    :
                               | scenarioDefinition
+                              | objectServiceDefinition
+                              | stateDefinition
+                              | domainServiceDefinition
+                              | terminatorServiceDefinition
                               ;
 
 //---------------------------------------------------------
-// action bodies
+// Project Definition
 //---------------------------------------------------------
-actionDefinition              : DEFINE ACTION actionName NEWLINE blockInput blockOutput statementList ENDDEFINE;
-bridgeDefinition              : DEFINE BRIDGE bridgeName NEWLINE blockInput blockOutput statementList ENDDEFINE;
-functionDefinition            : DEFINE FUNCTION functionName NEWLINE blockInput blockOutput statementList ENDDEFINE;
-scenarioDefinition            : DEFINE SCENARIO scenarioName NEWLINE blockInput blockOutput statementList ENDDEFINE;
-blockInput                    : INPUT blockParameters NEWLINE;
-blockOutput                   : OUTPUT blockParameters NEWLINE;
-blockParameters               : parameterDefinition? ( COMMA NEWLINE? parameterDefinition )*;
-parameterDefinition           : parameterName COLON parameterType;
-actionName                    : identifier;
+//---------------------------------------------------------
+// Domain Definition
+//---------------------------------------------------------
+
+domainName                    : identifier
+                              ;
+//---------------------------------------------------------
+// Exception Declaration
+//---------------------------------------------------------
+//---------------------------------------------------------
+// Type Definition
+//---------------------------------------------------------
+//---------------------------------------------------------
+// Type Reference
+//---------------------------------------------------------
+
+typeReference
+                              : namedTypeRef
+                              | TEXT
+                              | INTEGER
+                              | REAL
+                              | BOOLEAN
+                              ;
+
+namedTypeRef                  : typeName
+                              ;
+
+typeName                      : identifier
+                              ;
+
+//---------------------------------------------------------
+// Terminator Definition
+//---------------------------------------------------------
+//---------------------------------------------------------
+// Object Definition
+//---------------------------------------------------------
+
+objectName                    : identifier
+                              ;
+
+objectReference               : objectName
+                              ;
+
+attributeName                 : identifier
+                              ;
+
+relationshipSpec              : relationshipReference
+                                  ( DOT ( identifier | StringLiteral )
+                                    (DOT objectReference)?
+                                  )?
+                              ;
+
+eventName                     : identifier
+                              ;
+
+stateName                     : identifier
+                              ;
+
+
+//---------------------------------------------------------
+// Service Declaration
+//---------------------------------------------------------
+
+parameterList                 :
+                                  parameterDefinition? ( COMMA NEWLINE? parameterDefinition )*
+                              ;
+
+parameterDefinition           : parameterName COLON parameterType
+                              ;
+
+parameterName                 : identifier
+                              ;
+
+parameterType                 : typeReference
+                              ;
+
+//---------------------------------------------------------
+// Relationship Definition
+//---------------------------------------------------------
+
+relationshipName              : RelationshipName
+                              ;
+
+relationshipReference         : relationshipName
+                              ;
+
+
+//---------------------------------------------------------
+// Pragma Definition
+//---------------------------------------------------------
+//---------------------------------------------------------
+// Descriptions
+//---------------------------------------------------------
+
+description                   : Description
+                              ;
+
+//---------------------------------------------------------
+// Dynamic Behaviour
+//---------------------------------------------------------
+
+
+
+domainServiceDefinition       : DEFINE FUNCTION functionName NEWLINE blockInput blockOutput statementList ENDDEFINE
+                              ;
+
+
+
+objectServiceDefinition       : DEFINE FUNCTION objectServiceName NEWLINE blockInput blockOutput statementList ENDDEFINE
+                              ;
+
+terminatorServiceDefinition   : DEFINE BRIDGE bridgeName NEWLINE blockInput blockOutput statementList ENDDEFINE
+                              ;
+
+
+
+stateDefinition               : DEFINE ACTION stateName NEWLINE blockInput blockOutput statementList ENDDEFINE
+                              ;
+
+scenarioDefinition            : DEFINE SCENARIO scenarioName NEWLINE blockInput blockOutput statementList ENDDEFINE
+                              ;
+
+blockInput                    : INPUT parameterList NEWLINE;
+blockOutput                   : OUTPUT parameterList NEWLINE;
 bridgeName                    : identifier COLON identifier COLON identifier;  // TODO refine this
-functionName                  : identifier ( COLON | DOUBLE_COLON ) identifier;
+functionName                  : identifier DOUBLE_COLON identifier; // TODO see if this can be aligned
+objectServiceName             : identifier COLON identifier; // TODO see if this can be aligned
 scenarioName                  : identifier;
-parameterName                 : identifier;
-parameterType                 : identifier | TEXT | INTEGER | REAL | BOOLEAN;
 
 //---------------------------------------------------------
-// Statement
+// Statements
 //---------------------------------------------------------
-statementList                 : statement* ;
-statement                     : NEWLINE
-                              | ifStatement NEWLINE
-                              | loopStatement NEWLINE
-                              | caseStatement NEWLINE
-                              | forStatement NEWLINE
-                              | structureInstantiation NEWLINE
-                              | structureAssembly NEWLINE
-                              | assignStatement NEWLINE
-                              | enumValueAssignStatement NEWLINE
-                              | deleteStatement NEWLINE
-                              | linkStatement NEWLINE
-                              | generateStatement NEWLINE
-                              | callStatement NEWLINE
-                              | breakStatement NEWLINE
-                              | breakifStatement NEWLINE
-                              | startDomainContext NEWLINE
-                              | endDomainContext NEWLINE
-                              | Description
-                              | AdaInline
-                              | Inline
+
+statementList                 : statement*
                               ;
-assignStatement               : postfixExpression EQUALS expression;
-enumValueAssignStatement      : identifier OF identifier EQUALS EnumerationLiteral; // TODO:  refine
+
+
+
+statement                     : (
+                                | assignStatement
+                                | enumValueAssignStatement
+                                | callStatement
+                                | deleteStatement
+                                | linkStatement
+                                | generateStatement
+                                | ifStatement
+                                | caseStatement
+                                | forStatement
+                                | whileStatement
+                                | breakStatement
+                                | breakifStatement
+                                | structureInstantiation
+                                | structureAssembly
+                                | startDomainContext
+                                | endDomainContext
+                                | description
+                                | AdaInline
+                                | Inline
+                                )
+                                NEWLINE
+                              ;
+
+assignStatement               : lhs=postfixExpression EQUALS rhs=expression
+                              ;
+
+enumValueAssignStatement      : identifier OF identifier EQUALS EnumerationLiteral // TODO:  refine
+                              ;
+
+callStatement                 : root=sequence EQUALS
+                                ( nameExpression | CREATE_TIMER | DELETE_TIMER | GET_TIME_REMAINING )
+                                LBRACKET argumentList RBRACKET
+                              ;
+
 deleteStatement               : DELETE expression
                               | DELETE objectName WHERE whereClause
                               ;
@@ -64,47 +198,66 @@ linkStatement                 : linkType
                                 (
                                   rhs=navigateExpression
                                   ( ( USING | FROM ) assoc=navigateExpression)?
-                                )?
+                                )
                               ;
-relationshipSpec              : relationshipReference ( DOT ( identifier | StringLiteral ) (DOT objectReference)? )?;
-relationshipName              : RelationshipName;
-relationshipReference         : relationshipName;
-createTimer                   : sequence EQUALS root=CREATE_TIMER LEFT_SQUARE_BRACKET argumentList RIGHT_SQUARE_BRACKET;
+
+linkType                      : LINK
+                              | UNLINK
+                              | UNASSOCIATE
+                              ;
+
+createTimer                   : sequence EQUALS root=CREATE_TIMER LBRACKET argumentList RBRACKET
+                              ;
+
+
 generateStatement             : GENERATE
                                 ( ( operationName COLON eventName ) | SET_TIMER | RESET_TIMER )
-                                LEFT_PARENTHESIS argumentList RIGHT_PARENTHESIS ( TO expression )?
+                                LPAREN argumentList RPAREN ( TO expression )?
                               ;
+
 ifStatement                   : IF condition THEN NEWLINE
                                   statementList
                                 elseBlock?
                                 ENDIF
                               ;
+
 elseBlock                     : ELSE NEWLINE statementList
                               ;
-loopStatement                 : LOOP NEWLINE
+
+
+whileStatement                : LOOP NEWLINE
                                  statementList
                                 ENDLOOP
                               ;
+
 condition                     : logicalOr
                               ;
+
+
 caseStatement                 : SWITCH expression NEWLINE
                                  caseAlternative*
                                  caseOthers?
                                 ENDSWITCH
                               ;
+
 caseAlternative               : CASE choiceList NEWLINE statementList
                               ;
+
 choiceList                    : expression
                               ;
+
 caseOthers                    : DEFAULT NEWLINE statementList
                               ;
-forStatement                  : FOR ( identifier | sequence ) IN SetIdentifier DO NEWLINE
+
+forStatement                  : FOR loopVariableSpec
+                                DO NEWLINE
                                   statementList
                                 ENDFOR
                               ;
-callStatement                 : sequence EQUALS
-                                ( nameExpression | CREATE_TIMER | DELETE_TIMER | GET_TIME_REMAINING )
-                                LEFT_SQUARE_BRACKET argumentList RIGHT_SQUARE_BRACKET;
+
+loopVariableSpec              : ( identifier | sequence ) IN SetIdentifier
+                              ;
+
 breakStatement                : BREAK;
 breakifStatement              : BREAKIF logicalOr;
 structureInstantiation        : SetIdentifier IS typeName;
@@ -113,113 +266,177 @@ startDomainContext            : USE domainName;
 endDomainContext              : ENDUSE;
 
 //---------------------------------------------------------
-// Find Condition
+// Code Blocks
 //---------------------------------------------------------
+
+//---------------------------------------------------------
+// Find Condition Definition
+//---------------------------------------------------------
+
 findCondition                     : findLogicalOr;
+
 findLogicalOr                     : lhs=findLogicalOr OR rhs=findLogicalXor
                                   | findLogicalXor
                                   ;
+
 findLogicalXor                    : lhs=findLogicalXor XOR rhs=findLogicalAnd
                                   | findLogicalAnd
                                   ;
+
 findLogicalAnd                    : lhs=findLogicalAnd AND rhs=findPrimary
                                   | findPrimary
                                   ;
+
+
 findPrimary                       : findComparison
                                   | findUnary
                                   ;
+
 findUnary                         : NOT findUnary
-                                  | LEFT_PARENTHESIS findCondition RIGHT_PARENTHESIS
+                                  | LPAREN findCondition RPAREN
                                   ;
+
 findComparison                    : lhs=findName ( EQUALS | NOT_EQUALS | LESS_THAN | GREATER_THAN | LESS_THAN_OR_EQUAL_TO | GREATER_THAN_OR_EQUAL_TO  ) rhs=additiveExp;
+
 findName                          : att=identifier
                                     ( DOT comp=identifier
-                                    | LEFT_SQUARE_BRACKET expression RIGHT_SQUARE_BRACKET
+                                    | LBRACKET expression RBRACKET
                                     )*
                                   ;
 
 //---------------------------------------------------------
-// Expression
+// Expression Definition
 //---------------------------------------------------------
+
 constExpression               : expression;
+
+
 expression                    : rangeExpression;
+
 rangeExpression               : logicalOr (DOUBLE_DOT logicalOr)?;
+
 logicalOr                     : lhs=logicalOr OR rhs=logicalXor
                               | logicalXor
                               ;
+
 logicalXor                    : lhs=logicalXor XOR rhs=logicalAnd
                               | logicalAnd
                               ;
+
 logicalAnd                    : lhs=logicalAnd AND rhs=equality
                               | equality
                               ;
+
 equality                      : lhs=equality ( EQUALS | NOT_EQUALS ) rhs=relationalExp
                               | relationalExp
                               ;
+
 relationalExp                 : lhs=relationalExp ( LESS_THAN | GREATER_THAN | LESS_THAN_OR_EQUAL_TO | GREATER_THAN_OR_EQUAL_TO ) rhs=additiveExp
                               | additiveExp
                               ;
+
 additiveExp                   : lhs=additiveExp ( PLUS | MINUS ) rhs=multExp
                               | multExp
                               ;
+
 multExp                       : lhs=multExp ( STAR | SLASH | CARAT ) rhs=unaryExp // multiplication, division, exponentiation
                               | unaryExp
                               ;
+
 unaryExp                      : unaryOperator exp=unaryExp
                               | linkExpression
                               ;
-unaryOperator                 : MINUS | PLUS | NOT | COUNTOF;
-linkExpression                : navigateExpression
-//                            | ( linkType
-//                                lhs=navigateExpression relationshipSpec
-//                                (rhs=navigateExpression)?
-//                              )
+
+unaryOperator                 : MINUS
+                              | PLUS
+                              | NOT
+                              | COUNTOF
                               ;
-linkType                      : LINK | UNLINK | UNASSOCIATE;
+
+linkExpression                : navigateExpression
+                              ;
+
 navigateExpression            : lhs=navigateExpression
                                 ( POINTER relationshipSpec whereClause?
                                 )
                               | objectName whereClause
                               | postfixExpression
                               ;
+
+extendedExpression            :
+                              | createExpression
+                              | findExpression
+                              | primaryExpression
+                              ;
+
+createExpression              : CREATE UNIQUE? objectReference ( WITH createArgumentList )?
+                              ;
+
+createArgumentList            :
+                                (createArgument ( AND createArgument )*)?
+                              ;
+
+createArgument                : attributeName EQUALS expression
+                              ;
+
+findExpression                : findType objectReference ( whereClause )?
+                              ;
+
+whereClause                   : WHERE findCondition
+                              ;
+
+findType                      : FIND
+                              | FIND_ALL
+                              | FIND_ONE
+                              | FIND_ONLY
+                              ;
+
 postfixExpression             : root=postfixExpression
-                                ( LEFT_PARENTHESIS argumentList RIGHT_PARENTHESIS
+                                ( LPAREN argumentList RPAREN
                                 | DOT identifier
                                 )
                               | extendedExpression
                               ;
-extendedExpression            : createExpression
-                              | findExpression
-                              | primaryExpression
-                              ;
-findExpression                : findType objectReference ( whereClause )?;
-whereClause                   : WHERE findCondition;
-findType                      : FIND | FIND_ALL | FIND_ONE | FIND_ONLY;
-createExpression              : CREATE UNIQUE? objectReference ( WITH createArgumentList )?;
-createArgumentList            : (createArgument ( AND createArgument )*)?;
-createArgument                : attributeName EQUALS expression
-//                            | CURRENT_STATE EQUALS stateName
-                              ;
+
 primaryExpression             : literal
                               | parenthesisedExpression
                               | nameExpression
                               | sequence
                               ;
-sequence                      : LEFT_SQUARE_BRACKET argumentList RIGHT_SQUARE_BRACKET;
+
+sequence                      : LBRACKET argumentList RBRACKET
+                              ;
+
 nameExpression                : ( operationName DOUBLE_COLON )? identifier
                               | ( operationName COLON )? identifier
                               | identifier
                               ;
-parenthesisedExpression       : LEFT_PARENTHESIS expression RIGHT_PARENTHESIS;
-argumentList                  : (expression ( COMMA expression )*)? ;
-domainName                    : identifier;
-operationName                 : identifier;
-objectReference               : objectName;
-objectName                    : identifier;
-attributeName                 : identifier;
-stateName                     : identifier;
-eventName                     : identifier;
-typeName                      : identifier;
-identifier                    : Identifier | SetIdentifier;
-literal                       : IntegerLiteral | RealLiteral | StringLiteral | THIS | TRUE | FALSE | EnumerationLiteral | UNDEFINED;
+
+operationName                 : identifier; // TODO:  omit?
+
+parenthesisedExpression
+                              : LPAREN expression
+                                RPAREN
+                              ;
+
+
+argumentList                  : (expression ( COMMA expression )*)?
+                              ;
+
+
+
+literal
+                              : IntegerLiteral
+                              | RealLiteral
+                              | EnumerationLiteral
+                              | StringLiteral
+                              | TRUE
+                              | FALSE
+                              | THIS
+                              | UNDEFINED
+                              ;
+
+
+identifier                    : Identifier | SetIdentifier
+                              ;
 
