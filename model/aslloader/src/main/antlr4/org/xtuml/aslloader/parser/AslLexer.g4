@@ -70,6 +70,7 @@ IN                            : 'in';
 INCLUDE_HEADER                : '$INCLUDE_HEADER'; // eat header lines
 INLINE                        : '$INLINE'; // eat C inline code
 INPUT                         : 'input';
+INSTANCE                      : 'instance';
 INTEGER                       : 'Base_Integer_Type';
 INTERSECTION_OF               : 'intersection-of';
 IS                            : 'is';

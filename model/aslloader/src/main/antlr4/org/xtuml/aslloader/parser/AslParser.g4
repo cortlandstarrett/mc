@@ -1,4 +1,5 @@
 // TODO:  Check expression recursion differences.
+// TODO:  names - may need to recognise key letters and function/operation numbers
 parser grammar AslParser;
 
 options {tokenVocab=AslLexer;}
@@ -35,13 +36,13 @@ domainName                    : identifier
 
 typeReference
                               : namedTypeRef
+                              ;
+
+namedTypeRef                  : typeName
                               | TEXT
                               | INTEGER
                               | REAL
                               | BOOLEAN
-                              ;
-
-namedTypeRef                  : typeName
                               ;
 
 typeName                      : identifier
@@ -64,7 +65,7 @@ attributeName                 : identifier
                               ;
 
 relationshipSpec              : relationshipReference
-                                  ( DOT ( identifier | StringLiteral )
+                                  ( DOT ( objectReference | rolePhrase )
                                     (DOT objectReference)?
                                   )?
                               ;
@@ -103,6 +104,9 @@ relationshipName              : RelationshipName
 relationshipReference         : relationshipName
                               ;
 
+rolePhrase                    : StringLiteral
+                              ;
+
 
 //---------------------------------------------------------
 // Pragma Definition
@@ -120,7 +124,9 @@ description                   : Description
 
 
 
-domainServiceDefinition       : DEFINE FUNCTION functionName NEWLINE blockInput blockOutput statementList ENDDEFINE
+domainServiceDefinition       : DEFINE FUNCTION functionName NEWLINE
+                                ( INSTANCE THIS COLON objectName NEWLINE )?
+                                blockInput blockOutput statementList ENDDEFINE
                               ;
 
 
@@ -159,6 +165,7 @@ statement                     : (
                                 | assignStatement
                                 | enumValueAssignStatement
                                 | callStatement
+                                | exitStatement
                                 | deleteStatement
                                 | linkStatement
                                 | generateStatement
@@ -166,8 +173,6 @@ statement                     : (
                                 | caseStatement
                                 | forStatement
                                 | whileStatement
-                                | breakStatement
-                                | breakifStatement
                                 | structureInstantiation
                                 | structureAssembly
                                 | startDomainContext
@@ -188,6 +193,11 @@ enumValueAssignStatement      : identifier OF identifier EQUALS EnumerationLiter
 callStatement                 : root=sequence EQUALS
                                 ( nameExpression | CREATE_TIMER | DELETE_TIMER | GET_TIME_REMAINING )
                                 LBRACKET argumentList RBRACKET
+                                ( ON identifier )?
+                              ;
+
+exitStatement                 : BREAK
+                              | BREAKIF condition
                               ;
 
 deleteStatement               : DELETE expression
@@ -230,7 +240,7 @@ whileStatement                : LOOP NEWLINE
                                 ENDLOOP
                               ;
 
-condition                     : logicalOr
+condition                     : logicalOr // TODO
                               ;
 
 
@@ -258,8 +268,6 @@ forStatement                  : FOR loopVariableSpec
 loopVariableSpec              : ( identifier | sequence ) IN SetIdentifier
                               ;
 
-breakStatement                : BREAK;
-breakifStatement              : BREAKIF logicalOr;
 structureInstantiation        : SetIdentifier IS typeName;
 structureAssembly             : APPEND sequence TO SetIdentifier;
 startDomainContext            : USE domainName;
