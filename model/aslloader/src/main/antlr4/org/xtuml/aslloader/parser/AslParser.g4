@@ -126,23 +126,42 @@ description                   : Description
 
 domainServiceDefinition       : DEFINE FUNCTION functionName NEWLINE
                                 ( INSTANCE THIS COLON objectName NEWLINE )?
-                                blockInput blockOutput statementList ENDDEFINE
+                                blockInput
+                                blockOutput
+                                statementList
+                                ENDDEFINE
                               ;
 
 
 
-objectServiceDefinition       : DEFINE FUNCTION objectServiceName NEWLINE blockInput blockOutput statementList ENDDEFINE
+objectServiceDefinition       : DEFINE FUNCTION objectServiceName NEWLINE
+                                blockInput
+                                blockOutput
+                                statementList
+                                ENDDEFINE
                               ;
 
-terminatorServiceDefinition   : DEFINE BRIDGE bridgeName NEWLINE blockInput blockOutput statementList ENDDEFINE
+terminatorServiceDefinition   : DEFINE BRIDGE bridgeName NEWLINE
+                                blockInput
+                                blockOutput
+                                statementList
+                                ENDDEFINE
                               ;
 
 
 
-stateDefinition               : DEFINE ACTION stateName NEWLINE blockInput blockOutput statementList ENDDEFINE
+stateDefinition               : DEFINE ACTION stateName NEWLINE
+                                blockInput
+                                blockOutput
+                                statementList
+                                ENDDEFINE
                               ;
 
-scenarioDefinition            : DEFINE SCENARIO scenarioName NEWLINE blockInput blockOutput statementList ENDDEFINE
+scenarioDefinition            : DEFINE SCENARIO scenarioName NEWLINE
+                                blockInput
+                                blockOutput
+                                statementList
+                                ENDDEFINE
                               ;
 
 blockInput                    : INPUT parameterList NEWLINE;
@@ -377,6 +396,13 @@ extendedExpression            :
                               | primaryExpression
                               ;
 
+sortOrder                     : REVERSE? ORDERED BY sortOrderComponent
+                                ( AND sortOrderComponent )*
+                              ;
+
+sortOrderComponent            : attributeName
+                              ;
+
 createExpression              : CREATE UNIQUE? objectReference ( WITH createArgumentList )?
                               ;
 
@@ -387,7 +413,9 @@ createArgumentList            :
 createArgument                : attributeName EQUALS expression
                               ;
 
-findExpression                : findType objectReference ( whereClause )?
+findExpression                : findType objectReference
+                                whereClause?
+                                sortOrder?
                               ;
 
 whereClause                   : WHERE findCondition
