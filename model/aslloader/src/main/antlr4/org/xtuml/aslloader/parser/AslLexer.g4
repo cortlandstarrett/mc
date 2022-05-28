@@ -82,7 +82,7 @@ LINK                          : 'link' | 'link-counterpart';      // could separ
 LOOP                          : 'loop';
 LPAREN                        : '(';
 MINUS                         : '-';
-NEWLINE                       : '\n'+;
+NEWLINE                       : [\r\n]+;
 NOT                           : '!' | 'not';
 NOT_EQUALS                    : '!=' | 'not-equals';
 NOT_IN                        : 'not-in';
