@@ -124,7 +124,7 @@ description                   : Description
 
 
 
-domainServiceDefinition       : DEFINE FUNCTION functionName NEWLINE
+domainServiceDefinition       : DEFINE FUNCTION functionName NEWLINE+
                                 ( INSTANCE THIS COLON objectName NEWLINE )?
                                 blockInput
                                 blockOutput
@@ -134,14 +134,14 @@ domainServiceDefinition       : DEFINE FUNCTION functionName NEWLINE
 
 
 
-objectServiceDefinition       : DEFINE FUNCTION objectServiceName NEWLINE
+objectServiceDefinition       : DEFINE FUNCTION objectServiceName NEWLINE+
                                 blockInput
                                 blockOutput
                                 statementList
                                 ENDDEFINE
                               ;
 
-terminatorServiceDefinition   : DEFINE BRIDGE bridgeName NEWLINE
+terminatorServiceDefinition   : DEFINE BRIDGE bridgeName NEWLINE+
                                 blockInput
                                 blockOutput
                                 statementList
@@ -150,22 +150,22 @@ terminatorServiceDefinition   : DEFINE BRIDGE bridgeName NEWLINE
 
 
 
-stateDefinition               : DEFINE ACTION stateName NEWLINE
+stateDefinition               : DEFINE ACTION stateName NEWLINE+
                                 blockInput
                                 blockOutput
                                 statementList
                                 ENDDEFINE
                               ;
 
-scenarioDefinition            : DEFINE SCENARIO scenarioName NEWLINE
+scenarioDefinition            : DEFINE SCENARIO scenarioName NEWLINE+
                                 blockInput
                                 blockOutput
                                 statementList
                                 ENDDEFINE
                               ;
 
-blockInput                    : INPUT parameterList NEWLINE;
-blockOutput                   : OUTPUT parameterList NEWLINE;
+blockInput                    : INPUT parameterList NEWLINE+;
+blockOutput                   : OUTPUT parameterList NEWLINE+;
 bridgeName                    : identifier COLON identifier COLON identifier;  // TODO refine this
 functionName                  : identifier DOUBLE_COLON identifier; // TODO see if this can be aligned
 objectServiceName             : identifier COLON identifier; // TODO see if this can be aligned
@@ -263,7 +263,7 @@ condition                     : logicalOr // TODO
                               ;
 
 
-caseStatement                 : SWITCH expression NEWLINE
+caseStatement                 : SWITCH expression NEWLINE+
                                  caseAlternative*
                                  caseOthers?
                                 ENDSWITCH
