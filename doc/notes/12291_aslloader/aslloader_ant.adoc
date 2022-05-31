@@ -1,0 +1,118 @@
+= Aslloader Integration
+
+xtUML Project Analysis Note
+
+== 1 Abstract
+
+This note explores options for integrating a parser of ASL activities into
+a loader to populate an OOA of ASL.
+
+== 2 Introduction and Background
+
+'AslLexer.a4' and 'AslParser.a4' successfully recognize ASL activity
+bodies as exported with the WASL Exporter, which exports them as
+syntactically correct ASL (according the ASL Language Reference).
+
+A visitor pattern is supported by Antlr to isolate the model populator
+from the language parser.
+
+== 3 Requirements
+
+=== 3.1 Parse Activity Bodies
+
+Parse each of the state action, function, scenario, object operation and
+terminator service bodies of ASL.
+
+=== 3.2 Populate OOA of ASL
+
+From the textual ASL, populate instances of a model of ASL.  This may or
+may not include populating structural elements such as domain, class,
+relationship and state machine.
+
+== 4 Analysis
+
+=== Consider using a great deal of the MASL Exporter and Stratus.
+
+* The MASL Exporter can export a `.mod` file.
+* This `.mod` can be used to populate the structural OOA (of MASL/ASL).
+* Then the activity bodies can be parsed against the structural xtUML.
+
+This will leverage a large amount of work done for the Stratus project.
+
+=== Modify MaslPopulator
+
+MaslPopulator.java works to populate ooamasl from MaslParser.a4.
+
+* Is it similar enough?
+* Would it be OK to populate ooamasl with ASL?
+
+
+=== Generate MASL from ooamasl and modify
+
+. Generate MASL from ooamasl.
+. Edit the MASL to make an ooaasl.
+. Load into BridgePoint, tease apart the graphics.
+. Use this as the ooaasl.
+
+=== Run the MASL exporter
+
+* Run the MASL export parser to get structural MASL.
+
+Build an exporter modified from the MASL exporter.  This would output
+a `.mod` file together with ASL action bodies in the ASL format (with
+either ASL-style or MASL-style action definition headers.
+
+=== Delta from Stratus
+
+Model the ASL parser and loader as a delta from Stratus.
+
+. Add structural MASL (back) into `AslLexer.a4` and `AslParser.a4`.
+  (Or tease apart the structural parser from the activity parser of Stratus.)
+. Basically substitute the ASL parser for the MASL activity parser.
+. Look at the Stratus command line.  See how files are imported in the
+  correct order (`.mod` file first).
+. Run `xtuml2masl` as MASL on SWATS.  This works.  The ASL bodies are
+  embedded in MASL activity definitions.  This is how we convert ASL
+  models in the first place.
+. Start with ooamasl as-is.
+  .. Consider splitting the grammar into structural + activity/expression.
+     Then, import the activity grammar into the structural grammar to get the
+     complete parser.
+  .. Consider branching it.
+. Consider separating the structural grammar and importing it into the
+  activity (-specific) grammar.  This will keep a common parent (structural)
+  parse grammar.
+  .. This is limited to completely self-contained grammars.
+  .. I think we can do this.  I need to learn how to build it using maven.
+. Consider inheriting from the MASL grammar.  Antlr supports a form of
+  inheritance.  This is probably not feasible due to differing lexers.
+
+NOTE:  xtuml2masl is capable of outputting ASL models as structural MASL
+       with ASL bodies.  The headers of the action bodies are formatted
+       as MASL.
+
+== questions
+
+. What do I do with the "missing structural xtUML"?
+. What are key differences between ASL and MASL?
+
+
+
+
+
+== 5 Work Required
+
+. Split `MaslParser.g4` logically
+
+== 6 Acceptance Test
+
+
+== 7 Document References
+
+. [[dr-1]] https://support.onefact.net/issues/12291[12291 - ASL Parser/Loader]
+
+---
+
+This work is licensed under the Creative Commons CC0 License
+
+---
