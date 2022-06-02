@@ -91,10 +91,37 @@ NOTE:  xtuml2masl is capable of outputting ASL models as structural MASL
        with ASL bodies.  The headers of the action bodies are formatted
        as MASL.
 
+NOTE:  I proved that I can separate a grammar file into pieces and 'import'
+       the base.  I made `AslStructure` the base and imported it into
+       `AslParser`.
+
+How close can I get to _extending_ Stratus to support ASL?
+
+. Use Stratus to load the `.mod` file.
+. Detect ASL action bodies in the `MaslImportParser.java` and call the
+  ASL parser.
+
+Add AslParser to Stratus
+
+. Branch stratus.
+. Add the `AslLexer.a4` and `AslParser.a4` to the antlr folder.
+. Add `AslImportParser.java` and `AslPopulator.java` to the java folder.
+  These are pretty much copies of the MASL versions.  The former is a
+  pretty small file.  The latter is large and will be edited with vimdiff
+  like the parser grammar.
+. `LOAD::load` both MaslImportParser and AslImportParser.
+. Use the normal MASL flow to parse and load the `.mod` file.
+. Change `MaslPopulator.java` to call `aslParser.parseFile` for activity files.
+. Afterwards, figure out how to call the correct parser for each file
+  (using Dialect).
+
 == questions
 
 . What do I do with the "missing structural xtUML"?
 . What are key differences between ASL and MASL?
+. Should I develop a 'Textual xtUML' parser/loader that understands only
+  structural MASL?  Then, I could build action language parsers.  Maybe
+  they would import the (common) structural parser.
 
 
 
