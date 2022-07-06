@@ -490,6 +490,11 @@ unaryOperator                 : MINUS
                               | PLUS
                               | NOT
                               | COUNTOF
+                              | UNIQUE
+                              | UNION
+                              | DISUNION
+                              | INTERSECTION
+                              | NOT_IN
                               ;
 
 linkExpression                : navigateExpression
@@ -498,14 +503,13 @@ linkExpression                : navigateExpression
 navigateExpression            : lhs=navigateExpression
                                 ( NAVIGATE relationshipSpec whereClause?
                                 )
+                              | extendedExpression
                               | objectName whereClause
-                              | postfixExpression
                               ;
 
-extendedExpression            :
+extendedExpression            : postfixExpression
                               | createExpression
                               | findExpression
-                              | primaryExpression
                               ;
 
 sortOrder                     : REVERSE? ORDERED_BY sortOrderComponent
@@ -543,7 +547,7 @@ postfixExpression             : root=postfixExpression
                                 ( LPAREN argumentList RPAREN
                                 | DOT identifier
                                 )
-                              | extendedExpression
+                              | primaryExpression
                               ;
 
 primaryExpression             : literal
@@ -555,12 +559,12 @@ primaryExpression             : literal
 sequence                      : LBRACKET argumentList RBRACKET
                               ;
 
-nameExpression                : ( operationName SCOPE )? identifier
-                              | ( operationName COLON )? identifier
+nameExpression                : ( operationName SCOPE )? identifier // domain function
+                              | ( operationName COLON )? identifier // class and object operations
                               | identifier
                               ;
 
-operationName                 : identifier; // TODO:  omit?
+operationName                 : identifier; // CDS TODO:  deal with operation numbers
 
 parenthesisedExpression
                               : LPAREN expression
