@@ -45,10 +45,10 @@ typeReference
                               ;
 
 
-instanceTypeRef               : ANONYMOUS? INSTANCE OF objectReference
+instanceTypeRef               : ANONYMOUS? INSTANCE OF fullObjectReference
                               ;
 
-namedTypeRef                  : ANONYMOUS? typeName
+namedTypeRef                  : ANONYMOUS? (domainReference SCOPE)? typeName
                               ;
 
 typeName                      : identifier
@@ -79,16 +79,22 @@ objectName                    : identifier
 objectReference               : objectName
                               ;
 
+fullObjectReference           : (domainReference SCOPE)? objectName
+                              ;
+
 attributeName                 : identifier
                               ;
 
 relationshipSpec              : relationshipReference
-                                  ( DOT ( objectReference | rolePhrase )
+                                  ( DOT ( objOrRole=objectReference | rolePhrase )
                                     (DOT objectReference)?
                                   )?
                               ;
 
 eventName                     : identifier
+                              ;
+
+eventReference                : (objectReference COLON eventName) | SET_TIMER | RESET_TIMER
                               ;
 
 stateName                     : identifier
@@ -149,7 +155,7 @@ returnType                    : typeReference
 relationshipName              : RelationshipName
                               ;
 
-relationshipReference         : relationshipName
+relationshipReference         : (domainReference SCOPE)? relationshipName
                               ;
 
 rolePhrase                    : StringLiteral
@@ -342,9 +348,8 @@ createTimer                   : sequence EQUAL root=CREATE_TIMER LBRACKET argume
                               ;
 
 
-generateStatement             : GENERATE
-                                ( ( operationName COLON eventName ) | SET_TIMER | RESET_TIMER )
-                                LPAREN argumentList RPAREN ( TO expression )?
+generateStatement             : GENERATE eventReference
+                                LPAREN argumentList RPAREN (TO expression)?
                               ;
 
 ifStatement                   : IF condition THEN NEWLINE
@@ -362,7 +367,7 @@ whileStatement                : LOOP NEWLINE
                                 ENDLOOP
                               ;
 
-condition                     : logicalOr // TODO
+condition                     : expression
                               ;
 
 
@@ -401,6 +406,8 @@ endDomainContext              : ENDUSE;
 
 codeBlock                     : statementList
                               ;
+
+
 //---------------------------------------------------------
 // Find Condition Definition
 //---------------------------------------------------------
@@ -471,7 +478,7 @@ additiveExp                   : lhs=additiveExp ( PLUS | MINUS ) rhs=multExp
                               | multExp
                               ;
 
-multExp                       : lhs=multExp ( TIMES | DIVIDE | CARAT ) rhs=unaryExp // multiplication, division, exponentiation
+multExp                       : lhs=multExp ( TIMES | DIVIDE | POWER ) rhs=unaryExp
                               | unaryExp
                               ;
 
@@ -505,7 +512,7 @@ sortOrder                     : REVERSE? ORDERED_BY sortOrderComponent
                                 ( AND sortOrderComponent )*
                               ;
 
-sortOrderComponent            : attributeName
+sortOrderComponent            : REVERSE? attributeName
                               ;
 
 createExpression              : CREATE UNIQUE? objectReference ( WITH createArgumentList )?
