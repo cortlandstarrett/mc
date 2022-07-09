@@ -328,8 +328,7 @@ exitStatement                 : BREAK
                               | BREAKIF condition
                               ;
 
-deleteStatement               : DELETE expression
-                              | DELETE objectName WHERE whereClause
+deleteStatement               : DELETE expression whereClause?
                               ;
 linkStatement                 : linkType
                                 lhs=navigateExpression relationshipSpec
@@ -504,7 +503,6 @@ navigateExpression            : lhs=navigateExpression
                                 ( NAVIGATE relationshipSpec whereClause?
                                 )
                               | extendedExpression
-                              | objectName whereClause
                               ;
 
 extendedExpression            : postfixExpression
