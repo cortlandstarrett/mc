@@ -293,6 +293,8 @@ statement                     : (
                                 | exitStatement
                                 | deleteStatement
                                 | linkStatement
+                                | scheduleStatement
+                                | cancelTimerStatement
                                 | generateStatement
                                 | ifStatement
                                 | caseStatement
@@ -318,8 +320,7 @@ assignStatement               : lhs=expression EQUAL rhs=expression
 enumValueAssignStatement      : identifier OF identifier EQUAL EnumerationLiteral // TODO:  refine
                               ;
 
-callStatement                 : LBRACKET RBRACKET EQUAL
-                                ( nameExpression | DELETE_TIMER )
+callStatement                 : LBRACKET RBRACKET EQUAL root=nameExpression
                                 LBRACKET argumentList RBRACKET
                                 ( ON identifier )?
                               ;
@@ -342,6 +343,15 @@ linkType                      : LINK
                               | UNLINK
                               | UNASSOCIATE
                               ;
+
+
+scheduleStatement             : LBRACKET timerId=expression RBRACKET EQUAL
+                                CREATE_TIMER LBRACKET RBRACKET
+                              ;
+
+cancelTimerStatement          : LBRACKET RBRACKET EQUAL DELETE_TIMER LBRACKET timerId=expression RBRACKET
+                              ;
+
 
 
 generateStatement             : GENERATE eventReference
@@ -545,7 +555,7 @@ postfixExpression             : root=postfixExpression
                                 | LBRACKET argumentList RBRACKET ( ON identifier )?
                                 )
                               | primaryExpression
-                              | CREATE_TIMER | GET_TIME_REMAINING
+                              | GET_TIME_REMAINING
                               ;
 
 primaryExpression             : literal
