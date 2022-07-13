@@ -289,6 +289,7 @@ statement                     : (
                                 | assignStatement
                                 | enumValueAssignStatement
                                 | nullStatement
+                                | callStatement
                                 | exitStatement
                                 | deleteStatement
                                 | linkStatement
@@ -311,10 +312,16 @@ statement                     : (
 nullStatement                 : BEGIN NEWLINE? NULL SEMI NEWLINE? END SEMI
                               ;
 
-assignStatement               : lhs=postfixExpression EQUAL rhs=expression
+assignStatement               : lhs=expression EQUAL rhs=expression
                               ;
 
 enumValueAssignStatement      : identifier OF identifier EQUAL EnumerationLiteral // TODO:  refine
+                              ;
+
+callStatement                 : LBRACKET RBRACKET EQUAL
+                                ( nameExpression | DELETE_TIMER )
+                                LBRACKET argumentList RBRACKET
+                                ( ON identifier )?
                               ;
 
 exitStatement                 : BREAK
@@ -518,7 +525,7 @@ createArgumentList            :
 createArgument                : attributeName EQUAL expression
                               ;
 
-findExpression                : findType objectReference
+findExpression                : findType primaryExpression
                                 whereClause?
                                 sortOrder?
                               ;
@@ -538,7 +545,7 @@ postfixExpression             : root=postfixExpression
                                 | LBRACKET argumentList RBRACKET ( ON identifier )?
                                 )
                               | primaryExpression
-                              | CREATE_TIMER | DELETE_TIMER | GET_TIME_REMAINING
+                              | CREATE_TIMER | GET_TIME_REMAINING
                               ;
 
 primaryExpression             : literal
