@@ -398,7 +398,7 @@ forStatement                  : FOR loopVariableSpec
                                 ENDFOR
                               ;
 
-loopVariableSpec              : ( identifier | sequence ) IN SetIdentifier
+loopVariableSpec              : ( identifier | sequence ) IN expression
                               ;
 
 structureInstantiation        : SetIdentifier IS typeName;
@@ -567,9 +567,7 @@ primaryExpression             : literal
 sequence                      : LBRACKET argumentList RBRACKET
                               ;
 
-nameExpression                : ( operationName SCOPE )? identifier // domain function
-                              | ( operationName COLON )? identifier // class and object operations
-                              | identifier
+nameExpression                : ( operationName ( SCOPE | COLON ) )? identifier
                               ;
 
 operationName                 : identifier; // CDS TODO:  deal with operation numbers
