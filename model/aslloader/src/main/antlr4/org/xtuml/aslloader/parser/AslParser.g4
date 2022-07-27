@@ -1,4 +1,3 @@
-// TODO:  names - may need to recognise key letters and function/operation numbers
 parser grammar AslParser;
 
 options {tokenVocab=AslLexer;}
@@ -271,10 +270,10 @@ scenarioDefinitionASL         : DEFINE SCENARIO scenarioName NEWLINE+
 
 blockInput                    : INPUT ( parameterName COLON parameterType )? ( COMMA NEWLINE? parameterName COLON parameterType )* NEWLINE+;
 blockOutput                   : OUTPUT ( parameterName COLON parameterType )? ( COMMA NEWLINE? parameterName COLON parameterType )* NEWLINE+;
-bridgeName                    : identifier COLON identifier COLON identifier;  // TODO refine this
-functionName                  : identifier SCOPE identifier; // TODO see if this can be aligned
-objectServiceName             : identifier COLON identifier; // TODO see if this can be aligned
-scenarioName                  : identifier;
+bridgeName                    : operationName COLON identifier COLON identifier;  // TODO refine this
+functionName                  : operationName SCOPE identifier; // TODO see if this can be aligned
+objectServiceName             : operationName COLON identifier; // TODO see if this can be aligned
+scenarioName                  : operationName;
 
 //---------------------------------------------------------
 // Statements
@@ -341,6 +340,7 @@ linkStatement                 : linkType
 
 linkType                      : LINK
                               | UNLINK
+                              | ASSOCIATE
                               | UNASSOCIATE
                               ;
 
@@ -570,7 +570,7 @@ sequence                      : LBRACKET argumentList RBRACKET
 nameExpression                : ( operationName ( SCOPE | COLON ) )? identifier
                               ;
 
-operationName                 : identifier; // CDS TODO:  deal with operation numbers
+operationName                 : Word IntegerLiteral;
 
 parenthesisedExpression
                               : LPAREN expression
@@ -595,6 +595,7 @@ literal
                               ;
 
 
-identifier                    : Identifier | SetIdentifier
+identifier                    : Word ( IntegerLiteral | Word )*
+                              | SetIdentifier
                               ;
 
