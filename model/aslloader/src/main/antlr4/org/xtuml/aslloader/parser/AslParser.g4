@@ -85,7 +85,7 @@ attributeName                 : identifier
                               ;
 
 relationshipSpec              : relationshipReference
-                                  ( DOT ( objOrRole=objectReference | rolePhrase )
+                                  ( DOT ( objOrRole=identifier | rolePhrase ) // CDS TODO This needs fixing.
                                     (DOT objectReference)?
                                   )?
                               ;
@@ -93,7 +93,7 @@ relationshipSpec              : relationshipReference
 eventName                     : identifier
                               ;
 
-eventReference                : (objectReference COLON eventName) | SET_TIMER | RESET_TIMER
+eventReference                : (Word IntegerLiteral COLON eventName) | SET_TIMER | RESET_TIMER
                               ;
 
 stateName                     : identifier
@@ -313,7 +313,7 @@ statement                     : (
 nullStatement                 : BEGIN NEWLINE? NULL SEMI NEWLINE? END SEMI
                               ;
 
-assignStatement               : lhs=expression EQUAL rhs=expression
+assignStatement               : lhs=postfixNoCallExpression EQUAL rhs=expression
                               ;
 
 enumValueAssignStatement      : identifier OF identifier EQUAL EnumerationLiteral // TODO:  refine
@@ -331,10 +331,10 @@ exitStatement                 : BREAK
 deleteStatement               : DELETE expression whereClause?
                               ;
 linkStatement                 : linkType
-                                lhs=navigateExpression relationshipSpec
+                                lhs=primaryExpression relationshipSpec
                                 (
-                                  rhs=navigateExpression
-                                  ( ( USING | FROM ) assoc=navigateExpression)?
+                                  rhs=primaryExpression
+                                  ( ( USING | FROM ) assoc=primaryExpression)?
                                 )
                               ;
 
@@ -402,7 +402,7 @@ loopVariableSpec              : ( identifier | sequence ) IN expression
                               ;
 
 structureInstantiation        : SetIdentifier IS typeName;
-structureAssembly             : APPEND sequence TO SetIdentifier;
+structureAssembly             : APPEND sequence TO SetIdentifier; // TODO
 startDomainContext            : USE domainName;
 endDomainContext              : ENDUSE;
 
@@ -529,16 +529,20 @@ createExpression              : CREATE UNIQUE? objectReference ( WITH createArgu
                               ;
 
 createArgumentList            :
-                                (createArgument ( AND createArgument )*)?
+                                createArgument ( AND createArgument )*
                               ;
 
-createArgument                : attributeName EQUAL expression
+createArgument                : attributeName EQUAL postfixNoCallExpression
+                              | CURRENT_STATE EQUAL EnumerationLiteral
                               ;
 
-findExpression                : findType primaryExpression
+
+
+findExpression                : findType postfixNoCallExpression
                                 whereClause?
                                 sortOrder?
                               ;
+
 
 whereClause                   : WHERE findCondition
                               ;
@@ -549,13 +553,18 @@ findType                      : FIND
                               | FIND_ONLY
                               ;
 
-postfixExpression             : root=postfixExpression
+postfixExpression             : root=primaryExpression
                                 ( LPAREN argumentList RPAREN
-                                | DOT identifier
+                                | DOT ( identifier | CURRENT_STATE )
                                 | LBRACKET argumentList RBRACKET ( ON identifier )?
                                 )
                               | primaryExpression
-                              | GET_TIME_REMAINING
+                              | GET_TIME_REMAINING LBRACKET identifier RBRACKET
+                              ;
+
+postfixNoCallExpression       : root=postfixNoCallExpression
+                                DOT ( identifier | CURRENT_STATE )
+                              | primaryExpression
                               ;
 
 primaryExpression             : literal
