@@ -441,7 +441,7 @@ findUnary                         : NOT findUnary
                                   | LPAREN findCondition RPAREN
                                   ;
 
-findComparison                    : lhs=findName ( EQUAL | NOT_EQUAL | LT | GT | LTE | GTE  ) rhs=additiveExp;
+findComparison                    : lhs=findName ( EQUAL | NOT_EQUAL | LT | GT | LTE | GTE  ) rhs=postfixNoCallExpression;
 
 findName                          : att=identifier
                                     ( DOT comp=identifier
