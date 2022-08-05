@@ -532,7 +532,7 @@ createArgumentList            :
                                 createArgument ( AND createArgument )*
                               ;
 
-createArgument                : attributeName EQUAL postfixNoCallExpression
+createArgument                : attributeName EQUAL unaryExp
                               | CURRENT_STATE EQUAL EnumerationLiteral
                               ;
 
@@ -579,7 +579,7 @@ sequence                      : LBRACKET argumentList RBRACKET
 nameExpression                : ( operationName ( SCOPE | COLON ) )? identifier
                               ;
 
-operationName                 : Word IntegerLiteral;
+operationName                 : Word ( Word | IntegerLiteral )* IntegerLiteral;
 
 parenthesisedExpression
                               : LPAREN expression
