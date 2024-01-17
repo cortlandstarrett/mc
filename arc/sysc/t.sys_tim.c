@@ -664,8 +664,11 @@ TIM::ETimer_msec_time( void )
   t = (ETimer_time_t) (t1.to_seconds() * MSEC_CONVERT);
   return ( t - tinit );
 .else
-  ftime( &systyme );
-  t = ( systyme.time * USEC_CONVERT ) + systyme.millitm;
+  if ( 0 == clock_gettime( CLOCK_MONOTONIC, &systyme ) ) {
+    t = (ETimer_time_t)(systyme.tv_sec * 1000 + systyme.tv_nsec / 1000000);
+  } else {
+    t = 0;
+  }
   return ( t - tinit );
 .end if
 
@@ -676,7 +679,7 @@ TIM::ETimer_msec_time( void )
 .if ( te_thread.enabled )
   .if ( "POSIX" == te_thread.flavor )
 /*=====================================================================
- * Return remaining duration in timespec format.
+ * Return next expiration (absolute time) in timespec format.
  *===================================================================*/
 void *
 TIM::duration_until_next_timer_pop( void * ts_in )
@@ -697,8 +700,8 @@ TIM::duration_until_next_timer_pop( void * ts_in )
     ts = 0;   /* Return zero to indicate no timers ticking.  */
   } else {
     ETimer_time_t tnow = ETimer_msec_time();
-    ts->tv_sec = systyme.time;      /* Load current time.  */
-    ts->tv_nsec = systyme.millitm;  /* Stay milliseconds for now.  */
+    ts->tv_sec = systyme.tv_sec;      /* Load current time.  */
+    ts->tv_nsec = systyme.tv_nsec / 1000000; /* milliseconds for conversion */
     if ( t > tnow ) {
       t -= tnow;
       ts->tv_sec += t / 1000;       /* Add the interval.   */
@@ -752,11 +755,9 @@ TIM::init(\
   }
 #endif   /* if ${te_tim.max_timers} > 0 */
 .if ( "SystemC" == te_thread.flavor )
-  ftime( &systyme );            /* Initialize the hardware ticker.   */
   tinit = 0;
 .else
-  ftime( &systyme );            /* Initialize the hardware ticker.   */
-  tinit = ( systyme.time * USEC_CONVERT ) + systyme.millitm;
+  tinit = ETimer_msec_time();
 .end if
 }
 
